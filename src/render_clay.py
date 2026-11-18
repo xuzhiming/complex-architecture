@@ -60,3 +60,12 @@ if not ONLY or "top" in ONLY:
 az, el, dist, tgt = r(35), r(float(os.environ.get("HERO_EL", "25"))), 300, (0, -10, 26)
 render(os.environ.get("HERO_NAME", "perspective_hero.png"), (tgt[0] - dist*math.cos(el)*math.sin(az), tgt[1] - dist*math.cos(el)*math.cos(az), tgt[2] + dist*math.sin(el)),
        tgt, None, lens=42, sun_rot=(r(50), 0, r(-60)), ry=int(RES*0.66))
+# v6: low hero (10 deg, shows the arch and archivolts) + tower close-up detail (rear-right, where the tower is exposed)
+if not os.environ.get("HERO_NAME"):
+    el = r(10)
+    render("perspective_hero_low.png", (tgt[0] - dist*math.cos(el)*math.sin(az), tgt[1] - dist*math.cos(el)*math.cos(az), tgt[2] + dist*math.sin(el)),
+           tgt, None, lens=42, sun_rot=(r(50), 0, r(-60)), ry=int(RES*0.66))
+    import json as _j
+    _T = _j.load(open(os.path.join(HERE, "params.json")))["tower"]
+    tc = (_T["cx"], _T["cy"], 44.0)
+    render("detail_tower.png", (tc[0] + 52, tc[1] + 58, 50.0), tc, None, lens=55, sun_rot=(r(50), 0, r(140)), ry=int(RES*0.75))

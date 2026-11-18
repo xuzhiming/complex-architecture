@@ -130,7 +130,8 @@ def ringmesh(name, r0, r1, c, z=0.03, n=192):
         a, b = vs[i], vs[(i + 1) % n]; bm.faces.new((a[0], b[0], b[1], a[1]))
     bm.to_mesh(me); ob = bpy.data.objects.new(name, me); scene.collection.objects.link(ob); ob.data.materials.append(PLAZA); return ob
 pc = (0, FRONT_Y - 16)
-for r0, r1 in [(13.5, 14.3), (19.0, 19.5), (24.0, 24.35), (6.0, 6.3)]: ringmesh(f"PlazaDress_{r0}", r0, r1, pc)
+PLAZA_SX = P["global"].get("ref_stretch_x", 1.0)   # v6: forecourt widened with the building
+for r0, r1 in [(13.5, 14.3), (19.0, 19.5), (24.0, 24.35), (6.0, 6.3)]: ringmesh(f"PlazaDress_{r0}", r0, r1, pc).scale.x = PLAZA_SX
 
 
 # filled elliptical plaza glow: warm-white centre -> gold ring -> magenta edge
@@ -144,7 +145,7 @@ def plaza_disc():
     L.new(vl.outputs["Value"], ramp.inputs["Fac"]); L.new(ramp.outputs["Color"], e.inputs["Color"]); e.inputs["Strength"].default_value = 2.2
     L.new(e.outputs[0], N["Material Output"].inputs["Surface"]); return m
 bpy.ops.mesh.primitive_circle_add(radius=1.0, vertices=128, fill_type='NGON', location=(pc[0], pc[1], 0.02))
-pd = bpy.context.active_object; pd.name = "PlazaDisc"; pd.scale = (24.0, 24.0, 1); pd.data.materials.append(plaza_disc())
+pd = bpy.context.active_object; pd.name = "PlazaDisc"; pd.scale = (24.0*PLAZA_SX, 24.0, 1); pd.data.materials.append(plaza_disc())
 # --- tiny people (1.75 m) on the forecourt
 pm = [principled("MoodPerson", (0.02, 0.02, 0.03), rough=0.5)] + [emit(f"MoodPersonC{i}", c, 1.5) for i, c in enumerate([(1, 0.3, 0.4), (0.3, 0.7, 1), (1, 0.8, 0.5)])]
 H = P["people"]["height"]
@@ -164,10 +165,10 @@ N, L = world.node_tree.nodes, world.node_tree.links
 bg = N["Background"]; tc = N.new("ShaderNodeTexCoord"); sp = N.new("ShaderNodeSeparateXYZ"); L.new(tc.outputs["Generated"], sp.inputs[0])
 ramp = N.new("ShaderNodeValToRGB"); el = ramp.color_ramp.elements
 el[0].position = 0.45; el[0].color = (0.16, 0.19, 0.36, 1); el[1].position = 0.75; el[1].color = (0.03, 0.03, 0.09, 1)
-L.new(sp.outputs["Z"], ramp.inputs["Fac"]); L.new(ramp.outputs["Color"], bg.inputs["Color"]); bg.inputs["Strength"].default_value = 1.8
+L.new(sp.outputs["Z"], ramp.inputs["Fac"]); L.new(ramp.outputs["Color"], bg.inputs["Color"]); bg.inputs["Strength"].default_value = 0.35
 vol = N.new("ShaderNodeVolumePrincipled"); vol.inputs["Color"].default_value = (0.5, 0.5, 0.95, 1); vol.inputs["Density"].default_value = 0.0006
 vol.inputs["Anisotropy"].default_value = 0.55
-L.new(vol.outputs[0], N["World Output"].inputs["Volume"])
+# v6: no world volume / background haze / far city -> plain dark sky gradient
 
 # --- lights
 def light(name, kind, loc, energy, col, size=1.0, rot=None, spot=None):
@@ -187,10 +188,6 @@ light("Moon", 'SUN', (0, 0, 100), 0.6, (0.6, 0.65, 1.0), rot=(math.radians(40), 
 light("RimPink", 'AREA', (-80, 30, 70), 6e3, (1.0, 0.4, 0.8), 40, (math.radians(60), 0, math.radians(-120)))
 light("RimCyan", 'AREA', (90, 20, 60), 6e3, (0.3, 0.8, 1.0), 40, (math.radians(60), 0, math.radians(120)))
 light("UnderFill", 'AREA', (0, FRONT_Y - 35, 12), 3e3, (0.55, 0.5, 1.0), 60, (math.radians(-80), 0, 0))
-# glowing disc behind the crown (sky opening in the reference)
-bpy.ops.mesh.primitive_circle_add(radius=30, fill_type='NGON', location=(tx, ty + 60, tz + 10), rotation=(math.radians(90), 0, 0))
-disc = bpy.context.active_object; disc.data.materials.append(emit("MoodSkyDisc", (0.85, 0.85, 1.0), 6.0))
-
 # denser haze box in front of the arch so the outpouring light shows rays
 bpy.ops.mesh.primitive_cube_add(size=1, location=(0, FRONT_Y - 17, 18)); hz = bpy.context.active_object; hz.scale = (110, 32, 36)
 hm = bpy.data.materials.new("MoodHazeBox"); N2, L2 = nodes(hm); N2.remove(N2["Principled BSDF"])
@@ -200,23 +197,10 @@ L2.new(pv.outputs[0], N2["Material Output"].inputs["Volume"]); hz.data.materials
 bpy.ops.mesh.primitive_circle_add(radius=6.5, fill_type='NGON', location=(0, FRONT_Y + 14, 6.5), rotation=(math.radians(90), 0, 0))
 burst = bpy.context.active_object; burst.data.materials.append(emit("MoodBurst", (1.0, 0.85, 0.62), 2.4))
 light("BurstSpot", 'SPOT', (0, FRONT_Y + 12, 7), 4e3, (1.0, 0.9, 0.75), 1.5, (math.radians(95), 0, math.radians(180)), math.radians(120))
-# distant city silhouettes in the haze for depth
-FAR = principled("MoodFar", (0.03, 0.035, 0.07), metal=0.5, rough=0.3)
-for i in range(26):
-    x = random.uniform(-260, 260); y = random.uniform(260, 460); h = random.uniform(40, 140); r_ = random.uniform(6, 20)
-    if abs(x) < 70 and y < 180: continue
-    bpy.ops.mesh.primitive_cylinder_add(radius=r_, depth=h, location=(x, y, h/2), vertices=24)
-    t = bpy.context.active_object; t.data.materials.append(FAR)
-    bpy.ops.mesh.primitive_cylinder_add(radius=r_*2.2, depth=1.2, location=(x, y, h*random.uniform(0.6, 1.0)), vertices=32)
-    d = bpy.context.active_object; d.data.materials.append(SHELL)
-light("BackGlowL", 'AREA', (-150, 400, 90), 8e4, (0.45, 0.55, 1.0), 120, (math.radians(-90), 0, 0))
-light("BackGlowR", 'AREA', (160, 380, 70), 6e4, (0.8, 0.5, 1.0), 120, (math.radians(-90), 0, 0))
 # --- visible light shafts: narrow warm spots fanning out of the arch + cool beams from the sky opening, scattered by the haze box
 for k, (ax, az_) in enumerate([(-40, 22), (-26, 34), (-12, 44), (0, 50), (12, 44), (26, 34), (40, 22)]):
     light(f"ArchBeam{k}", 'SPOT', (0, FRONT_Y - 3.0, 1.5), 7e5, (1.0, 0.86, 0.66), 0.3,
           (math.radians(90 + az_), 0, math.radians(180 + ax)), math.radians(6)).data.spot_blend = 0.1
-for k, (bx, by) in enumerate([(-30, 20), (25, 35), (-5, 60)]):
-    light(f"SkyBeam{k}", 'SPOT', (bx, by, 140), 2.5e6, (0.75, 0.7, 1.0), 0.5, (math.radians(-12 + 6*k), 0, 0), math.radians(5)).data.spot_blend = 0.1
 # --- iridescent rim strips: an emissive tube just under every canopy lip, alternating pink / cyan
 import bmesh
 def rim_strip(o, k):

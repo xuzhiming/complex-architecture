@@ -179,13 +179,26 @@ def rounded_band(name, c, r, z, h=0.9, out=0.9, seg=96):
     p = [(r - 1.2, z - h/2), (r + out*0.4, z - h/2), (r + out*0.85, z - h*0.3), (r + out, z), (r + out*0.85, z + h*0.3), (r + out*0.4, z + h/2), (r - 1.2, z + h/2), (r - 1.2, z - h/2)]
     return lathe(name, p, seg, c)
 
-def canopy(name, R, z, c, t=None, sx=1.0, sy=1.0, fins=0, r_drum=3.0, upturn=True, lip_k=0.32, fin_c=None):
+def canopy(name, R, z, c, t=None, sx=1.0, sy=1.0, fins=0, r_drum=3.0, upturn=True, lip_k=0.32, fin_c=None, ribs=False):
     """Thin tapered canopy: thick centre, thin up-turned edge; optional down-curving support fins."""
     if t is None: t = min(1.9, 0.055*R + 0.55)
     lip = lip_k*t if upturn else 0.05
-    prof = [(0, 0.55*t), (0.3*R, 0.45*t), (0.65*R, 0.22*t), (0.9*R, 0.12*t), (R, lip), (R*0.995, lip - 0.12),
-            (0.93*R, -0.04*t), (0.7*R, -0.18*t), (0.4*R, -0.42*t), (0, -0.65*t)]
+    # v6 lens: tapered top, rounded fascia nose of thickness e at the rim, shallow concave underside
+    e = max(0.32, 0.2*t); zc = lip - e/2 + 0.04
+    nose = [(R - e/2 + e/2*math.cos(math.radians(a)), zc + e/2*math.sin(math.radians(a))) for a in (90, 50, 20, 0, -20, -50, -90)]
+    prof = [(0, 0.55*t), (0.3*R, 0.45*t), (0.65*R, 0.22*t), (0.86*R, max(0.12*t, zc + e/2 + 0.02))] + nose + \
+           [(0.93*R, min(-0.04*t, zc - e/2 - 0.02)), (0.7*R, -0.18*t), (0.4*R, -0.42*t), (0, -0.65*t)]
     ob = lathe(name, prof, 128, (c[0], c[1], z), sx, sy)
+    if ribs and R > 5.5 and 0.9*R > r_drum + 1.7:   # underside radial ribs (soffit), from the drum to near the fascia
+        under = [(0.93*R, min(-0.04*t, zc - e/2 - 0.02)), (0.7*R, -0.18*t), (0.4*R, -0.42*t), (0, -0.65*t)][::-1]
+        def uz(r):
+            for (r0, z0), (r1, z1) in zip(under, under[1:]):
+                if r0 <= r <= r1: return z0 + (z1 - z0)*(r - r0)/(r1 - r0)
+            return under[-1][1]
+        ra, rb = r_drum + 0.2, 0.9*R; K = 6
+        top = [(ra + (rb - ra)*i/K, z + uz(ra + (rb - ra)*i/K) + 0.15) for i in range(K + 1)]
+        bot = [(r_, zz - 0.15 - 0.75*max(0.0, 1 - (r_ - ra)/(rb - ra))**1.5 - 0.12) for (r_, zz) in top]
+        rib_plates(name + "_ribs", c, top + bot[::-1], max(8, int(2*math.pi*R/4.5)), 0.28, 0.13, sx, sy)
     if fins:
         bm = bmesh.new()
         for k in range(fins):
@@ -210,14 +223,26 @@ def canopy(name, R, z, c, t=None, sx=1.0, sy=1.0, fins=0, r_drum=3.0, upturn=Tru
     return ob
 
 def drum(name, c, r, z0, z1, band=4.2, arched=True, nfin=None):
-    """Cylinder drum: dark recessed glazing, rounded floor bands, dense mullions."""
-    cyl(name + "_core", r - 0.7, z0 - 0.3, z1, (c[0], c[1], 0), 96, GLAZE)
+    """v6 drum: solid clay core, thick rounded floor bands, pilasters, and per storey a ring of
+    instanced arched windows between the pilasters (full build only; silhouettes ignore them)."""
+    cyl(name + "_core", r - 0.7, z0 - 0.3, z1, (c[0], c[1], 0), 96, CLAY)
     nb = max(1, int(round((z1 - z0)/band)))
     zs = [z0 + (z1 - z0)*k/nb for k in range(nb + 1)]
     for k, z in enumerate(zs):
-        rounded_band(f"{name}_band{k}", (c[0], c[1], 0), r, z, 0.8 if 0 < k < nb else 1.1, 0.7)
-    n = nfin or max(12, int(2*math.pi*r/1.7))
-    fins_around(name + "_mull", c, r - 0.75, z0, z1, n, w=0.38, d=0.9)
+        rounded_band(f"{name}_band{k}", (c[0], c[1], 0), r, z, 1.0 if 0 < k < nb else 1.25, 0.8)
+    DW = P.get("detail", {}).get("drum_windows", {})
+    npil = nfin or max(6, int(2*math.pi*r/DW.get("bay", 5.2)))
+    fins_around(name + "_pil", c, r - 0.75, z0, z1, npil, w=0.75, d=0.6, a_skip=None)
+    if FULL and arched:
+        rc = r - 0.7; per = max(1, int(round(2*math.pi*rc/npil/DW.get("pitch", 2.7))))
+        for k in range(nb):
+            h = zs[k + 1] - zs[k]; sill = 0.75; rise = min(DW.get("hw", 0.7), 0.9)
+            sp = max(0.8, h - sill - rise - 0.75)
+            wt = window_type(f"dw_{int(sp*10)}", DW.get("hw", 0.7), sp, rise)
+            for j in range(npil):
+                for q in range(per):
+                    a = 2*math.pi*(j + (q + 0.5)/per)/npil
+                    window_at(wt, c[0] + rc*math.cos(a), c[1] + rc*math.sin(a), zs[k] + sill, a, DW.get("lit", 0.45), name)
     return zs
 
 def turret(name, c, r, z0, z1, cap_R=None, dome=True, fins=0):

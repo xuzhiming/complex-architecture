@@ -6,6 +6,13 @@ from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
 HERE = os.path.dirname(os.path.abspath(__file__))
 VIEWS = ["front", "rear", "left", "right"]
+# v6: the user widened the design in x. The design target is the reference stretched horizontally by
+# global.ref_stretch_x in the FRONT/REAR elevations (side elevations unchanged). REF_STRETCH_X=1 -> strict reference.
+try:
+    _G = json.load(open(os.path.join(os.path.dirname(HERE), "params.json")))["global"]
+except Exception:
+    _G = {}
+STRETCH_X = float(os.environ.get("REF_STRETCH_X", _G.get("ref_stretch_x", 1.0)))
 
 def load_model(sil_dir, view):
     a = np.asarray(Image.open(os.path.join(sil_dir, f"sil_{view}.png")).convert("RGBA"))[..., 3] > 20
@@ -15,7 +22,8 @@ def ref_mask(view, H_m, mpp, shape, ground_row, cx_px):
     r = np.asarray(Image.open(os.path.join(HERE, f"ref_{view}_sil.png"))) > 127
     h, w = r.shape
     s = (H_m/mpp)/h
-    nw, nh = max(1, int(round(w*s))), max(1, int(round(h*s)))
+    kx = STRETCH_X if view in ("front", "rear") else 1.0
+    nw, nh = max(1, int(round(w*s*kx))), max(1, int(round(h*s)))
     rr = np.asarray(Image.fromarray((r*255).astype(np.uint8)).resize((nw, nh), Image.BILINEAR)) > 127
     out = np.zeros(shape, bool)
     y1 = ground_row; y0 = y1 - nh; x0 = int(round(cx_px - nw/2))

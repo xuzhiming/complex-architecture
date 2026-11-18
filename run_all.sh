@@ -35,9 +35,9 @@ $BL -b building.blend -P check/circulation_check.py -- --out "$ROOT/circulation_
 grep CIRCULATION logs/circulation.log
 grep -q "CIRCULATION PASS | negative test caught: True" logs/circulation.log || { echo "circulation check failed"; exit 1; }
 
-step "6/8 export: gltf-transform (webp textures + meshopt)"
+step "6/8 export: gltf-transform (webp textures + meshopt + GPU instancing of repeated windows)"
 $GT optimize building.glb web/building_opt.glb --compress meshopt --texture-compress webp \
-    --join-named false --simplify false --flatten false --instance false 2>&1 | tail -1
+    --join-named false --simplify false --flatten false --instance true --instance-min 5 2>&1 | tail -1
 cp spaces.json web/spaces.json
 
 step "7/8 web walk test (headless Chrome)"

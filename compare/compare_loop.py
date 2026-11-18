@@ -92,7 +92,8 @@ def main():
     for rnd in range(1, ROUNDS + 1):
         tot = region_totals(best)
         worst = sorted(tot, key=tot.get, reverse=True)[:3]
-        cands = sorted([k for k, v in KNOBS.items() if set(v[1]) & set(worst)], key=lambda k: (tries.get(k, 0), -len(set(KNOBS[k][1]) & set(worst))))[:int(os.environ.get("CANDS", "6"))]
+        EXC = set(filter(None, os.environ.get("KNOB_EXCLUDE", "").split(",")))
+        cands = sorted([k for k, v in KNOBS.items() if set(v[1]) & set(worst) and k not in EXC], key=lambda k: (tries.get(k, 0), -len(set(KNOBS[k][1]) & set(worst))))[:int(os.environ.get("CANDS", "6"))]
         for k in cands: tries[k] = tries.get(k, 0) + 1
         jobs = []
         for k in cands:

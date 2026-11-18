@@ -35,13 +35,14 @@ sa = ST["T_stairA_0"]; steps = sa["steps"]
 lift0 = LF["T_lift0"]; lx0, ly0, lx1, ly1 = lift0["shaft"]
 a_d07 = math.degrees(math.atan2(D[D_CG]["center"][1] - cc[1], D[D_CG]["center"][0] - cc[0]))
 a_d12 = math.degrees(math.atan2(D[did("gallery", "T_link")]["center"][1] - cc[1], D[did("gallery", "T_link")]["center"][0] - cc[0]))
+hx = S["spaces"]["W_hall"]["probe"][0]; wcx = S["spaces"]["W_core"]["probe"][0]   # wing positions come from the plan
 ROUTE = [("start", (0, -62, 0), 0.0), ("shot", "01_forecourt"),
-         (0, -50, 0), ("shot", "02_arch"), (0, -30, 0), ("shot", "03_tunnel"), (0, -14, 0), (0, -6, 0), ("shot", "04_courtyard"),
-         (-8, 4, 0), *through(D_CG), ("shot", "05_gallery"),
+         (0, -50, 0), ("shot", "02_arch"), (0, -30, 0), ("shot", "03_tunnel"), (0, cc[1] - 10, 0), (0, cc[1] - 2, 0), ("shot", "04_courtyard"),
+         (cc[0] - 8, cc[1] + 4, 0), *through(D_CG), ("shot", "05_gallery"),
          *arc(cc[0], cc[1], gal_r, a_d07, 180, 3)[1:], *through(did("gallery", "W_link"), 1.0), ("shot", "06_W_link_door"),
-         *through(did("W_link", "W_hall"), 1.0), (-25, 10, 0), (-25, 15.5, 0), ("shot", "07_W_hall"),
-         *through(did("W_hall", "W_core"), 1.3), (-28, 20.5, 0), ("shot", "08_W_core"),
-         *through(did("W_hall", "W_core"), 1.3, rev=True), (-25, 10, 0), (-25, 3, 0),
+         *through(did("W_link", "W_hall"), 1.0), (hx, 10, 0), (hx, 15.5, 0), ("shot", "07_W_hall"),
+         *through(did("W_hall", "W_core"), 1.3), (wcx, 20.5, 0), ("shot", "08_W_core"),
+         *through(did("W_hall", "W_core"), 1.3, rev=True), (hx, 10, 0), (hx, cc[1], 0),
          *through(did("W_link", "W_hall"), 1.0, rev=True), *through(did("gallery", "W_link"), 1.0, rev=True),
          *arc(cc[0], cc[1], gal_r, 180, a_d12 + 6, 8)[1:], ("shot", "09_gallery_ring"),
          *through(did("gallery", "T_link"), 1.0), *through(did("T_link", "T_L0"), 1.6), ("shot", "10_tower_lobby"),

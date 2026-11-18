@@ -1,0 +1,150 @@
+{
+ "route_completed": true,
+ "final_state": {
+  "x": 8.251351089358682,
+  "y": 38.30455167596658,
+  "z": 13.499770654907227,
+  "yaw": 2.1753136616851863,
+  "onGround": true,
+  "lift": null
+ },
+ "reached_upper_floor": true,
+ "samples": 908,
+ "duration_s": 78.9,
+ "path_length_m": 257.9,
+ "penetrations": [],
+ "stuck": [],
+ "doors_passed_min_open": {
+  "D15_gallery__T_link": 1.0,
+  "D62_T_link__T_L0": 1.0
+ },
+ "events": [
+  {
+   "shot": "01_forecourt",
+   "at": [
+    0,
+    -62,
+    0.0
+   ]
+  },
+  {
+   "shot": "02_arch",
+   "at": [
+    0,
+    -50.27,
+    0.0
+   ]
+  },
+  {
+   "shot": "03_tunnel",
+   "at": [
+    0,
+    -30.27,
+    0.0
+   ]
+  },
+  {
+   "shot": "04_courtyard",
+   "at": [
+    0.0,
+    -4.27,
+    0.0
+   ]
+  },
+  {
+   "shot": "05_gallery",
+   "at": [
+    -21.82,
+    11.37,
+    0.0
+   ]
+  },
+  {
+   "shot": "06_W_link_door",
+   "at": [
+    -29.51,
+    -2.0,
+    0.0
+   ]
+  },
+  {
+   "shot": "07_W_hall",
+   "at": [
+    -33.0,
+    15.2,
+    0.0
+   ]
+  },
+  {
+   "shot": "08_W_core",
+   "at": [
+    -35.76,
+    20.26,
+    0.0
+   ]
+  },
+  {
+   "shot": "09_gallery_ring",
+   "at": [
+    4.71,
+    24.14,
+    0.0
+   ]
+  },
+  {
+   "shot": "10_tower_lobby",
+   "at": [
+    9.13,
+    28.1,
+    0.0
+   ]
+  },
+  {
+   "shot": "11_stair_landing",
+   "at": [
+    6.77,
+    45.28,
+    2.25
+   ]
+  },
+  {
+   "shot": "12_tower_L1",
+   "at": [
+    7.75,
+    38.8,
+    4.5
+   ]
+  },
+  {
+   "lift_to": 13.5,
+   "accepted": true
+  },
+  {
+   "shot": "13_in_lift_L3",
+   "at": [
+    10.58,
+    42.75,
+    13.5
+   ]
+  },
+  {
+   "shot": "14_tower_L3",
+   "at": [
+    8.25,
+    38.3,
+    13.5
+   ]
+  },
+  {
+   "shot": "99_end",
+   "at": [
+    8.25,
+    38.3,
+    13.5
+   ]
+  }
+ ],
+ "page_errors": [],
+ "sanity_ray_hits_wall": true,
+ "PASS": true
+}

@@ -17,6 +17,7 @@ bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
 COL = bpy.data.collections.new("Building"); scene.collection.children.link(COL)
 exec(open(os.path.join(HERE, "src", "geom.py")).read())
+exec(open(os.path.join(HERE, "src", "detail.py")).read())   # v6: instanced windows, balconies, rib plates, arch bridges
 
 G, POD, ARC, TUN, CY, TW, ST = P["global"], P["podium"], P["arch"], P["tunnel"], P["courtyard"], P["tower"], P["stairs"]
 DR = P["doors"]
@@ -94,8 +95,9 @@ ROLE = "shell"
 shell = WALL.loft_ring("PodiumShell", 0.0, -POD["wall_t"], 0.0, DB + 0.2)
 DE, FO = POD.get("deck_edge_z", DB + 2.4), POD["fascia_out"]
 # knife-edge deck: concave soffit rising from deck_bot to a thin lip at deck_edge_z, thin plate back to the wall line, deck_top inboard
-deck = DECK.loft("PodiumDeck", [(-16, DB), (-7.0, DB), (-3.0, DB + (DE - DB)*0.35), (FO - 1.6, DE - 0.75), (FO - 0.3, DE - 0.25), (FO, DE + 0.1),
-                                (FO - 0.4, DE + 0.45), (-8.0, DE + 0.7), (-13.0, DT), (-16, DT)])
+deck = DECK.loft("PodiumDeck", [(-16, DB), (-7.0, DB), (-3.0, DB + (DE - DB)*0.35), (FO - 1.6, DE - 0.75), (FO - 0.6, DE - 0.4)] +
+                               [(FO - 0.42 + 0.42*math.cos(math.radians(a)), DE + 0.05 + 0.42*math.sin(math.radians(a))) for a in (-90, -55, -25, 0, 25, 55, 90)] +   # v6 rounded nose
+                               [(FO - 1.2, DE + 0.55), (-8.0, DE + 0.7), (-13.0, DT), (-16, DT)])
 smooth(deck)
 
 # doors / portal positions on the shell
@@ -196,9 +198,13 @@ arch_tube("PortalLining", ARC["cx"], (FRONT_Y + PORTAL_BACK)/2, ARC["portal_dept
 pb = arch_prisms("PortalBackWall", [(ARC["cx"], PORTAL_BACK, 0.0, -math.pi/2, ARC["hw"] + 0.3, ARC["spring"], ARC["rise"] + 0.3, 0.6)])
 boolean(pb, [arch_prisms("c", [(ARC["cx"], PORTAL_BACK, -0.5, -math.pi/2, TUN["hw"], TUN["spring"] + 0.5, TUN["rise"], 2.0)])])
 # archivolts on the shell face
-for k, (grow, dep) in enumerate([(1.4, 1.6), (2.8, 1.0)]):
+for k, (grow, dep) in enumerate(P.get("detail", {}).get("archivolts", [[1.4, 1.6], [2.8, 1.0]])):   # v6: layered, stepped archivolts
     av = arch_prisms(f"Archivolt{k}", [(ARC["cx"], FRONT_Y - dep/2 + 0.2, 0.0, -math.pi/2, ARC["hw"] + grow, ARC["spring"], ARC["rise"] + grow*0.8, dep)])
     boolean(av, [arch_prisms("c", [(ARC["cx"], FRONT_Y - dep/2 + 0.2, -0.5, -math.pi/2, ARC["hw"] + grow - 1.4, ARC["spring"] + 0.5, ARC["rise"] + grow*0.8 - 1.4, dep + 2)])])
+AVL = P.get("detail", {}).get("archivolts", [[1.4, 1.6], [2.8, 1.0]]); gmax = max(g for g, _ in AVL)
+box("ArchKeystone", (2.4, AVL[0][1] + 0.6, 3.2), (ARC["cx"], FRONT_Y - (AVL[0][1] + 0.6)/2 + 0.2, ARC["spring"] + ARC["rise"] + gmax*0.8 - 1.0))
+for sx_ in (-1, 1):   # impost blocks where the archivolts spring
+    box(f"ArchImpost{sx_}", (gmax + 1.2, AVL[0][1] + 0.4, 0.9), (ARC["cx"] + sx_*(ARC["hw"] + gmax/2), FRONT_Y - (AVL[0][1] + 0.4)/2 + 0.2, ARC["spring"] - 0.45))
 # tunnel from portal back wall to the arcade wall of the courtyard
 Y_TUN_END = CC[1] - math.sqrt(CR**2 - TUN["hw"]**2) + 0.3
 tun = arch_tube("TunnelVault", ARC["cx"], (PORTAL_BACK + Y_TUN_END)/2, Y_TUN_END - PORTAL_BACK, TUN["hw"], TUN["spring"], TUN["rise"], 0.6)
@@ -242,44 +248,89 @@ def column_profile():
 for k, (x, y) in enumerate(COLS["positions"]):
     prof = column_profile()
     lathe(f"TreeColumn{k}", prof, 64, (x, y, 0))
-    for j in range(COLS["ribs"]):
-        a = 2*math.pi*j/COLS["ribs"]
-        lathe(f"TreeRib{k}_{j}", [(r + 0.3, z) for (r, z) in prof[3:-2]], 2, (x, y, 0), a0=a - 0.03, a1=a + 0.03, closed=False, sm=False)
+    # v6: solid rib plates following the flare (ribbed flaring head), thin on the shaft, deep under the deck
+    fl = [(r, z) for (r, z) in prof[3:-2] if z >= COLS.get("flare_z0", 14.0) - 4.0]
+    outer = [(r + 0.15 + 0.55*(i/(len(fl) - 1))**1.5, z) for i, (r, z) in enumerate(fl)]
+    inner = [(max(r - 0.4, 0.3), z) for (r, z) in fl][::-1]
+    rib_plates(f"TreeRibs{k}", (x, y), outer + inner, COLS["ribs"], 0.38)
 
 # ---------------- tower exterior ----------------
 DOOR_ANG_T = math.atan2(CC[1] - TC[1], CC[0] - TC[0])   # tower faces the courtyard here
 tower_shells = []
+TD = P.get("detail", {}).get("tower", {})
 for k, (r, z0, z1) in enumerate(TW["drums"]):
-    sh = ring(f"TowerShell{k}", r - 0.5 - TW["shell_t"], r - 0.5, z0, z1, (TC[0], TC[1], 0), 128, GLAZE)
+    # v6: solid clay shell (no dark drum behind fins) carrying instanced arched / tall-rect windows
+    sh = ring(f"TowerShell{k}", r - 0.5 - TW["shell_t"], r - 0.5, z0, z1, (TC[0], TC[1], 0), 128, CLAY)
     tower_shells.append(sh)
-    skip = [(DOOR_ANG_T, 0.16)] if z0 < 1 else None
-    fins_around(f"TowerMull{k}", TC, r - 0.5, z0 + (3.0 if z0 < 1 else 0), z1, int(2*math.pi*r/1.4), w=0.32, d=0.8, a_skip=skip)
     zz = [z for z in [FH*j for j in range(0, 30)] if z0 < z < z1 + 0.01]
-    for z in zz:
-        rounded_band(f"TowerBand{k}_{int(z*10)}", (TC[0], TC[1], 0), r - 0.3, z, 0.7, 0.8, 128)
-    for j in range(TW["ribs_per_drum"]):
+    for z in zz:   # thick rounded floor-edge belts
+        rounded_band(f"TowerBand{k}_{int(z*10)}", (TC[0], TC[1], 0), r - 0.3, z, TD.get("band_h", 1.05), TD.get("band_out", 1.15), 128)
+    rib_angles = []
+    for j in range(TW["ribs_per_drum"]):   # buttress pilasters: stepped foot, slender shaft, corbelled head
         a = 2*math.pi*(j + 0.5*(k % 2))/TW["ribs_per_drum"] + 0.15
         if z0 < 1 and abs(((a - DOOR_ANG_T + math.pi) % (2*math.pi)) - math.pi) < 0.25: continue
+        rib_angles.append(a)
         p = (TC[0] + (r + 0.2)*math.cos(a), TC[1] + (r + 0.2)*math.sin(a))
-        lathe(f"TowerRib{k}_{j}", [(0, z0), (0.9, z0), (0.65, (z0 + z1)/2), (0.9, z1), (0, z1)], 12, (p[0], p[1], 0))
-    rounded_band(f"TowerStep{k}", (TC[0], TC[1], 0), r, z1, 1.4, 1.4, 128)
-for k, (z, dx, dy, ro) in enumerate(TW["belts"]):
-    ri = tower_r_at(z) - 1.0
-    lathe(f"TowerBelt{k}", [(ri, z - 0.7), (ro - 1.0, z - 0.7), (ro - 0.1, z - 0.35), (ro + 0.1, z), (ro - 0.1, z + 0.35), (ro - 1.0, z + 0.7), (ri, z + 0.7), (ri, z - 0.7)],
+        lathe(f"TowerRib{k}_{j}", [(0, z0), (1.25, z0), (1.25, z0 + 1.6), (0.85, z0 + 2.4), (0.72, z1 - 2.0), (1.05, z1 - 0.9), (1.05, z1), (0, z1)], 12, (p[0], p[1], 0))
+    if FULL:
+        rw = r - 0.5; pitch = TD.get("win_pitch", 2.7)
+        n = max(8, int(2*math.pi*rw/pitch))
+        skip = [(a, 1.6/rw) for a in rib_angles] + ([(DOOR_ANG_T, 0.2)] if z0 < 1 else [])
+        wfl = [FH*j for j in range(0, 30) if z0 - 0.01 <= FH*j and FH*j + FH <= z1 + 0.3]
+        for f_i, zf in enumerate(wfl):
+            arched = (f_i + k) % 2 == 0
+            wt = window_type("tw_arch", 0.62, 2.0, 0.62) if arched else window_type("tw_rect", 0.55, 2.55, 0.12)
+            ring_windows(f"TW{k}", TC, rw, zf + 0.85, wt, n, phase=0.11*f_i, skip=skip, lit_p=0.35,
+                         keep=lambda x, y, z: z > DT + 0.5 or not DECK.inside(x, y, -1.5))   # nothing inside the podium or under the deck
+    rounded_band(f"TowerStep{k}", (TC[0], TC[1], 0), r, z1, 1.6, 1.6, 128)
+for k, (z, dx, dy, ro) in enumerate(TW["belts"]):   # offset cantilever belts (thick rounded)
+    ri = tower_r_at(z) - 1.0; hb = TD.get("belt_h", 1.0)
+    lathe(f"TowerBelt{k}", [(ri, z - hb), (ro - 1.2, z - hb), (ro - 0.25, z - hb*0.6), (ro + 0.1, z), (ro - 0.25, z + hb*0.6), (ro - 1.2, z + hb), (ri, z + hb), (ri, z - hb)],
           128, (TC[0] + dx, TC[1] + dy, 0))
+    rib_plates(f"TowerBeltBrackets{k}", (TC[0] + dx, TC[1] + dy), [(ri + 0.5, z - hb), (ro - 1.4, z - hb), (ri + 0.5, z - hb - 2.2)], 14, 0.35, 0.2*k)
+# balconies: sector slabs with parapets on alternate floors, rotating around the tower
+BT = TD.get("balconies", {"every": 2, "depth": 2.2, "span_deg": 40, "per_floor": 3})
+bfl = [FH*j for j in range(2, 40) if FH*j < TW["floors_top"] - 1 and j % BT["every"] == 0]
+bm_ = bmesh.new()
+for kk, zf in enumerate(bfl):
+    rwall = tower_r_at(zf) - 0.5
+    for jb in range(BT["per_floor"]):
+        a0 = 2*math.pi*jb/BT["per_floor"] + kk*0.9 + 0.35
+        sector_bm(bm_, TC, rwall - 0.2, rwall + BT["depth"], a0, a0 + math.radians(BT["span_deg"]), zf - 0.35, zf, 10)
+        sector_bm(bm_, TC, rwall + BT["depth"] - 0.2, rwall + BT["depth"], a0, a0 + math.radians(BT["span_deg"]), zf, zf + 1.05, 10)
+bm_object("TowerBalconies", bm_)
 canopy("TowerCrown", TW["crown_R"], TW["crown_z"], TC, t=1.8, fins=12, r_drum=TW["drums"][-1][0] - 0.5, lip_k=0.45)
 lathe("TowerDome", [(TW["dome_r"], 0), (TW["dome_r"]*0.92, TW["dome_h"]*0.45), (TW["dome_r"]*0.6, TW["dome_h"]*0.85), (0, TW["dome_h"])], 96, (TC[0], TC[1], TW["crown_z"] + 0.6))
 ring("TowerParapet", TW["drums"][-1][0] - 1.2, TW["drums"][-1][0] - 0.4, TW["drums"][-1][2], TW["crown_z"], (TC[0], TC[1], 0), 96)
+# v6 crown detail: secondary under-disc, ribbed soffit, dome lantern with ring of mini-arches
+canopy("TowerCrownUnder", TW["crown_R"]*0.72, TW["crown_z"] - 2.2, TC, t=0.9, r_drum=TW["drums"][-1][0] - 0.5, lip_k=0.3, ribs=True)
+DZ = TW["crown_z"] + 0.6 + TW["dome_h"]
+cyl("TowerLantern", TW["dome_r"]*0.32, DZ - 0.3, DZ + 1.6, (TC[0], TC[1], 0), 32)
+lathe("TowerLanternCap", [(TW["dome_r"]*0.42, 0), (TW["dome_r"]*0.4, 0.25), (TW["dome_r"]*0.22, 0.75), (0, 1.0)], 32, (TC[0], TC[1], DZ + 1.6))
+fins_around("TowerLanternFins", TC, TW["dome_r"]*0.32, DZ - 0.3, DZ + 1.6, 12, w=0.18, d=0.25)
 
 # ---------------- canopies with drums ----------------
 CS = P.get("canopy_scale", 1.0)
 RIMS = []
 for cp in P["canopies"]:
     c = (cp["cx"], cp["cy"]); r = cp["drum_r"]
-    drum(cp["name"], c, r, DE - 0.3, cp["z"], band=FH)
     rx, ry = cp["rx"]*CS, cp["ry"]*CS
     R = max(rx, ry)
-    canopy(cp["name"] + "_canopy", R, cp["z"] + 0.6, c, sx=rx/R, sy=ry/R, lip_k=cp.get("lip", 0.3))
+    if cp.get("style") == "column_tower":
+        # v6 side tower: slim windowed core + ring of slender columns with stacked rounded floors, trumpet flare under the cap
+        nc, rc = cp.get("n_cols", 8), cp.get("col_r", 0.55)
+        drum(cp["name"], c, r*0.62, DE - 0.3, cp["z"] - 3.0, band=FH)
+        for j in range(nc):
+            a = 2*math.pi*(j + 0.5)/nc
+            lathe(f'{cp["name"]}_col{j}', [(0, DE - 0.3), (rc*1.5, DE - 0.3), (rc*1.5, DE + 0.6), (rc, DE + 1.4), (rc, cp["z"] - 3.4), (rc*1.6, cp["z"] - 2.6), (0, cp["z"] - 2.6)],
+                  16, (c[0] + (r - 0.7)*math.cos(a), c[1] + (r - 0.7)*math.sin(a), 0))
+        for zb in [DE - 0.3 + FH*(q + 1) for q in range(int((cp["z"] - DE - 3.0)/FH))]:
+            ring(f'{cp["name"]}_floor{int(zb)}', r*0.62 - 0.5, r + 0.15, zb - 0.3, zb + 0.25, (c[0], c[1], 0), 64)
+        lathe(cp["name"] + "_trumpet", [(0, cp["z"] - 8.0), (r*0.62, cp["z"] - 8.0), (r*0.7, cp["z"] - 5.0), (r*0.95, cp["z"] - 2.6), (r*1.35, cp["z"] - 0.6),
+                                        (r*1.5, cp["z"] + 0.2), (0, cp["z"] + 0.2)], 64, (c[0], c[1], 0))
+    else:
+        drum(cp["name"], c, r, DE - 0.3, cp["z"], band=FH)
+    canopy(cp["name"] + "_canopy", R, cp["z"] + 0.6, c, sx=rx/R, sy=ry/R, lip_k=cp.get("lip", 0.3), r_drum=r, ribs=True)
     canopy(cp["name"] + "_fins", r + 0.6, cp["z"] + 0.3, c, t=0.7, fins=8, r_drum=r - 0.3, fin_c=min(min(rx, ry)*0.6, r + 6.0))
     if cp.get("dome"):
         lathe(cp["name"] + "_dome", [(r*0.8, 0), (r*0.72, r*0.3), (r*0.5, r*0.55), (r*0.22, r*0.7), (0, r*0.74)], 48, (c[0], c[1], cp["z"] + 1.0))
@@ -288,7 +339,7 @@ for cp in P["canopies"]:
     # intrudes into the tower floors (found by the circulation headroom probe on T_L6)
     ri = tower_r_at(cp["z"]) - 0.5 - TW["shell_t"]
     if math.hypot(c[0] - TC[0], c[1] - TC[1]) - R < ri:
-        for nm in (cp["name"] + "_canopy", cp["name"] + "_fins"):
+        for nm in (cp["name"] + "_canopy", cp["name"] + "_fins", cp["name"] + "_canopy_ribs"):
             ob = bpy.data.objects.get(nm)
             if ob: boolean(ob, [cyl("cut", ri, cp["z"] - 3.0, cp["z"] + 4.0, (TC[0], TC[1], 0), 128)])
 RIMS.append((TC, TW["crown_R"], 1, 1, TW["crown_z"], 0.45))
@@ -316,7 +367,9 @@ def sweep_bank(name, pts, wfun, tfun, samples=220, bank=0.0):
         return 0.5*((2*p1) + (-p0 + p2)*u + (2*p0 - 5*p1 + 4*p2 - p3)*u*u + (-p0 + 3*p1 - 3*p2 + p3)*u**3)
     C = [cr(k/samples) for k in range(samples + 1)]
     NS = 24
-    sec = [(math.copysign(abs(math.cos(a))**0.7, math.cos(a)), math.copysign(abs(math.sin(a))**0.7, math.sin(a))) for a in [2*math.pi*k/NS for k in range(NS)]]
+    NS = 32; px, pz = CRS.get("sec_p", [0.7, 0.7])   # v6 blade section: full width, thin crisp edges (pz > 1), cambered top
+    sec = [(math.copysign(abs(math.cos(a))**px, math.cos(a)), math.copysign(abs(math.sin(a))**pz, math.sin(a)) + CRS.get("camber", 0.0)*(1 - math.cos(a)**2))
+           for a in [2*math.pi*k/NS for k in range(NS)]]
     verts, faces = [], []
     for k, p in enumerate(C):
         T = (C[min(k + 1, samples)] - C[max(k - 1, 0)]).normalized()
@@ -333,10 +386,13 @@ def sweep_bank(name, pts, wfun, tfun, samples=220, bank=0.0):
     ob = mesh_from(name, verts, faces); smooth(ob); return ob
 def crescent_pts(mirror=False, scale=1.0):
     base = Vector(CRS["pts"][0]); out = []
+    # v6 constraint: the crescent post stands on the deck, so its foot must clear the (larger) courtyard void
+    dvec = Vector((base.x - CC[0], base.y - CC[1], 0.0)); need = CR + CRS["post_r"] + 1.0
+    push = dvec.normalized()*(need - dvec.length) if dvec.length < need else Vector((0, 0, 0))
     for p in CRS["pts"]:
         v = Vector(p) - base
         q = base + Vector((v.x*CRS.get("spread", 1.0), v.y*CRS.get("spread", 1.0), v.z*CRS.get("rise", 1.0)))
-        q.z += CRS.get("dz", 0.0)
+        q.z += CRS.get("dz", 0.0); q += push
         if mirror:
             q.x = 2*TC[0] - q.x
             q = Vector((TC[0], TC[1], q.z)) + (q - Vector((TC[0], TC[1], q.z)))*scale
@@ -356,10 +412,9 @@ if CRS.get("horn2", 0.0) > 0.05:      # second horn (roof plan shows two horns e
     cyl("CrescentHorn2Post", CRS["post_r"]*CRS["horn2"], DT, p2[0][2] + 0.5, (p2[0][0], p2[0][1], 0), 48)
 
 # ---------------- bridges ----------------
-prof = profile_rect("BridgeProfile", 3.0, 0.8)
-for k, pl in enumerate(P["bridges"]):
-    curve_obj(f"Bridge{k}", [tuple(p) for p in pl], bevel_obj=prof)
-bpy.data.objects.remove(prof, do_unlink=True)
+BRD = P.get("detail", {}).get("bridge", {})
+for k, pl in enumerate(P["bridges"]):   # v6: slender curved bridges: thin deck, open railing, under-slung arch rib
+    arch_bridge(f"Bridge{k}", [tuple(p) for p in pl], **BRD)
 for ob in [o for o in bpy.data.objects if o.type == 'CURVE']: bpy.data.objects.remove(ob, do_unlink=True)
 
 # =====================================================================
@@ -647,12 +702,12 @@ if FULL:
 
 # ---------------- clean meshes ----------------
 for o in list(COL.objects):
-    if o.type != 'MESH': continue
+    if o.type != 'MESH' or o.get("inst"): continue
     bm = bmesh.new(); bm.from_mesh(o.data)
     bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.001)
     bm.to_mesh(o.data); bm.free()
 
-print("BUILD OK", MODE, "objects:", len(COL.objects), "doors:", len(DOORS), "stairs:", len(STAIRS))
+print("BUILD OK", MODE, "objects:", len(COL.objects), "instances:", N_INST[0], "doors:", len(DOORS), "stairs:", len(STAIRS))
 
 # =====================================================================
 # SAVE / EXPORT (full)  |  SILHOUETTES (sil)

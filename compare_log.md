@@ -210,3 +210,131 @@ Each round: the 3x3 XOR-error regions (summed over the 4 views) are ranked; knob
 - Fix in geometry code (build.py): canopies that reach into the tower are boolean-trimmed to the tower's inner face.
 - Run 2 (2 more rounds, no further improving step): silhouette unchanged (IoU 0.9311 / skyline 1.67 m), CIRCULATION PASS
   (55/55 spaces, 102/102 doors, 32/32 flights, negative test caught), WALK PASS (0 penetrations, 0 stuck).
+
+# v6 - structure refinement + user-widened design
+
+## S1 - side-view skyline fix (params, before the detail work), scored against the strict reference
+Per-4-m skyline tables of the LEFT/RIGHT views (`compare/skyline_diff.py`) showed (a) the front canopies stopped short in y
+(ref has a z~34 lip out to y -48 and a z~43 lip out to y -40) and (b) a 2 m-too-high plateau at y -10..+1 from E_high / W_tall,
+while the front elevation needs those caps at 57-58 m. Resolution: the two tall capped towers sit BEHIND the courtyard (y +14,
+hidden behind the tower in the side views, as in the roof plan), and a broad mass (M_W) carries the 55 m side plateau.
+- W_big ry 20->23, W_low1 z +1 / ry 17->21, E_high + W_tall cy -> +14, W_tall z 52.8->56, M_W -> (-14,-4) r 11 z1 54.4, M_E z1 57.5->54.5
+- result (strict reference): IoU 0.9311 -> **0.9366**, skyline 1.67 -> **1.03 m**; LEFT 2.38 -> 1.33 m, RIGHT 2.19 -> 1.12 m
+
+## S2 - geometry-code detail (build.py, src/geom.py, src/detail.py) - mostly sub-silhouette
+Instanced arched / tall-rect windows on tower and every drum (linked duplicates -> GPU instancing in the glb), solid clay drums,
+thick rounded floor belts, buttress pilasters, cantilever belts with brackets, rotating sector balconies, crown under-disc + lantern,
+lens canopies with rounded fascia nose + underside rib soffits, column-cluster side towers with trumpet flares, ribbed tree-column
+heads, rounded deck nose, 4-layer archivolts + keystone + imposts, blade-section crescent, slender bridges.
+
+## S3 - USER DESIGN CHANGE: widened building (reference no longer the strict target for width)
+The user asked for a clearly larger central courtyard/plaza and a wider building. Changes: podium/deck half-width x1.18,
+wings shifted 8 m outward, canopies/masses/columns x1.18 (canopy rx x1.18), courtyard r 16.5 -> 24 m (about 58 m across incl.
+gallery) and centre y 3 -> -2, tower moved back 3.5 m (rear centre kept), crescent re-seated (its post must clear the courtyard void;
+enforced in build.py), M_C/M_E2 masses fill the tower shoulders, arch half-width 20 -> 23 m, bridges much thinner.
+- strict reference after widening: IoU **0.8368**, skyline **5.63 m** (expected: the reference is narrower)
+- the compare now uses the DESIGN TARGET = reference FRONT/REAR elevations stretched x1.18 (`global.ref_stretch_x`; side views
+  unchanged; `REF_STRETCH_X=1` gives the strict reference). Against the target before tuning: IoU 0.9016, skyline 2.59 m.
+# Silhouette compare log
+
+Reference: `ref/sheet_elevations.png` (4 elevation panels). The sheets carry **no dimension lines**, so each reference panel
+is scaled uniformly until its silhouette bbox height equals `global.H_total` (ground lines anchored, bbox centres aligned).
+Model silhouettes are true orthographic renders at 0.2 m/px. Score = mean IoU - 0.01 x mean skyline error (m).
+Each round: the 3x3 XOR-error regions (summed over the 4 views) are ranked; knobs that drive the worst regions are tried at +/- step
+(parallel builds); the best improving candidate is accepted, otherwise those knob steps are halved.
+
+## Round 0 (initial params)
+- mean IoU **0.8994**, mean skyline err **2.69 m**, score 0.8725
+- per view (IoU/skyline): front 0.926/1.75m | rear 0.921/1.60m | left 0.872/3.90m | right 0.877/3.52m
+
+## Round 1
+- worst regions: highC (0.106), highR (0.051), midR (0.051)
+- candidates (12 builds, 78 s):
+  - `tower.crown_z` +0.600: score 0.8719 (IoU 0.8988, sky 2.69 m)
+  - `tower.crown_z` -0.600: score 0.8720 (IoU 0.8988, sky 2.68 m)
+  - `crescent.dz` +0.800: score 0.8711 (IoU 0.8986, sky 2.75 m)
+  - `crescent.dz` -0.800: score 0.8691 (IoU 0.8968, sky 2.77 m)
+  - `crescent.spread` +0.050: score 0.8724 (IoU 0.8995, sky 2.70 m)
+  - `crescent.spread` -0.050: score 0.8725 (IoU 0.8994, sky 2.70 m)
+  - `crescent.rise` +0.060: score 0.8686 (IoU 0.8969, sky 2.83 m)
+  - `crescent.rise` -0.060: score 0.8672 (IoU 0.8956, sky 2.84 m)
+  - `crescent.d_scale` +0.100: score 0.8734 (IoU 0.9000, sky 2.66 m)
+  - `crescent.d_scale` -0.100: score 0.8714 (IoU 0.8987, sky 2.73 m)
+  - `crescent.dy` +0.800: score 0.8706 (IoU 0.8985, sky 2.80 m)
+  - `crescent.dy` -0.800: score 0.8749 (IoU 0.9008, sky 2.59 m)
+- **accepted** `crescent.dy` -0.800 -> mean IoU **0.9008**, skyline **2.59 m**, score 0.8749
+- per view: front 0.926/1.75m | rear 0.921/1.60m | left 0.875/3.69m | right 0.881/3.32m
+
+## Round 2
+- worst regions: highC (0.104), midR (0.051), highR (0.049)
+- candidates (12 builds, 79 s):
+  - `masses.top_E` +1.000: score 0.8744 (IoU 0.9005, sky 2.60 m)
+  - `masses.top_E` -1.000: score 0.8749 (IoU 0.9008, sky 2.59 m)
+  - `tower.r_scale` +0.030: score 0.8726 (IoU 0.8990, sky 2.64 m)
+  - `tower.r_scale` -0.030: score 0.8771 (IoU 0.9025, sky 2.54 m)
+  - `canopy_scale` +0.040: score 0.8733 (IoU 0.9003, sky 2.70 m)
+  - `canopy_scale` -0.040: score 0.8746 (IoU 0.9013, sky 2.67 m)
+  - `canopies.z_shift` +0.800: score 0.8711 (IoU 0.8982, sky 2.72 m)
+  - `canopies.z_shift` -0.800: score 0.8683 (IoU 0.8956, sky 2.73 m)
+  - `crescent.dx` +0.800: score 0.8760 (IoU 0.9017, sky 2.57 m)
+  - `crescent.dx` -0.800: score 0.8731 (IoU 0.8995, sky 2.64 m)
+  - `mass_scale` +0.060: score 0.8123 (IoU 0.8444, sky 3.22 m)
+  - `mass_scale` -0.060: score 0.8198 (IoU 0.8523, sky 3.25 m)
+- **accepted** `tower.r_scale` -0.030 -> mean IoU **0.9025**, skyline **2.54 m**, score 0.8771
+- per view: front 0.926/1.75m | rear 0.921/1.60m | left 0.878/3.59m | right 0.884/3.22m
+
+## Round 3
+- worst regions: highC (0.105), midR (0.049), highR (0.049)
+- candidates (12 builds, 66 s):
+  - `masses.top_C` +1.000: score 0.8766 (IoU 0.9020, sky 2.54 m)
+  - `masses.top_C` -1.000: score 0.8777 (IoU 0.9031, sky 2.54 m)
+  - `masses.r_WT` +0.600: score 0.8771 (IoU 0.9025, sky 2.54 m)
+  - `masses.r_WT` -0.600: score 0.8770 (IoU 0.9024, sky 2.54 m)
+  - `canopies.west_dx` +1.000: score 0.8771 (IoU 0.9023, sky 2.52 m)
+  - `canopies.west_dx` -1.000: score 0.8760 (IoU 0.9021, sky 2.60 m)
+  - `canopies.east_dx` +1.000: score 0.8764 (IoU 0.9025, sky 2.61 m)
+  - `canopies.east_dx` -1.000: score 0.8748 (IoU 0.9011, sky 2.63 m)
+  - `tower.crown_z` +0.600: score 0.8765 (IoU 0.9019, sky 2.54 m)
+  - `tower.crown_z` -0.600: score 0.8766 (IoU 0.9019, sky 2.53 m)
+  - `crescent.dz` +0.800: score 0.8757 (IoU 0.9017, sky 2.60 m)
+  - `crescent.dz` -0.800: score 0.8731 (IoU 0.8994, sky 2.63 m)
+- **accepted** `masses.top_C` -1.000 -> mean IoU **0.9031**, skyline **2.54 m**, score 0.8777
+- per view: front 0.928/1.75m | rear 0.922/1.60m | left 0.878/3.59m | right 0.884/3.22m
+
+## Round 4
+- worst regions: highC (0.101), midR (0.050), highR (0.049)
+- candidates (12 builds, 66 s):
+  - `crescent.spread` +0.050: score 0.8780 (IoU 0.9033, sky 2.53 m)
+  - `crescent.spread` -0.050: score 0.8775 (IoU 0.9031, sky 2.56 m)
+  - `crescent.rise` +0.060: score 0.8737 (IoU 0.9005, sky 2.68 m)
+  - `crescent.rise` -0.060: score 0.8718 (IoU 0.8989, sky 2.70 m)
+  - `crescent.d_scale` +0.100: score 0.8788 (IoU 0.9039, sky 2.51 m)
+  - `crescent.d_scale` -0.100: score 0.8765 (IoU 0.9023, sky 2.58 m)
+  - `crescent.dy` +0.800: score 0.8753 (IoU 0.9017, sky 2.64 m)
+  - `crescent.dy` -0.800: score 0.8804 (IoU 0.9048, sky 2.44 m)
+  - `masses.top_E` +1.000: score 0.8772 (IoU 0.9028, sky 2.55 m)
+  - `masses.top_E` -1.000: score 0.8777 (IoU 0.9031, sky 2.54 m)
+  - `tower.r_scale` +0.030: score 0.8757 (IoU 0.9016, sky 2.59 m)
+  - `tower.r_scale` -0.030: score 0.8796 (IoU 0.9046, sky 2.50 m)
+- **accepted** `crescent.dy` -0.800 -> mean IoU **0.9048**, skyline **2.44 m**, score 0.8804
+- per view: front 0.928/1.75m | rear 0.922/1.60m | left 0.882/3.40m | right 0.888/3.01m
+
+## Final
+- mean IoU **0.9048**, mean skyline error **2.44 m**, score 0.8804
+- per view: front 0.928/1.75m | rear 0.922/1.60m | left 0.882/3.40m | right 0.888/3.01m
+- roof plan loose check (oblique sheet, bbox-fitted, indicative only): IoU 0.510
+- overlays: `compare/final/overlay_sheet.png` (red = reference only, blue = model only, grey = overlap)
+- tuned params written back to `params.json` (start values kept in `params_initial.json`)
+
+## v6 summary (scores)
+| stage | target | mean IoU | mean skyline | front / rear / left / right IoU |
+|---|---|---|---|---|
+| v5 final | strict ref | 0.9311 | 1.67 m | 0.940 / 0.933 / 0.923 / 0.928 |
+| S1 side-skyline params | strict ref | 0.9366 | 1.03 m | 0.943 / 0.937 / 0.932 / 0.935 |
+| S1+S2 detail code, not widened | strict ref | 0.9233 | 1.43 m | 0.920 / 0.916 / 0.926 / 0.931 |
+| S3 widened, before tuning | design target (front/rear ref x1.18) | 0.9016 | 2.59 m | 0.928 / 0.924 / 0.874 / 0.880 |
+| **v6 final (after 4 loop rounds)** | design target | **0.9048** | **2.44 m** | 0.928 / 0.922 / 0.882 / 0.888 |
+| v6 final | strict ref (for the record) | 0.8526 | 6.09 m | 0.824 / 0.818 / 0.882 / 0.888 |
+The S2 detail drop (0.9366 -> 0.9233 strict) comes mainly from the column-cluster side towers + trumpet flares and the blade-section
+crescent in the front/rear elevations. The side views got worse after widening (tower moved back 3.5 m, crescent re-seated behind
+the larger courtyard) and are the main remaining gap.

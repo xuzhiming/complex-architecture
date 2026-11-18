@@ -61,7 +61,7 @@ function leafRoot(o) { while (o) { if (/^DoorLeaf_/.test(o.name)) return o; o = 
 {
   const parts = []; let nV = 0, nI = 0;
   gltf.scene.traverse(o => {
-    if (!o.isMesh) return;
+    if (!o.isMesh || o.isInstancedMesh) return;   // instanced facade windows (EXT_mesh_gpu_instancing) are decoration, not collision
     if (leafRoot(o)) return;
     const role = roleOf(o);
     if (role === 'plaza_glow' || role === 'window_light' || role === 'cut') return;
