@@ -420,8 +420,87 @@ def crescent_pts(mirror=False, scale=1.0):
 def crescent_d(t):
     D = CRS["d"]; f = t*(len(D) - 1); i = min(int(f), len(D) - 2); u = f - i
     return max(0.25, (D[i]*(1 - u) + D[i + 1]*u)*CRS.get("d_scale", 1.0))
+def crescent_plate(name, ctr, e, R, ph_t, ph_b, w_mid, thick, vax=(0, 0, 1), sx=1.0, N=160, M=28):
+    """v8: a clean PLANAR crescent moon in the vertical plane spanned by plan direction e and +Z.
+    Outer boundary = arc of circle (0,0,R) from the tip angle ph_t round the far side to the base angle ph_b;
+    inner boundary = circle through both ends and the outer mid-point moved inward by w_mid (thickest at mid-arc).
+    Constant flat section (thick), corners rounded by a superellipse. No twist, no sweep."""
+    a0, a1 = math.radians(ph_t), math.radians(ph_b) + 2*math.pi
+    O = lambda a: (R*math.cos(a), R*math.sin(a))
+    Pt, Pb = O(a0), O(a1); am = (a0 + a1)/2; Mi = ((R - w_mid)*math.cos(am), (R - w_mid)*math.sin(am))
+    (x1, y1), (x2, y2), (x3, y3) = Pt, Mi, Pb
+    dd = 2*(x1*(y2 - y3) + x2*(y3 - y1) + x3*(y1 - y2))
+    ux = ((x1*x1 + y1*y1)*(y2 - y3) + (x2*x2 + y2*y2)*(y3 - y1) + (x3*x3 + y3*y3)*(y1 - y2))/dd
+    uy = ((x1*x1 + y1*y1)*(x3 - x2) + (x2*x2 + y2*y2)*(x1 - x3) + (x3*x3 + y3*y3)*(x2 - x1))/dd
+    ri = math.hypot(x1 - ux, y1 - uy)
+    b0, bm_, b1 = [math.atan2(q[1] - uy, q[0] - ux) for q in (Pt, Mi, Pb)]
+    # unwrap so the inner arc runs Pt -> Mi -> Pb
+    def unwrap(x, ref):
+        while x - ref > math.pi: x -= 2*math.pi
+        while x - ref < -math.pi: x += 2*math.pi
+        return x
+    bm_ = unwrap(bm_, b0); b1 = unwrap(b1, bm_)
+    e = Vector((e[0], e[1], 0)).normalized(); Z = Vector(vax).normalized(); nrm = e.cross(Z).normalized(); C0 = Vector(ctr)
+    W = lambda s, z: C0 + e*(s*sx) + Z*z     # sx > 1: elliptical crescent (affine, still planar); plane spanned by e (horizontal) and vax (vertical, optionally leaning back)
+    sec = [(math.copysign(abs(math.cos(t))**0.25, math.cos(t)), math.copysign(abs(math.sin(t))**0.25, math.sin(t)))
+           for t in [2*math.pi*k/M for k in range(M)]]
+    verts, faces = [], []
+    for k in range(N + 1):
+        f = k/N
+        o = O(a0 + (a1 - a0)*f); bb = b0 + (b1 - b0)*f; i_ = (ux + ri*math.cos(bb), uy + ri*math.sin(bb))
+        mid = W((o[0] + i_[0])/2, (o[1] + i_[1])/2); acr = W(o[0], o[1]) - W(i_[0], i_[1])
+        hw = max(acr.length/2, 0.04); acr = acr.normalized() if acr.length > 1e-6 else Vector((0, 0, 1))
+        ht = thick/2*min(1.0, 0.35 + hw/1.2)     # flat plate; only the last metre of each tip thins to a sharp edge
+        for (u, v) in sec: verts.append(tuple(mid + acr*(u*hw) + nrm*(v*ht)))
+    for k in range(N):
+        for j in range(M):
+            p_ = k*M + j; q_ = k*M + (j + 1) % M; faces.append([p_, q_, q_ + M, p_ + M])
+    faces.append(list(range(M))[::-1]); faces.append([N*M + j for j in range(M)])
+    ob = mesh_from(name, verts, faces); smooth(ob)
+    return ob, W(*Pt), W(*Pb)
+
 PR = CRS.get("pair")
-if PR:
+PL = CRS.get("plate")
+if PL:
+    # v8 crown (user: follow the reference strictly, no twist, natural): two mirror-image planar crescents framing the tower
+    # like ( ). Each lies in a vertical plane yawed by theta (bulge front-outboard, tips rear-inboard), so the front
+    # elevation shows the pair and each side elevation shows the crescent C of the reference sheet.
+    ax = PL.get("axis_x") if PL.get("axis_x") is not None else TC[0]
+    # Each crescent: circle radius R in a plane yawed by theta about Z (horizontal axis e runs from the outboard bulge
+    # towards the axis) and leaning back by alpha about e. Measured from the elevations, both the front and the side panels
+    # show a ~45 m x 29 m C: a circular crescent at yaw ~45 deg, lean ~54 deg gives exactly that, and seen from the
+    # front-high roof-plan view the two read as round ( ) moons.
+    if PL.get("Ax"):
+        # elliptical crescent in an upright plane: Ax / Ay = its semi-axis as seen in the front / side elevation (both sheets
+        # show the same long low C), B = vertical semi-axis; the plane yaw follows from Ax/Ay. Still one flat plate, no twist.
+        th = math.atan2(PL["Ay"], PL["Ax"]); A_ = math.hypot(PL["Ax"], PL["Ay"]); B_ = PL["B"]; uc = PL["uc"]*A_
+        print("CRESCENT ellipse plane yaw", round(math.degrees(th), 1), "A", round(A_, 1), "B", B_)
+        for sd, nm in ((-1, "CrescentCrownL"), (1, "CrescentCrownR")):
+            e = (-sd*math.cos(th), math.sin(th))
+            u_tip = -(PL["tip_gap"]/2)/math.cos(th)
+            ph_t = math.degrees(math.acos(max(-1, min(1, (u_tip - uc)/A_))))
+            ctr = (ax + e[0]*uc, TC[1] + e[1]*uc + PL.get("dy", 0.0), PL["zc"])
+            ob, ptip, pbase = crescent_plate(nm, ctr, e, B_, ph_t, PL["ph_base"], PL["w_mid"], PL["thick"], sx=A_/B_)
+            cut = cyl("cut", tower_r_at(max(DT, pbase.z)) - 0.45, DT, TW["crown_z"] - 1.5, (TC[0], TC[1], 0), 96)
+            boolean(ob, [cut])
+            print("CRESCENT", nm, "tip", tuple(round(c, 1) for c in ptip), "base", tuple(round(c, 1) for c in pbase))
+        pts = [tuple(pbase)]
+if PL and not PL.get("Ax"):
+    th, al, R_ = math.radians(PL["theta"]), math.radians(PL["alpha"]), PL["R"]
+    print("CRESCENT plane yaw", PL["theta"], "lean", PL["alpha"], "R", R_)
+    for sd, nm in ((-1, "CrescentCrownL"), (1, "CrescentCrownR")):
+        e = Vector((-sd*math.cos(th), math.sin(th), 0))
+        w = Vector((-e.y, e.x, 0)) if sd < 0 else Vector((e.y, -e.x, 0))      # horizontal normal pointing to the rear
+        v = Vector((0, 0, 1))*math.cos(al) + w*math.sin(al)
+        pt = math.radians(PL["ph_tip"])
+        off = e*(R_*math.cos(pt)) + v*(R_*math.sin(pt))                       # tip relative to the circle centre
+        ctr = (ax + sd*PL["tip_gap"]/2 - off.x, TC[1] + PL["dy"], PL["zc"])
+        ob, ptip, pbase = crescent_plate(nm, ctr, e, R_, PL["ph_tip"], PL["ph_base"], PL["w_mid"], PL["thick"], vax=tuple(v))
+        cut = cyl("cut", tower_r_at(max(DT, pbase.z)) - 0.45, DT, TW["crown_z"] - 1.5, (TC[0], TC[1], 0), 96)
+        boolean(ob, [cut])
+        print("CRESCENT", nm, "tip", tuple(round(c, 1) for c in ptip), "base", tuple(round(c, 1) for c in pbase))
+    pts = [tuple(pbase)]
+elif PR and not PL:
     # v7 crown: TWO mirror-symmetric horn blades framing the tower (user's roof-plan reference). Each horn keeps the
     # side-elevation (y, z) profile fitted to the LEFT/RIGHT reference panels (both horns coincide in the side views);
     # in plan/front it springs beside the tower, bulges outward, then curls inward with the tips leaving a gap above the tower.
@@ -442,7 +521,7 @@ if PR:
         cyl(nm + "_Post", CRS["post_r"], DT, zb + 0.6, (hp[0][0], hp[0][1], 0), 48)
         drum(nm + "_PostDrum", (hp[0][0], hp[0][1]), CRS["post_r"] + 0.8, DT, max(DT + 6, zb - 3.0), band=FH)
     pts = [(ax - bdx, yb, zb)]
-else:
+elif not PL:
     pts = crescent_pts()
     sweep_bank("CrescentCrown", pts, lambda t: crescent_d(t)/2, lambda t: crescent_d(t)/2*CRS.get("flat", 0.8), bank=math.radians(CRS.get("bank", 0.0)))
     cyl("CrescentPost", CRS["post_r"], DT, pts[0][2] + 0.5, (pts[0][0], pts[0][1], 0), 48)

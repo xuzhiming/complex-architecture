@@ -69,3 +69,10 @@ if not os.environ.get("HERO_NAME"):
     _T = _j.load(open(os.path.join(HERE, "params.json")))["tower"]
     tc = (_T["cx"], _T["cy"], 44.0)
     render("detail_tower.png", (tc[0] + 52, tc[1] + 58, 50.0), tc, None, lens=55, sun_rot=(r(50), 0, r(140)), ry=int(RES*0.75))
+# v8: crown close-up from the front, 3/4-high like the roof-plan crown reference (both crescents framing the tower)
+if not os.environ.get("HERO_NAME"):
+    import json as _j
+    _T = _j.load(open(os.path.join(HERE, "params.json")))["tower"]
+    ct = (_T["cx"], _T["cy"] - 4.0, 58.0); ce = r(float(os.environ.get("CROWN_EL", "38"))); cd_ = float(os.environ.get("CROWN_D", "165"))
+    render("crown_detail.png", (ct[0] + float(os.environ.get("CROWN_DX", "0")), ct[1] - cd_*math.cos(ce), ct[2] + cd_*math.sin(ce)), ct, None, lens=50,
+           sun_rot=(r(50), 0, r(-35)), ry=int(RES*0.75))

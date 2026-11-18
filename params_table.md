@@ -147,11 +147,26 @@ Every dimension used by `build.py` comes from `params.json` (metres; +Z up, fron
 | `crescent.pair.thick` | `0.32` | inferred | yes (from null) |
 | `crescent.pair.curl_p` | `1.6` | inferred | yes (from null) |
 | `crescent.pair.base_drop` | `4.0` | inferred | yes (from null) |
+| `crescent.plate.axis_x` | `13.5` | inferred | yes (from null) |
+| `crescent.plate.zc` | `63.4` | inferred | yes (from null) |
+| `crescent.plate.dy` | `12.0` | inferred | yes (from null) |
+| `crescent.plate.ph_base` | `-85.0` | inferred | yes (from null) |
+| `crescent.plate.w_mid` | `3.5` | inferred | yes (from null) |
+| `crescent.plate.thick` | `1.3` | inferred | yes (from null) |
+| `crescent.plate.tip_gap` | `5.0` | inferred | yes (from null) |
+| `crescent.plate.theta` | `20.0` | inferred | yes (from null) |
+| `crescent.plate.alpha` | `0.0` | inferred | yes (from null) |
+| `crescent.plate.R` | `30.0` | inferred | yes (from null) |
+| `crescent.plate.ph_tip` | `78.0` | inferred | yes (from null) |
+| `crescent.plate.Ax` | `29.3` | inferred | yes (from null) |
+| `crescent.plate.Ay` | `38.0` | inferred | yes (from null) |
+| `crescent.plate.B` | `14.4` | inferred | yes (from null) |
+| `crescent.plate.uc` | `-0.21` | inferred | yes (from null) |
 | `bridges` | `[[[-32.6, 16.3, 38.0], [-28.1, 20.3, 38.2], [-23.7, 22.9, 38.4], [-19.2, 24.0, 38.6]], [[42.9, 16.5, 34.0], [37.1, 22.6, 34.3], [31.4, 27.2, 34.7], [25.6, 30...` | inferred | yes (from [[[-31.0, -5.5, 40.0], [-20.0, 4.0, 40.5], [-6.0, 14.0, 41.0], [-0.5, 24.0, 41.0]], [[40.0, -1.0, 34.0], [34.0, 10.0, 34.5], [30.0, 22.0, 35.0], [28.5, 30.0, 35.0]], [[-27.0, -5.5, 48.0], [-12.0, 6.0, 49.0], [0.0, 20.0, 49.5], [1.5, 31.0, 50.0]]]) |
 | `people.height` | `1.75` | inferred |  |
 | `people.count` | `40` | inferred |  |
 | `masses.M_W` | `{"cx": -40.3, "cy": -4.2, "r": 9.0, "z1": 54.4}` | inferred | yes (from {"cx": -14.0, "cy": 4.0, "r": 9.0, "z1": 47.0}) |
-| `masses.M_WT` | `{"cx": -30.0, "cy": 16.5, "r": 5.6, "z1": 56.0}` | inferred | yes (from {"cx": -19.0, "cy": 12.0, "r": 5.0, "z1": 56.0}) |
+| `masses.M_WT` | `{"cx": -30.0, "cy": 16.5, "r": 6.799999999999999, "z1": 56.0}` | inferred | yes (from {"cx": -19.0, "cy": 12.0, "r": 5.0, "z1": 56.0}) |
 | `masses.M_E` | `{"cx": 38.5, "cy": 10.1, "r": 8.0, "z1": 54.5}` | measured from sheet | yes (from {"cx": 29.0, "cy": 10.0, "r": 8.0, "z1": 58.5}) |
 | `masses.M_C` | `{"cx": -8.9, "cy": 27.5, "r": 5.0, "z1": 58.5}` | measured from sheet | yes (from {"cx": -7.0, "cy": 19.5, "r": 5.0, "z1": 59.5}) |
 | `masses.M_E2` | `{"cx": 31.2, "cy": 24.5, "r": 6.0, "z1": 66.0}` | inferred | yes (from null) |
@@ -176,4 +191,4 @@ Every dimension used by `build.py` comes from `params.json` (metres; +Z up, fron
 | `detail.bridge.rib` | `0.38` | inferred | yes (from null) |
 | `detail.bridge.rib_drop` | `3.2` | inferred | yes (from null) |
 
-171 parameters: 44 measured from sheet, 127 inferred, 74 tuned by the compare loop.
+186 parameters: 44 measured from sheet, 142 inferred, 89 tuned by the compare loop.

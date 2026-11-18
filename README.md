@@ -8,6 +8,7 @@ Live preview / 在线预览: https://complex-architecture.pages.dev (Cloudflare 
 ![final](docs/final_render.png)
 ![views](docs/four_views.png)
 ![hero](docs/perspective_hero.png)
+![crown](docs/crown_detail.png)
 ![detail](docs/detail_tower.png)
 
 ## Run locally / 本地预览

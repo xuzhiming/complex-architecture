@@ -441,3 +441,30 @@ Each round: the 3x3 XOR-error regions (summed over the 4 views) are ranked; knob
 Loop accepted `canopies.west_dx` +1.0 and `masses.r_WT` +0.6 (side-defining knobs tower.cx/cy and crescent dy/dz/rise/spread were
 excluded so the strict side fit is not traded away); bridges re-seated afterwards. Front/rear loss vs v6 = the reference shows the
 old single C crown, the model now has the symmetric pair; strict front/rear is low because the design is ~31 % wider than the sheet.
+
+## v8 — crown = two clean planar crescent moons (user: follow the reference strictly, no twist, natural)
+- The v7 horns are removed: the outward bulge, the curl, the banked sweep, and their posts and drums. Each crescent is now one flat plate
+  (`crescent_plate()`, params `crescent.plate`). Its outline is two conic arcs: an outer ellipse and an inner ellipse through both tips,
+  offset so the band is widest (3.5 m) at mid-arc and runs to sharp tips. The section is a constant 1.3 m with rounded edges.
+  There is no twist and no sweep.
+- Both the front and the side panels of the elevation sheet show the same long, low C, so each plate stands upright in a
+  plane turned 52.4° from E-W:
+  - Ax (C semi-axis in the front view) 29.3 m and Ay (in the side view) 38 m give an in-plane semi-axis of 48 m; the vertical semi-axis B is 14.4 m.
+  - The plane is 12 m behind the tower axis.
+  - The bulges sit outboard-front, and the tips curve in above the tower crown to z 77.7 with a 5 m gap.
+  - The lower ends run into the tower drums (trimmed at the shell at z ~49).
+- Variants tried (quick evals, sides vs the STRICT ref, front/rear vs ×1.313):
+  | crown variant | front / rear | left / right | 3/4 crown view |
+  |---|---|---|---|
+  | v7 horns (twisted sweep) | 0.879/2.87, 0.876/2.90 | 0.924/1.37, 0.927/1.18 | rejected by the user (twisted) |
+  | planar circle, upright, R 30, turned 20° | 0.888/2.17, 0.886/2.23 | 0.901/4.17, 0.903/3.97 | round ( ), but side views lose ~3 m |
+  | planar circle, leaning back 54° (silhouette-optimised) | 0.886/2.10, 0.883/2.22 | 0.906/3.70, 0.908/3.50 | lies almost flat, wrong |
+  | **planar ellipse crescent, upright, turned 52.4° (chosen, coordinate-descent tuned)** | **0.889/2.03, 0.886/2.11** | **0.925/1.33, 0.928/1.11** | crescent pair framing the tower |
+- A circular crescent cannot show the sheet's side C, because a round upright plate seen from the side is narrow. The elliptical
+  plate keeps the side views better than v7, and it is still a single flat crescent with no twist.
+
+## v8 summary (final run_all, no tuning rounds)
+| stage | front / rear (target x1.313) | left / right (STRICT) | mean IoU / skyline |
+|---|---|---|---|
+| v7 final | 0.879/2.87 m, 0.876/2.90 m | 0.924/1.37 m, 0.927/1.18 m | 0.9013 / 2.08 m |
+| **v8 final (planar crescent pair)** | **0.889/2.03 m, 0.886/2.11 m** | **0.925/1.33 m, 0.928/1.11 m** | **0.9067 / 1.65 m** |
