@@ -129,9 +129,10 @@ def ringmesh(name, r0, r1, c, z=0.03, n=192):
     for i in range(n):
         a, b = vs[i], vs[(i + 1) % n]; bm.faces.new((a[0], b[0], b[1], a[1]))
     bm.to_mesh(me); ob = bpy.data.objects.new(name, me); scene.collection.objects.link(ob); ob.data.materials.append(PLAZA); return ob
-pc = (0, FRONT_Y - 16)
+pc = (0, FRONT_Y - 16*P["global"].get("plaza_scale", 1.0))
 PLAZA_SX = P["global"].get("ref_stretch_x", 1.0)   # v6: forecourt widened with the building
-for r0, r1 in [(13.5, 14.3), (19.0, 19.5), (24.0, 24.35), (6.0, 6.3)]: ringmesh(f"PlazaDress_{r0}", r0, r1, pc).scale.x = PLAZA_SX
+PS = P["global"].get("plaza_scale", 1.0)            # v7: larger forecourt plaza overall
+for r0, r1 in [(13.5, 14.3), (19.0, 19.5), (24.0, 24.35), (6.0, 6.3)]: ringmesh(f"PlazaDress_{r0}", r0*PS, r1*PS, pc).scale.x = PLAZA_SX
 
 
 # filled elliptical plaza glow: warm-white centre -> gold ring -> magenta edge
@@ -145,12 +146,12 @@ def plaza_disc():
     L.new(vl.outputs["Value"], ramp.inputs["Fac"]); L.new(ramp.outputs["Color"], e.inputs["Color"]); e.inputs["Strength"].default_value = 2.2
     L.new(e.outputs[0], N["Material Output"].inputs["Surface"]); return m
 bpy.ops.mesh.primitive_circle_add(radius=1.0, vertices=128, fill_type='NGON', location=(pc[0], pc[1], 0.02))
-pd = bpy.context.active_object; pd.name = "PlazaDisc"; pd.scale = (24.0*PLAZA_SX, 24.0, 1); pd.data.materials.append(plaza_disc())
+pd = bpy.context.active_object; pd.name = "PlazaDisc"; pd.scale = (24.0*PS*PLAZA_SX, 24.0*PS, 1); pd.data.materials.append(plaza_disc())
 # --- tiny people (1.75 m) on the forecourt
 pm = [principled("MoodPerson", (0.02, 0.02, 0.03), rough=0.5)] + [emit(f"MoodPersonC{i}", c, 1.5) for i, c in enumerate([(1, 0.3, 0.4), (0.3, 0.7, 1), (1, 0.8, 0.5)])]
 H = P["people"]["height"]
 for i in range(P["people"]["count"]):
-    a = random.uniform(0, 2*math.pi); rr = random.uniform(4, 24)
+    a = random.uniform(0, 2*math.pi); rr = random.uniform(4, 24*PS)
     x, y = pc[0] + rr*math.cos(a)*1.3, pc[1] + rr*math.sin(a)*0.8 + 4
     bpy.ops.mesh.primitive_cylinder_add(radius=0.22, depth=H - 0.3, location=(x, y, (H - 0.3)/2), vertices=8)
     body = bpy.context.active_object
@@ -219,7 +220,7 @@ for k, o in enumerate([o for o in scene.objects if o.name.startswith("CanopyRim"
     rim_strip(o, k)
 # --- camera: low, front, looking up through the plaza ring into the arch
 cam = bpy.data.objects.new("MoodCam", bpy.data.cameras.new("MoodCam")); scene.collection.objects.link(cam); scene.camera = cam
-cam.location = Vector((0, FRONT_Y - 92, 3.5)); cam.data.lens = 24; cam.data.sensor_width = 36
+cam.location = Vector((0, FRONT_Y - 112, 3.5)); cam.data.lens = 24; cam.data.sensor_width = 36   # v7: pulled back for the wider frame
 tgt = Vector((0, 10, 35)); cam.rotation_euler = (tgt - cam.location).to_track_quat('-Z', 'Y').to_euler()
 cam.data.shift_y = 0.0; cam.data.clip_end = 2000
 

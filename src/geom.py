@@ -175,9 +175,9 @@ def arch_prisms(name, items, m=CLAY):
             k2 = (k + 1) % n; faces.append([b + k, b + n + k, b + n + k2, b + k2])
     return mesh_from(name, verts, faces, m)
 
-def rounded_band(name, c, r, z, h=0.9, out=0.9, seg=96):
+def rounded_band(name, c, r, z, h=0.9, out=0.9, seg=96, sx=1.0, sy=1.0):
     p = [(r - 1.2, z - h/2), (r + out*0.4, z - h/2), (r + out*0.85, z - h*0.3), (r + out, z), (r + out*0.85, z + h*0.3), (r + out*0.4, z + h/2), (r - 1.2, z + h/2), (r - 1.2, z - h/2)]
-    return lathe(name, p, seg, c)
+    return lathe(name, p, seg, c, sx, sy)
 
 def canopy(name, R, z, c, t=None, sx=1.0, sy=1.0, fins=0, r_drum=3.0, upturn=True, lip_k=0.32, fin_c=None, ribs=False):
     """Thin tapered canopy: thick centre, thin up-turned edge; optional down-curving support fins."""

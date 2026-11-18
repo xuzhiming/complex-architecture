@@ -26,18 +26,20 @@ def through(did, k=1.6, rev=False):
     if (pb[0] - pa[0])*n[0] + (pb[1] - pa[1])*n[1] < 0: s = -s
     return [(c[0] - s*n[0]*k, c[1] - s*n[1]*k, c[2]), (c[0] + s*n[0]*k, c[1] + s*n[1]*k, c[2])]
 
-def arc(cx, cy, r, a0, a1, n, z=0.0):
-    return [(cx + r*math.cos(math.radians(a0 + (a1 - a0)*i/n)), cy + r*math.sin(math.radians(a0 + (a1 - a0)*i/n)), z) for i in range(n + 1)]
+KX = json.load(open(os.path.join(HERE, "..", "params.json")))["courtyard"].get("kx", 1.0)   # v7: elliptical courtyard
+def arc(cx, cy, r, a0, a1, n, z=0.0):   # r = x semi-axis (gallery probe offset); y semi-axis = r / KX
+    return [(cx + r*math.cos(math.radians(a0 + (a1 - a0)*i/n)), cy + r/KX*math.sin(math.radians(a0 + (a1 - a0)*i/n)), z) for i in range(n + 1)]
 
 # ---- route (Blender coords, z = floor level) ; ("shot", name) = checkpoint screenshot ; ("lift", level) ----
 cc = S["spaces"]["courtyard"]["probe"]; gal_r = abs(S["spaces"]["gallery"]["probe"][0] - cc[0])
 sa = ST["T_stairA_0"]; steps = sa["steps"]
 lift0 = LF["T_lift0"]; lx0, ly0, lx1, ly1 = lift0["shaft"]
-a_d07 = math.degrees(math.atan2(D[D_CG]["center"][1] - cc[1], D[D_CG]["center"][0] - cc[0]))
-a_d12 = math.degrees(math.atan2(D[did("gallery", "T_link")]["center"][1] - cc[1], D[did("gallery", "T_link")]["center"][0] - cc[0]))
+a_d07 = math.degrees(math.atan2(D[D_CG]["center"][1] - cc[1], (D[D_CG]["center"][0] - cc[0])/KX))
+a_d12 = math.degrees(math.atan2(D[did("gallery", "T_link")]["center"][1] - cc[1], (D[did("gallery", "T_link")]["center"][0] - cc[0])/KX))
 hx = S["spaces"]["W_hall"]["probe"][0]; wcx = S["spaces"]["W_core"]["probe"][0]   # wing positions come from the plan
-ROUTE = [("start", (0, -62, 0), 0.0), ("shot", "01_forecourt"),
-         (0, -50, 0), ("shot", "02_arch"), (0, -30, 0), ("shot", "03_tunnel"), (0, cc[1] - 10, 0), (0, cc[1] - 2, 0), ("shot", "04_courtyard"),
+fy = D[did("forecourt", "portal_tunnel")]["center"][1]   # portal face y (moves with the podium depth)
+ROUTE = [("start", (0, fy - 12, 0), 0.0), ("shot", "01_forecourt"),
+         (0, fy + 0.5, 0), ("shot", "02_arch"), (0, fy + 9, 0), ("shot", "03_tunnel"), (0, cc[1] - 10, 0), (0, cc[1] - 2, 0), ("shot", "04_courtyard"),
          (cc[0] - 8, cc[1] + 4, 0), *through(D_CG), ("shot", "05_gallery"),
          *arc(cc[0], cc[1], gal_r, a_d07, 180, 3)[1:], *through(did("gallery", "W_link"), 1.0), ("shot", "06_W_link_door"),
          *through(did("W_link", "W_hall"), 1.0), (hx, 10, 0), (hx, 15.5, 0), ("shot", "07_W_hall"),
@@ -62,7 +64,7 @@ async def main():
         await pg.wait_for_function("window.__walk && window.__walk.ready", timeout=240000)
         W = "window.__walk"
         # sanity: the penetration detector must see a wall between the forecourt and the closed west room
-        sanity = await pg.evaluate(f"{W}.raySegment([0,-60,1.0],[{S['spaces']['W_room_s']['probe'][0]},{S['spaces']['W_room_s']['probe'][1]},1.0])")
+        sanity = await pg.evaluate(f"{W}.raySegment([0,{fy - 10},1.0],[{S['spaces']['W_room_s']['probe'][0]},{S['spaces']['W_room_s']['probe'][1]},1.0])")
         traj, events, pen, stuck, doorpass = [], [], [], [], []
         t0 = time.time()
         async def st(): return await pg.evaluate(f"{W}.state()")

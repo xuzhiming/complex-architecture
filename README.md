@@ -7,6 +7,7 @@ Live preview / 在线预览: https://complex-architecture.pages.dev (Cloudflare 
 
 ![final](docs/final_render.png)
 ![views](docs/four_views.png)
+![hero](docs/perspective_hero.png)
 ![detail](docs/detail_tower.png)
 
 ## Run locally / 本地预览
@@ -26,7 +27,7 @@ COMPARE_ROUNDS=4 ./run_all.sh
 ```
 1. `compare/ref_extract.py` – reference elevation silhouettes (needs `ref/sheet_elevations.png`, not included in this repo).
 2. `compare/compare_loop.py` – silhouette IoU + skyline error vs the reference (design target: front/rear stretched by
-   `global.ref_stretch_x`), coordinate-descent tuning of the knobs, log in `compare_log.md`.
+   `global.ref_stretch_x` for the widened plaza, side elevations strict via `ref_stretch_y` = 1), coordinate-descent tuning of the knobs, log in `compare_log.md`.
 3. `build.py` (+ `src/geom.py`, `src/detail.py`) – Blender 5 headless build: exterior, interior (rooms/doors/stairs/lifts),
    `building.blend`, `building.glb`, `spaces.json`.
 4. `src/render_clay.py` – true-ortho clay elevations, hero views, tower close-up.

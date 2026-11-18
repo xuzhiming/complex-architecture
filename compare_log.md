@@ -338,3 +338,106 @@ Each round: the 3x3 XOR-error regions (summed over the 4 views) are ranked; knob
 The S2 detail drop (0.9366 -> 0.9233 strict) comes mainly from the column-cluster side towers + trumpet flares and the blade-section
 crescent in the front/rear elevations. The side views got worse after widening (tower moved back 3.5 m, crescent re-seated behind
 the larger courtyard) and are the main remaining gap.
+
+## v7 — larger plaza / courtyard, crown pair, side elevations back to the strict reference
+- **Courtyard -> ellipse**: y semi-axis 18 m (a first try with a circle r 32 pushed the tower far back and broke the side views), x semi-axis
+  18 x kx 1.68 = 30.2 m; arcade + gallery outer ~ 38.8 m -> **~77.6 m across including the gallery** (v6 circle r 24: ~58 m;
+  the N-S depth stays near the v5 side-fitted value). Arches re-spaced by equal arc length on the ellipse (44 bays).
+- **Frame widened mainly in x**: podium wall_half_w 58.4 -> 65, deck_half_w 72.45 -> 80.6 (161 m wide deck), depth unchanged
+  (wall 45 / deck 54); wings moved out (W hall x -45..-41, E hall x 41..45), canopies/masses x x1.113, tower kept rear-centre at
+  (13.5, 40) (v5 39, v6 43.5). Forecourt plaza in the mood render x1.3.
+- **Compare targets**: `global.ref_stretch_x` 1.18 -> **1.313** (front/rear reference stretched by the new deck width ratio
+  161/122.6 = 1.313); **`ref_stretch_y` = 1.0 -> side views are scored against the STRICT reference**.
+- **Crown**: the single asymmetric C is replaced by two mirror-symmetric thin blades (per the roof-plan crown reference): each
+  horn springs from a post beside the tower (x = 13.5 -/+ 24), bulges outward 6 m, curls inward with tips 2.5 m off the axis
+  (gap 5 m above the tower); blade section thickness 0.32 x width, sharp edges (sec_p). Both horns share the v5 side-fitted (y, z)
+  profile, so in the side elevations they overlap into the reference C.
+- Bridges recomputed for the new drum positions (0.7 m deck, open rails, hangers, rib_drop 3.2).
+
+| stage | front / rear (target x1.313) | left / right (STRICT) | mean IoU / skyline |
+|---|---|---|---|
+| v6 final | (x1.18) 0.928/1.75 m, 0.922/1.60 m | 0.882/3.40 m, 0.888/3.01 m | — |
+| v7a ellipse + pair (base_dx 19, bulge 3.5) | 0.875/3.53 m, 0.873/3.33 m | **0.924/1.33 m, 0.927/1.14 m** | 0.8998 / 2.33 m |
+| v7b pair base_dx 24, bulge 6 | 0.875/2.96 m, 0.873/2.80 m | **0.924/1.37 m, 0.927/1.18 m** | 0.8998 / 2.08 m |
+Front/rear are lower than v6 by design: the reference elevation shows the old single C, the new crown is a symmetric pair.
+# Silhouette compare log
+
+Reference: `ref/sheet_elevations.png` (4 elevation panels). The sheets carry **no dimension lines**, so each reference panel
+is scaled uniformly until its silhouette bbox height equals `global.H_total` (ground lines anchored, bbox centres aligned).
+Model silhouettes are true orthographic renders at 0.2 m/px. Score = mean IoU - 0.01 x mean skyline error (m).
+Each round: the 3x3 XOR-error regions (summed over the 4 views) are ranked; knobs that drive the worst regions are tried at +/- step
+(parallel builds); the best improving candidate is accepted, otherwise those knob steps are halved.
+
+## Round 0 (initial params)
+- mean IoU **0.8998**, mean skyline err **2.08 m**, score 0.8790
+- per view (IoU/skyline): front 0.875/2.96m | rear 0.873/2.80m | left 0.924/1.37m | right 0.927/1.18m
+
+## Round 1
+- worst regions: highC (0.109), midR (0.046), midL (0.044)
+- candidates (12 builds, 62 s):
+  - `canopy_scale` +0.040: score 0.8779 (IoU 0.8996, sky 2.16 m)
+  - `canopy_scale` -0.040: score 0.8768 (IoU 0.8999, sky 2.31 m)
+  - `canopies.z_shift` +0.800: score 0.8744 (IoU 0.8965, sky 2.21 m)
+  - `canopies.z_shift` -0.800: score 0.8723 (IoU 0.8945, sky 2.22 m)
+  - `mass_scale` +0.060: score 0.8215 (IoU 0.8478, sky 2.63 m)
+  - `mass_scale` -0.060: score 0.8268 (IoU 0.8534, sky 2.66 m)
+  - `masses.top_E` +1.000: score 0.8785 (IoU 0.8995, sky 2.09 m)
+  - `masses.top_E` -1.000: score 0.8790 (IoU 0.8998, sky 2.08 m)
+  - `canopies.west_dx` +1.000: score 0.8796 (IoU 0.9006, sky 2.09 m)
+  - `canopies.west_dx` -1.000: score 0.8777 (IoU 0.8989, sky 2.11 m)
+  - `canopies.east_dx` +1.000: score 0.8792 (IoU 0.9004, sky 2.12 m)
+  - `canopies.east_dx` -1.000: score 0.8766 (IoU 0.8984, sky 2.18 m)
+- **accepted** `canopies.west_dx` +1.000 -> mean IoU **0.9006**, skyline **2.09 m**, score 0.8796
+- per view: front 0.877/2.90m | rear 0.874/2.92m | left 0.924/1.37m | right 0.927/1.18m
+
+## Round 2
+- worst regions: highC (0.109), midR (0.047), highR (0.044)
+- candidates (12 builds, 61 s):
+  - `tower.crown_z` +0.600: score 0.8795 (IoU 0.9003, sky 2.07 m)
+  - `tower.crown_z` -0.600: score 0.8788 (IoU 0.8999, sky 2.11 m)
+  - `crescent.d_scale` +0.100: score 0.8792 (IoU 0.9001, sky 2.09 m)
+  - `crescent.d_scale` -0.100: score 0.8800 (IoU 0.9009, sky 2.09 m)
+  - `tower.r_scale` +0.030: score 0.8782 (IoU 0.8994, sky 2.12 m)
+  - `tower.r_scale` -0.030: score 0.8798 (IoU 0.9005, sky 2.07 m)
+  - `crescent.dx` +0.800: score 0.8796 (IoU 0.9006, sky 2.09 m)
+  - `crescent.dx` -0.800: score 0.8796 (IoU 0.9006, sky 2.09 m)
+  - `masses.top_C` +1.000: score 0.8792 (IoU 0.9001, sky 2.09 m)
+  - `masses.top_C` -1.000: score 0.8796 (IoU 0.9005, sky 2.09 m)
+  - `masses.r_WT` +0.600: score 0.8805 (IoU 0.9014, sky 2.08 m)
+  - `masses.r_WT` -0.600: score 0.8788 (IoU 0.8998, sky 2.10 m)
+- **accepted** `masses.r_WT` +0.600 -> mean IoU **0.9014**, skyline **2.08 m**, score 0.8805
+- per view: front 0.879/2.87m | rear 0.876/2.90m | left 0.924/1.37m | right 0.927/1.18m
+
+## Round 3
+- worst regions: highC (0.108), midR (0.047), highR (0.044)
+- candidates (12 builds, 57 s):
+  - `tower.crown_z` +0.600: score 0.8805 (IoU 0.9011, sky 2.06 m)
+  - `tower.crown_z` -0.600: score 0.8797 (IoU 0.9007, sky 2.10 m)
+  - `crescent.d_scale` +0.100: score 0.8801 (IoU 0.9009, sky 2.08 m)
+  - `crescent.d_scale` -0.100: score 0.8809 (IoU 0.9017, sky 2.08 m)
+  - `masses.top_E` +1.000: score 0.8800 (IoU 0.9010, sky 2.10 m)
+  - `masses.top_E` -1.000: score 0.8805 (IoU 0.9013, sky 2.08 m)
+  - `tower.r_scale` +0.030: score 0.8791 (IoU 0.9002, sky 2.11 m)
+  - `tower.r_scale` -0.030: score 0.8807 (IoU 0.9013, sky 2.06 m)
+  - `canopy_scale` +0.040: score 0.8785 (IoU 0.9010, sky 2.25 m)
+  - `canopy_scale` -0.040: score 0.8790 (IoU 0.9016, sky 2.25 m)
+  - `canopies.z_shift` +0.800: score 0.8760 (IoU 0.8982, sky 2.22 m)
+  - `canopies.z_shift` -0.800: score 0.8739 (IoU 0.8960, sky 2.21 m)
+- no improvement -> halved steps of tried knobs
+
+## Final
+- mean IoU **0.9014**, mean skyline error **2.08 m**, score 0.8805
+- per view: front 0.879/2.87m | rear 0.876/2.90m | left 0.924/1.37m | right 0.927/1.18m
+- roof plan loose check (oblique sheet, bbox-fitted, indicative only): IoU 0.523
+- overlays: `compare/final/overlay_sheet.png` (red = reference only, blue = model only, grey = overlap)
+- tuned params written back to `params.json` (start values kept in `params_initial.json`)
+
+## v7 summary (scores)
+| stage | front / rear | left / right (STRICT reference) | mean IoU / skyline |
+|---|---|---|---|
+| v6 final (sides strict, front/rear x1.18) | 0.928/1.75 m, 0.922/1.60 m | 0.882/3.40 m, 0.888/3.01 m | 0.9048 / 2.44 m |
+| **v7 final (3 loop rounds; sides strict, front/rear x1.313)** | 0.879/2.87 m, 0.876/2.90 m | **0.924/1.37 m, 0.927/1.18 m** | **0.9013 / 2.08 m** |
+| v7 final, everything strict (for the record) | 0.713/15.25 m, 0.708/15.41 m | 0.924/1.37 m, 0.927/1.18 m | 0.8181 / 8.30 m |
+Loop accepted `canopies.west_dx` +1.0 and `masses.r_WT` +0.6 (side-defining knobs tower.cx/cy and crescent dy/dz/rise/spread were
+excluded so the strict side fit is not traded away); bridges re-seated afterwards. Front/rear loss vs v6 = the reference shows the
+old single C crown, the model now has the symmetric pair; strict front/rear is low because the design is ~31 % wider than the sheet.

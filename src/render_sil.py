@@ -4,7 +4,7 @@ from mathutils import Vector
 SIL_DIR = os.environ.get("SIL_DIR", os.path.join(os.path.dirname(bpy.data.filepath) if bpy.data.filepath else ".", "sil"))
 os.makedirs(SIL_DIR, exist_ok=True)
 MPP = float(os.environ.get("SIL_MPP", "0.2"))           # metres per pixel
-FW, FH_ = 170.0, 100.0; ZC = FH_/2 - 2.0                 # frame (m); ground 2 m above bottom edge
+FW, FH_ = 200.0, 100.0; ZC = FH_/2 - 2.0                 # frame (m); ground 2 m above bottom edge
 sc = bpy.context.scene
 for o in list(sc.objects):
     if o.type == 'LIGHT' or (o.type == 'MESH' and o.get("role") in ("cut",)): o.hide_render = True

@@ -74,6 +74,11 @@ WALL = Outline(POD["wall_half_w"], POD["wall_half_d"], POD["wall_cy"], POD["wall
 DECK = Outline(POD["deck_half_w"], POD["deck_half_d"], POD["deck_cy"], POD["deck_n"])
 DB, DT = POD["deck_bot"], POD["deck_top"]
 CC = (CY["cx"], CY["cy"]); CR = CY["r"]
+KX = CY.get("kx", 1.0)          # v7: elliptical courtyard, x semi-axes = KX * (y semi-axes); KX = 1 -> circle
+def EP(R, a): return (CC[0] + R*KX*math.cos(a), CC[1] + R*math.sin(a))          # point on the ellipse "radius" R at parameter a
+def EN(a): return math.atan2(KX*math.sin(a), math.cos(a))                        # outward normal angle there
+def EPAR(px, py): return math.atan2(py - CC[1], (px - CC[0])/KX)                 # parameter of the ray towards (px, py)
+def ecut(R, z0, z1, seg=128): return cyl("cut", R, z0, z1, (CC[0], CC[1], 0), seg, sx=KX)
 R_ARC_OUT = CR + CY["wall_t"]                      # outer face of arcade wall
 R_GAL_OUT = R_ARC_OUT + CY["gallery_w"]            # inner face of gallery outer wall
 TC = (TW["cx"], TW["cy"])
@@ -161,7 +166,7 @@ if FULL:
         if math.hypot(p[0] - TC[0], p[1] - TC[1]) < TW["drums"][0][0] + 3: continue
         nx, ny = DECK.nrm[i]; fitems.append((p[0], p[1], DB + 1.0, math.atan2(ny, nx), 1.0, 1.3, 1.0, 2.6))
     if POD.get("fascia_loggia", False): deck_cuts.append(arch_prisms("cut_loggia", fitems))   # off: the deck edge is now a thin knife-edge
-deck_cuts += [cyl_cut(CR + 0.05, CC, DB - 1, DT + 3, 128), cyl_cut(TW["drums"][0][0] - 0.2, TC, DB - 1, DT + 3)]
+deck_cuts += [ecut(CR + 0.05, DB - 1, DT + 3), cyl_cut(TW["drums"][0][0] - 0.2, TC, DB - 1, DT + 3)]
 boolean(deck, deck_cuts)
 
 # loggia back wall (open arcade gallery behind the top-storey arches)
@@ -206,10 +211,10 @@ box("ArchKeystone", (2.4, AVL[0][1] + 0.6, 3.2), (ARC["cx"], FRONT_Y - (AVL[0][1
 for sx_ in (-1, 1):   # impost blocks where the archivolts spring
     box(f"ArchImpost{sx_}", (gmax + 1.2, AVL[0][1] + 0.4, 0.9), (ARC["cx"] + sx_*(ARC["hw"] + gmax/2), FRONT_Y - (AVL[0][1] + 0.4)/2 + 0.2, ARC["spring"] - 0.45))
 # tunnel from portal back wall to the arcade wall of the courtyard
-Y_TUN_END = CC[1] - math.sqrt(CR**2 - TUN["hw"]**2) + 0.3
+Y_TUN_END = CC[1] - CR*math.sqrt(max(1 - (TUN["hw"]/(CR*KX))**2, 0)) + 0.3
 tun = arch_tube("TunnelVault", ARC["cx"], (PORTAL_BACK + Y_TUN_END)/2, Y_TUN_END - PORTAL_BACK, TUN["hw"], TUN["spring"], TUN["rise"], 0.6)
 # side openings where the gallery ring crosses the tunnel
-def ring_y(R, x): return CC[1] - math.sqrt(max(R*R - x*x, 0))
+def ring_y(R, x): return CC[1] - R*math.sqrt(max(1 - (x/(R*KX))**2, 0))
 GX = TUN["hw"] + 0.3
 gy0, gy1 = ring_y(R_GAL_OUT, GX), ring_y(R_ARC_OUT, GX)
 TUN_SIDE_OPEN = (gy0 + 0.3, gy1 - 0.3)
@@ -217,22 +222,34 @@ if FULL:
     boolean(tun, [box("c", (2.0, TUN_SIDE_OPEN[1] - TUN_SIDE_OPEN[0], 3.0), (sx*GX, (TUN_SIDE_OPEN[0] + TUN_SIDE_OPEN[1])/2, 1.5)) for sx in (-1, 1)])
 
 # ---------------- courtyard arcade wall (4 tiers) + rim ----------------
-cwall = ring("CourtArcadeWall", CR, R_ARC_OUT, 0.0, DT + CY["rim_h"], (CC[0], CC[1], 0), 128)
+cwall = ring("CourtArcadeWall", CR, R_ARC_OUT, 0.0, DT + CY["rim_h"], (CC[0], CC[1], 0), 160, sx=KX)
 ARCADE_OPEN = []   # L0 arcade openings (courtyard <-> gallery)
 citems = []
 n = CY["n_arches"]
-for lv in CY["tiers"]:
+def eq_angles(n, R=(CR + R_ARC_OUT)/2, m=2048):
+    # v7: on the ellipse, space arches by equal arc length (uniform angle would cram them at the x-ends)
+    acc = [0.0]
+    for i in range(m):
+        a0, a1 = 2*math.pi*i/m, 2*math.pi*(i + 1)/m
+        acc.append(acc[-1] + math.dist(EP(R, a0), EP(R, a1)))
+    out, j = [], 0
     for k in range(n):
-        a = 2*math.pi*(k + 0.5)/n
-        if abs(((a - 1.5*math.pi + math.pi) % (2*math.pi)) - math.pi) < math.asin(min(1, (TUN["hw"] + 1.5)/CR)): continue
-        r = (CR + R_ARC_OUT)/2
-        citems.append((CC[0] + r*math.cos(a), CC[1] + r*math.sin(a), lv + (0.0 if lv == 0 else 1.0), a, CY["arch_hw"], CY["arch_spring"], CY["arch_rise"], CY["wall_t"] + 1.0))
+        tgt = acc[-1]*(k + 0.5)/n
+        while acc[j + 1] < tgt: j += 1
+        out.append(2*math.pi*(j + (tgt - acc[j])/(acc[j + 1] - acc[j]))/m)
+    return out
+ARCH_ANGS = eq_angles(n)
+for lv in CY["tiers"]:
+    for a in ARCH_ANGS:
+        if abs(((a - 1.5*math.pi + math.pi) % (2*math.pi)) - math.pi) < math.asin(min(1, (TUN["hw"] + 1.5)/(CR*KX))): continue
+        r = (CR + R_ARC_OUT)/2; pe = EP(r, a)
+        citems.append((pe[0], pe[1], lv + (0.0 if lv == 0 else 1.0), EN(a), CY["arch_hw"], CY["arch_spring"], CY["arch_rise"], CY["wall_t"]*KX + 1.0))
         if lv == 0: ARCADE_OPEN.append(a)
 citems.append((ARC["cx"], CC[1] - CR, -0.5, -math.pi/2, TUN["hw"], TUN["spring"] + 0.5, TUN["rise"], 6.0))
 if FULL: boolean(cwall, [arch_prisms("cut_courtarch", citems)])
-rounded_band("CourtRim", (CC[0], CC[1], 0), R_ARC_OUT, DT + CY["rim_h"], 0.9, 0.7, 128)
+rounded_band("CourtRim", (CC[0], CC[1], 0), R_ARC_OUT, DT + CY["rim_h"], 0.9, 0.7, 160, sx=KX)
 for lv in CY["tiers"][1:]:   # balcony rails on upper tiers (inside face)
-    ring(f"CourtRail_{lv}", CR - 0.35, CR - 0.15, lv, lv + 1.1, (CC[0], CC[1], 0), 128)
+    ring(f"CourtRail_{lv}", CR - 0.35, CR - 0.15, lv, lv + 1.1, (CC[0], CC[1], 0), 160, sx=KX)
 
 # ---------------- flared tree columns ----------------
 COLS = P["columns"]
@@ -389,6 +406,7 @@ def crescent_pts(mirror=False, scale=1.0):
     # v6 constraint: the crescent post stands on the deck, so its foot must clear the (larger) courtyard void
     dvec = Vector((base.x - CC[0], base.y - CC[1], 0.0)); need = CR + CRS["post_r"] + 1.0
     push = dvec.normalized()*(need - dvec.length) if dvec.length < need else Vector((0, 0, 0))
+    if CRS.get("pair"): push = Vector((0, 0, 0))   # pair mode places the post foot itself
     for p in CRS["pts"]:
         v = Vector(p) - base
         q = base + Vector((v.x*CRS.get("spread", 1.0), v.y*CRS.get("spread", 1.0), v.z*CRS.get("rise", 1.0)))
@@ -402,14 +420,33 @@ def crescent_pts(mirror=False, scale=1.0):
 def crescent_d(t):
     D = CRS["d"]; f = t*(len(D) - 1); i = min(int(f), len(D) - 2); u = f - i
     return max(0.25, (D[i]*(1 - u) + D[i + 1]*u)*CRS.get("d_scale", 1.0))
-pts = crescent_pts()
-sweep_bank("CrescentCrown", pts, lambda t: crescent_d(t)/2, lambda t: crescent_d(t)/2*CRS.get("flat", 0.8), bank=math.radians(CRS.get("bank", 0.0)))
-cyl("CrescentPost", CRS["post_r"], DT, pts[0][2] + 0.5, (pts[0][0], pts[0][1], 0), 48)
-drum("CrescentPostDrum", (pts[0][0], pts[0][1]), CRS["post_r"] + 0.8, DT, pts[0][2] - 3.0, band=FH)
-if CRS.get("horn2", 0.0) > 0.05:      # second horn (roof plan shows two horns embracing the tower)
-    p2 = crescent_pts(True, CRS["horn2"])
-    sweep_bank("CrescentHorn2", p2, lambda t: crescent_d(t)/2*CRS["horn2"], lambda t: crescent_d(t)/2*CRS.get("flat", 0.8)*CRS["horn2"])
-    cyl("CrescentHorn2Post", CRS["post_r"]*CRS["horn2"], DT, p2[0][2] + 0.5, (p2[0][0], p2[0][1], 0), 48)
+PR = CRS.get("pair")
+if PR:
+    # v7 crown: TWO mirror-symmetric horn blades framing the tower (user's roof-plan reference). Each horn keeps the
+    # side-elevation (y, z) profile fitted to the LEFT/RIGHT reference panels (both horns coincide in the side views);
+    # in plan/front it springs beside the tower, bulges outward, then curls inward with the tips leaving a gap above the tower.
+    yz = crescent_pts(); n_ = len(yz)
+    ax = PR.get("axis_x") if PR.get("axis_x") is not None else TC[0]
+    bdx, bul, tdx = PR["base_dx"], PR["bulge"], PR["tip_dx"]
+    def xoff(t): return bdx + (tdx - bdx)*t**PR.get("curl_p", 1.6) + bul*math.sin(math.pi*min(1.0, t*1.4))
+    m_ = CRS["post_r"] + 1.0; A_, B_ = CR*KX + m_, CR + m_
+    def ymin(x):
+        v = 1 - ((x - CC[0])/A_)**2
+        return CC[1] + B_*math.sqrt(v) if v > 0 else -1e9
+    yb = max(yz[0][1], ymin(ax - bdx), ymin(ax + bdx)) + 0.3     # post foot must clear the courtyard void
+    zb = yz[0][2] - PR.get("base_drop", 4.0)
+    for sd, nm in ((-1, "CrescentCrownL"), (1, "CrescentCrownR")):
+        hp = [(ax + sd*xoff(i/(n_ - 1)), yb if i == 0 else p[1], zb if i == 0 else p[2]) for i, p in enumerate(yz)]
+        sweep_bank(nm, hp, lambda t: crescent_d(t)/2*PR.get("thick", 0.32), lambda t: crescent_d(t)/2*CRS.get("flat", 0.85),
+                   bank=math.radians(CRS.get("bank", 0.0)))
+        cyl(nm + "_Post", CRS["post_r"], DT, zb + 0.6, (hp[0][0], hp[0][1], 0), 48)
+        drum(nm + "_PostDrum", (hp[0][0], hp[0][1]), CRS["post_r"] + 0.8, DT, max(DT + 6, zb - 3.0), band=FH)
+    pts = [(ax - bdx, yb, zb)]
+else:
+    pts = crescent_pts()
+    sweep_bank("CrescentCrown", pts, lambda t: crescent_d(t)/2, lambda t: crescent_d(t)/2*CRS.get("flat", 0.8), bank=math.radians(CRS.get("bank", 0.0)))
+    cyl("CrescentPost", CRS["post_r"], DT, pts[0][2] + 0.5, (pts[0][0], pts[0][1], 0), 48)
+    drum("CrescentPostDrum", (pts[0][0], pts[0][1]), CRS["post_r"] + 0.8, DT, pts[0][2] - 3.0, band=FH)
 
 # ---------------- bridges ----------------
 BRD = P.get("detail", {}).get("bridge", {})
@@ -469,18 +506,19 @@ def wall_line(p0, p1, z0, z1, t, openings=(), batch=None):
             batch.add(Vector((cx, cy, (za + zb_)/2)), (sb2 - sa2, t, zb_ - za), rot)
 
 def arc_wall(c, r, t, z0, z1, a0, a1, openings=(), seg_len=0.8):
-    """openings: list of (angle, width, zb, h)"""
-    n = max(4, int(abs(a1 - a0)*r/seg_len))
+    """openings: list of (angle, width, zb, h); v7: elliptical (x scaled by KX) about the courtyard centre"""
+    n = max(4, int(abs(a1 - a0)*r*KX/seg_len))
     for i in range(n):
         aa = a0 + (a1 - a0)*i/n; ab = a0 + (a1 - a0)*(i + 1)/n; am = (aa + ab)/2
-        holes = sorted([(zb, zb + h) for (ang, w, zb, h) in openings if abs(((am - ang + math.pi) % (2*math.pi)) - math.pi)*r <= w/2])
+        pa_, pb_ = EP(r, aa), EP(r, ab); seg_l = math.hypot(pb_[0] - pa_[0], pb_[1] - pa_[1]); pm = EP(r, am)
+        holes = sorted([(zb, zb + h) for (ang, w, zb, h) in openings if math.hypot(pm[0] - EP(r, ang)[0], pm[1] - EP(r, ang)[1]) <= w/2])
         zc = z0; segs = []
         for (ha, hb) in holes:
             if ha > zc: segs.append((zc, ha))
             zc = max(zc, hb)
         if zc < z1: segs.append((zc, z1))
         for (za, zb_) in segs:
-            WALLB.add(Vector((c[0] + r*math.cos(am), c[1] + r*math.sin(am), (za + zb_)/2)), (r*abs(ab - aa)*1.04, t, zb_ - za), am + math.pi/2)
+            WALLB.add(Vector((pm[0], pm[1], (za + zb_)/2)), (seg_l*1.04, t, zb_ - za), EN(am) + math.pi/2)
 
 def stair_module(sid, x0, y0, levels, lower_name, upper_names, flip=False):
     """Dog-leg stair in a shaft whose SW corner is (x0,y0), entry on the south side. Returns slab-hole rects per upper level."""
@@ -539,7 +577,7 @@ if FULL:
     space("forecourt", (ARC["cx"], FRONT_Y - 12.0), 0.0, "outside")
     space("portal_tunnel", (ARC["cx"], (PORTAL_BACK + Y_TUN_END)/2), 0.0, "passage")
     space("courtyard", (CC[0], CC[1]), 0.0, "open")
-    space("gallery", (CC[0] - (R_ARC_OUT + R_GAL_OUT)/2, CC[1]), 0.0, "passage")
+    space("gallery", (CC[0] - (R_ARC_OUT + R_GAL_OUT)/2*KX, CC[1]), 0.0, "passage")
     add_door("forecourt", "portal_tunnel", (ARC["cx"], FRONT_Y), (0, 1), 2*TUN["hw"], TUN["spring"] + TUN["rise"], 0.0, "open", check_wall=False)
     add_door("portal_tunnel", "courtyard", (ARC["cx"], CC[1] - CR), (0, 1), 2*TUN["hw"], TUN["spring"] + TUN["rise"], 0.0, "open", check_wall=False)
     for sx in (-1, 1):
@@ -548,19 +586,19 @@ if FULL:
         if abs(math.cos(a)) > 0.97 or abs(math.sin(a)) > 0.97 or True:
             pass
     for a in ARCADE_OPEN[::4]:
-        add_door("courtyard", "gallery", (CC[0] + (CR + R_ARC_OUT)/2*math.cos(a), CC[1] + (CR + R_ARC_OUT)/2*math.sin(a)), (math.cos(a), math.sin(a)),
+        add_door("courtyard", "gallery", EP((CR + R_ARC_OUT)/2, a), (math.cos(EN(a)), math.sin(EN(a))),
                  2*CY["arch_hw"], CY["arch_spring"], 0.0, "opening")
     # ---- gallery outer wall (L0) with doors ----
     ang_W, ang_E = math.pi, 0.0
-    ang_T = math.atan2(TC[1] - CC[1], TC[0] - CC[0])
+    ang_T = EPAR(TC[0], TC[1])
     RG = R_GAL_OUT + CY["outer_wall_t"]/2
     lw = DR["link_w"]
-    a_tun = math.asin(min(1, (TUN["hw"] + 0.6)/RG))
+    a_tun = math.asin(min(1, (TUN["hw"] + 0.6)/(RG*KX)))
     arc_wall(CC, RG, CY["outer_wall_t"], 0.0, WH, -math.pi/2 + a_tun, 3*math.pi/2 - a_tun,
              [(ang_W, DR["int_w"], 0.0, DR["int_h"]), (ang_E, DR["int_w"], 0.0, DR["int_h"]), (ang_T, DR["int_w"], 0.0, DR["int_h"])])
     for nm, ang in (("W", ang_W), ("E", ang_E), ("T", ang_T)):
-        c = (CC[0] + RG*math.cos(ang), CC[1] + RG*math.sin(ang))
-        add_door("gallery", f"{nm}_link", c, (math.cos(ang), math.sin(ang)), DR["int_w"], DR["int_h"], 0.0)
+        c = EP(RG, ang)
+        add_door("gallery", f"{nm}_link", c, (math.cos(EN(ang)), math.sin(EN(ang))), DR["int_w"], DR["int_h"], 0.0)
     # ---- wings ----
     def wing(tag, wd, sgn):
         """Wing with stacked floors on every podium level (section A-A): hall + 2 rooms + core per level,
@@ -570,10 +608,10 @@ if FULL:
         hx_out = hall[0] if sgn < 0 else hall[2]
         levels = POD["levels"]; LGc = POD.get("loggia")
         sfx = lambda k: "" if k == 0 else f"_L{k}"
-        space(f"{tag}_link", ((hx_in + CC[0] + sgn*RG)/2, CC[1]), 0.0, "passage")
+        space(f"{tag}_link", ((hx_in + CC[0] + sgn*RG*KX)/2, CC[1]), 0.0, "passage")
         space(f"{tag}_vest", (wd["ext_door_x"], (WALL.y_front(wd["ext_door_x"]) + rs0[1])/2), 0.0, "passage")
         # link corridor gallery -> hall (ground floor)
-        xg = CC[0] + sgn*(RG + CY["outer_wall_t"]/2)
+        xg = CC[0] + sgn*(RG*KX + CY["outer_wall_t"]/2)
         for dy in (-lw/2, lw/2):
             wall_line((xg, CC[1] + dy), (hx_in, CC[1] + dy), 0.0, WH, WT)
         add_door(f"{tag}_link", f"{tag}_hall", (hx_in, CC[1]), (-sgn, 0.0), DR["int_w"], DR["int_h"], 0.0)
@@ -632,8 +670,8 @@ if FULL:
     holesW = wing("W", P["wings"]["west"], -1)
     holesE = wing("E", P["wings"]["east"], +1)
     # ---- tower link + lobby + core ----
-    tdir = (math.cos(ang_T), math.sin(ang_T)); tn = (-tdir[1], tdir[0])
-    p_g = (CC[0] + (RG + 0.25)*tdir[0], CC[1] + (RG + 0.25)*tdir[1])
+    p_g = EP(RG + 0.25, ang_T)
+    tdir = (TC[0] - p_g[0], TC[1] - p_g[1]); _l = math.hypot(*tdir); tdir = (tdir[0]/_l, tdir[1]/_l); tn = (-tdir[1], tdir[0])
     R_T0 = TW["drums"][0][0] - 0.5 - TW["shell_t"]
     dct = math.hypot(TC[0] - p_g[0], TC[1] - p_g[1])
     p_t = (TC[0] - tdir[0]*(TW["drums"][0][0] - 0.5 - TW["shell_t"]/2), TC[1] - tdir[1]*(TW["drums"][0][0] - 0.5 - TW["shell_t"]/2))
@@ -674,7 +712,7 @@ if FULL:
         boolean(sl, [rects_cutter(core_holes, z - st/2)])
     for k, z in enumerate(POD["levels"][1:], start=1):
         sl = WALL.loft(f"PodiumSlab{k}", [(-POD["wall_t"] + 0.02, z - st), (-POD["wall_t"] + 0.02, z)])
-        cuts = [cyl_cut(CR + 0.02, CC, z - 2, z + 2, 96), cyl_cut(TW["drums"][0][0] - 0.2, TC, z - 2, z + 2)]
+        cuts = [ecut(CR + 0.02, z - 2, z + 2, 128), cyl_cut(TW["drums"][0][0] - 0.2, TC, z - 2, z + 2)]
         if z < TUN["spring"] + TUN["rise"] + 0.6:
             cuts.append(box("c", (2*TUN["hw"] + 1.2, Y_TUN_END - FRONT_Y + 4, 3.0), (ARC["cx"], (FRONT_Y + Y_TUN_END)/2, z)))
         if z < ARC["spring"] + ARC["rise"] + 1.0:
@@ -692,7 +730,7 @@ if FULL:
     ROLE = "shell"
     # ---- glowing plaza rings (forecourt + courtyard) ----
     ROLE = "plaza_glow"
-    ring("PlazaRingCourt", CR*0.45, CR*0.52, 0.0, 0.04, (CC[0], CC[1], 0), 128)
+    ring("PlazaRingCourt", CR*0.45, CR*0.52, 0.0, 0.04, (CC[0], CC[1], 0), 128, sx=KX)
     ring("PlazaRingFore", 9.0, 10.0, 0.0, 0.04, (ARC["cx"], FRONT_Y - 14.0, 0), 128)
     ROLE = "shell"
     # spaces / graph export

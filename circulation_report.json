@@ -107,7 +107,15 @@
     "blocked_at": null
    },
    {
-    "id": "D13_gallery__W_link",
+    "id": "D13_courtyard__gallery",
+    "type": "opening",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D14_gallery__W_link",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -115,7 +123,7 @@
     "blocked_at": null
    },
    {
-    "id": "D14_gallery__E_link",
+    "id": "D15_gallery__E_link",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -123,7 +131,7 @@
     "blocked_at": null
    },
    {
-    "id": "D15_gallery__T_link",
+    "id": "D16_gallery__T_link",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -131,7 +139,7 @@
     "blocked_at": null
    },
    {
-    "id": "D16_W_link__W_hall",
+    "id": "D17_W_link__W_hall",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -139,7 +147,7 @@
     "blocked_at": null
    },
    {
-    "id": "D17_W_hall__W_room_s",
+    "id": "D18_W_hall__W_room_s",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -147,7 +155,7 @@
     "blocked_at": null
    },
    {
-    "id": "D18_W_hall__W_room_n",
+    "id": "D19_W_hall__W_room_n",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -155,7 +163,7 @@
     "blocked_at": null
    },
    {
-    "id": "D19_W_vest__W_room_s",
+    "id": "D20_W_vest__W_room_s",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -163,7 +171,7 @@
     "blocked_at": null
    },
    {
-    "id": "D20_W_room_s__W_room_n",
+    "id": "D21_W_room_s__W_room_n",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -171,7 +179,7 @@
     "blocked_at": null
    },
    {
-    "id": "D21_W_hall__W_core",
+    "id": "D22_W_hall__W_core",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -179,7 +187,7 @@
     "blocked_at": null
    },
    {
-    "id": "D22_W_hall_L1__W_room_s_L1",
+    "id": "D23_W_hall_L1__W_room_s_L1",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -187,7 +195,7 @@
     "blocked_at": null
    },
    {
-    "id": "D23_W_hall_L1__W_room_n_L1",
+    "id": "D24_W_hall_L1__W_room_n_L1",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -195,7 +203,7 @@
     "blocked_at": null
    },
    {
-    "id": "D24_W_room_s_L1__W_room_n_L1",
+    "id": "D25_W_room_s_L1__W_room_n_L1",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -203,7 +211,7 @@
     "blocked_at": null
    },
    {
-    "id": "D25_W_hall_L1__W_core_L1",
+    "id": "D26_W_hall_L1__W_core_L1",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -211,7 +219,7 @@
     "blocked_at": null
    },
    {
-    "id": "D26_W_hall_L2__W_room_s_L2",
+    "id": "D27_W_hall_L2__W_room_s_L2",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -219,7 +227,7 @@
     "blocked_at": null
    },
    {
-    "id": "D27_W_hall_L2__W_room_n_L2",
+    "id": "D28_W_hall_L2__W_room_n_L2",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -227,7 +235,7 @@
     "blocked_at": null
    },
    {
-    "id": "D28_W_room_s_L2__W_room_n_L2",
+    "id": "D29_W_room_s_L2__W_room_n_L2",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -235,7 +243,7 @@
     "blocked_at": null
    },
    {
-    "id": "D29_W_hall_L2__W_core_L2",
+    "id": "D30_W_hall_L2__W_core_L2",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -243,7 +251,7 @@
     "blocked_at": null
    },
    {
-    "id": "D30_W_hall_L3__W_room_s_L3",
+    "id": "D31_W_hall_L3__W_room_s_L3",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -251,7 +259,7 @@
     "blocked_at": null
    },
    {
-    "id": "D31_W_hall_L3__W_room_n_L3",
+    "id": "D32_W_hall_L3__W_room_n_L3",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -259,7 +267,7 @@
     "blocked_at": null
    },
    {
-    "id": "D32_W_room_s_L3__W_room_n_L3",
+    "id": "D33_W_room_s_L3__W_room_n_L3",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -267,7 +275,7 @@
     "blocked_at": null
    },
    {
-    "id": "D33_W_hall_L3__W_core_L3",
+    "id": "D34_W_hall_L3__W_core_L3",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -275,7 +283,7 @@
     "blocked_at": null
    },
    {
-    "id": "D34_forecourt__W_vest",
+    "id": "D35_forecourt__W_vest",
     "type": "ext_door",
     "clear": true,
     "pierces_wall": true,
@@ -283,7 +291,7 @@
     "blocked_at": null
    },
    {
-    "id": "D35_W_core__W_lift",
+    "id": "D36_W_core__W_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -291,7 +299,7 @@
     "blocked_at": null
    },
    {
-    "id": "D36_W_core_L1__W_lift",
+    "id": "D37_W_core_L1__W_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -299,7 +307,7 @@
     "blocked_at": null
    },
    {
-    "id": "D37_W_core_L2__W_lift",
+    "id": "D38_W_core_L2__W_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -307,7 +315,7 @@
     "blocked_at": null
    },
    {
-    "id": "D38_W_core_L3__W_lift",
+    "id": "D39_W_core_L3__W_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -315,7 +323,7 @@
     "blocked_at": null
    },
    {
-    "id": "D39_E_link__E_hall",
+    "id": "D40_E_link__E_hall",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -323,7 +331,7 @@
     "blocked_at": null
    },
    {
-    "id": "D40_E_hall__E_room_s",
+    "id": "D41_E_hall__E_room_s",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -331,7 +339,7 @@
     "blocked_at": null
    },
    {
-    "id": "D41_E_hall__E_room_n",
+    "id": "D42_E_hall__E_room_n",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -339,7 +347,7 @@
     "blocked_at": null
    },
    {
-    "id": "D42_E_vest__E_room_s",
+    "id": "D43_E_vest__E_room_s",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -347,7 +355,7 @@
     "blocked_at": null
    },
    {
-    "id": "D43_E_room_s__E_room_n",
+    "id": "D44_E_room_s__E_room_n",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -355,7 +363,7 @@
     "blocked_at": null
    },
    {
-    "id": "D44_E_room_n__E_core",
+    "id": "D45_E_room_n__E_core",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -363,7 +371,7 @@
     "blocked_at": null
    },
    {
-    "id": "D45_E_hall_L1__E_room_s_L1",
+    "id": "D46_E_hall_L1__E_room_s_L1",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -371,7 +379,7 @@
     "blocked_at": null
    },
    {
-    "id": "D46_E_hall_L1__E_room_n_L1",
+    "id": "D47_E_hall_L1__E_room_n_L1",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -379,7 +387,7 @@
     "blocked_at": null
    },
    {
-    "id": "D47_E_room_s_L1__E_room_n_L1",
+    "id": "D48_E_room_s_L1__E_room_n_L1",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -387,7 +395,7 @@
     "blocked_at": null
    },
    {
-    "id": "D48_E_room_n_L1__E_core_L1",
+    "id": "D49_E_room_n_L1__E_core_L1",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -395,7 +403,7 @@
     "blocked_at": null
    },
    {
-    "id": "D49_E_hall_L2__E_room_s_L2",
+    "id": "D50_E_hall_L2__E_room_s_L2",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -403,7 +411,7 @@
     "blocked_at": null
    },
    {
-    "id": "D50_E_hall_L2__E_room_n_L2",
+    "id": "D51_E_hall_L2__E_room_n_L2",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -411,7 +419,7 @@
     "blocked_at": null
    },
    {
-    "id": "D51_E_room_s_L2__E_room_n_L2",
+    "id": "D52_E_room_s_L2__E_room_n_L2",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -419,7 +427,7 @@
     "blocked_at": null
    },
    {
-    "id": "D52_E_room_n_L2__E_core_L2",
+    "id": "D53_E_room_n_L2__E_core_L2",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -427,7 +435,7 @@
     "blocked_at": null
    },
    {
-    "id": "D53_E_hall_L3__E_room_s_L3",
+    "id": "D54_E_hall_L3__E_room_s_L3",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -435,7 +443,7 @@
     "blocked_at": null
    },
    {
-    "id": "D54_E_hall_L3__E_room_n_L3",
+    "id": "D55_E_hall_L3__E_room_n_L3",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -443,7 +451,7 @@
     "blocked_at": null
    },
    {
-    "id": "D55_E_room_s_L3__E_room_n_L3",
+    "id": "D56_E_room_s_L3__E_room_n_L3",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -451,7 +459,7 @@
     "blocked_at": null
    },
    {
-    "id": "D56_E_room_n_L3__E_core_L3",
+    "id": "D57_E_room_n_L3__E_core_L3",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -459,7 +467,7 @@
     "blocked_at": null
    },
    {
-    "id": "D57_forecourt__E_vest",
+    "id": "D58_forecourt__E_vest",
     "type": "ext_door",
     "clear": true,
     "pierces_wall": true,
@@ -467,7 +475,7 @@
     "blocked_at": null
    },
    {
-    "id": "D58_E_core__E_lift",
+    "id": "D59_E_core__E_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -475,7 +483,7 @@
     "blocked_at": null
    },
    {
-    "id": "D59_E_core_L1__E_lift",
+    "id": "D60_E_core_L1__E_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -483,7 +491,7 @@
     "blocked_at": null
    },
    {
-    "id": "D60_E_core_L2__E_lift",
+    "id": "D61_E_core_L2__E_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -491,7 +499,7 @@
     "blocked_at": null
    },
    {
-    "id": "D61_E_core_L3__E_lift",
+    "id": "D62_E_core_L3__E_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -499,7 +507,7 @@
     "blocked_at": null
    },
    {
-    "id": "D62_T_link__T_L0",
+    "id": "D63_T_link__T_L0",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -507,7 +515,7 @@
     "blocked_at": null
    },
    {
-    "id": "D63_T_L0__T_lift0",
+    "id": "D64_T_L0__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -515,7 +523,7 @@
     "blocked_at": null
    },
    {
-    "id": "D64_T_L1__T_lift0",
+    "id": "D65_T_L1__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -523,7 +531,7 @@
     "blocked_at": null
    },
    {
-    "id": "D65_T_L2__T_lift0",
+    "id": "D66_T_L2__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -531,7 +539,7 @@
     "blocked_at": null
    },
    {
-    "id": "D66_T_L3__T_lift0",
+    "id": "D67_T_L3__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -539,7 +547,7 @@
     "blocked_at": null
    },
    {
-    "id": "D67_T_L4__T_lift0",
+    "id": "D68_T_L4__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -547,7 +555,7 @@
     "blocked_at": null
    },
    {
-    "id": "D68_T_L5__T_lift0",
+    "id": "D69_T_L5__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -555,7 +563,7 @@
     "blocked_at": null
    },
    {
-    "id": "D69_T_L6__T_lift0",
+    "id": "D70_T_L6__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -563,7 +571,7 @@
     "blocked_at": null
    },
    {
-    "id": "D70_T_L7__T_lift0",
+    "id": "D71_T_L7__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -571,7 +579,7 @@
     "blocked_at": null
    },
    {
-    "id": "D71_T_L8__T_lift0",
+    "id": "D72_T_L8__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -579,7 +587,7 @@
     "blocked_at": null
    },
    {
-    "id": "D72_T_L9__T_lift0",
+    "id": "D73_T_L9__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -587,7 +595,7 @@
     "blocked_at": null
    },
    {
-    "id": "D73_T_L10__T_lift0",
+    "id": "D74_T_L10__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -595,7 +603,7 @@
     "blocked_at": null
    },
    {
-    "id": "D74_T_L11__T_lift0",
+    "id": "D75_T_L11__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -603,7 +611,7 @@
     "blocked_at": null
    },
    {
-    "id": "D75_T_L12__T_lift0",
+    "id": "D76_T_L12__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -611,7 +619,7 @@
     "blocked_at": null
    },
    {
-    "id": "D76_T_L13__T_lift0",
+    "id": "D77_T_L13__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -619,7 +627,7 @@
     "blocked_at": null
    },
    {
-    "id": "D77_T_L0__T_lift1",
+    "id": "D78_T_L0__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -627,7 +635,7 @@
     "blocked_at": null
    },
    {
-    "id": "D78_T_L1__T_lift1",
+    "id": "D79_T_L1__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -635,7 +643,7 @@
     "blocked_at": null
    },
    {
-    "id": "D79_T_L2__T_lift1",
+    "id": "D80_T_L2__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -643,7 +651,7 @@
     "blocked_at": null
    },
    {
-    "id": "D80_T_L3__T_lift1",
+    "id": "D81_T_L3__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -651,7 +659,7 @@
     "blocked_at": null
    },
    {
-    "id": "D81_T_L4__T_lift1",
+    "id": "D82_T_L4__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -659,7 +667,7 @@
     "blocked_at": null
    },
    {
-    "id": "D82_T_L5__T_lift1",
+    "id": "D83_T_L5__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -667,7 +675,7 @@
     "blocked_at": null
    },
    {
-    "id": "D83_T_L6__T_lift1",
+    "id": "D84_T_L6__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -675,7 +683,7 @@
     "blocked_at": null
    },
    {
-    "id": "D84_T_L7__T_lift1",
+    "id": "D85_T_L7__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -683,7 +691,7 @@
     "blocked_at": null
    },
    {
-    "id": "D85_T_L8__T_lift1",
+    "id": "D86_T_L8__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -691,7 +699,7 @@
     "blocked_at": null
    },
    {
-    "id": "D86_T_L9__T_lift1",
+    "id": "D87_T_L9__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -699,7 +707,7 @@
     "blocked_at": null
    },
    {
-    "id": "D87_T_L10__T_lift1",
+    "id": "D88_T_L10__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -707,7 +715,7 @@
     "blocked_at": null
    },
    {
-    "id": "D88_T_L11__T_lift1",
+    "id": "D89_T_L11__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -715,7 +723,7 @@
     "blocked_at": null
    },
    {
-    "id": "D89_T_L12__T_lift1",
+    "id": "D90_T_L12__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -723,7 +731,7 @@
     "blocked_at": null
    },
    {
-    "id": "D90_T_L13__T_lift1",
+    "id": "D91_T_L13__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -731,7 +739,7 @@
     "blocked_at": null
    },
    {
-    "id": "D91_T_L0__T_lift2",
+    "id": "D92_T_L0__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -739,7 +747,7 @@
     "blocked_at": null
    },
    {
-    "id": "D92_T_L1__T_lift2",
+    "id": "D93_T_L1__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -747,7 +755,7 @@
     "blocked_at": null
    },
    {
-    "id": "D93_T_L2__T_lift2",
+    "id": "D94_T_L2__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -755,7 +763,7 @@
     "blocked_at": null
    },
    {
-    "id": "D94_T_L3__T_lift2",
+    "id": "D95_T_L3__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -763,7 +771,7 @@
     "blocked_at": null
    },
    {
-    "id": "D95_T_L4__T_lift2",
+    "id": "D96_T_L4__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -771,7 +779,7 @@
     "blocked_at": null
    },
    {
-    "id": "D96_T_L5__T_lift2",
+    "id": "D97_T_L5__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -779,7 +787,7 @@
     "blocked_at": null
    },
    {
-    "id": "D97_T_L6__T_lift2",
+    "id": "D98_T_L6__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -787,7 +795,7 @@
     "blocked_at": null
    },
    {
-    "id": "D98_T_L7__T_lift2",
+    "id": "D99_T_L7__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -795,7 +803,7 @@
     "blocked_at": null
    },
    {
-    "id": "D99_T_L8__T_lift2",
+    "id": "D100_T_L8__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -803,7 +811,7 @@
     "blocked_at": null
    },
    {
-    "id": "D100_T_L9__T_lift2",
+    "id": "D101_T_L9__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -811,7 +819,7 @@
     "blocked_at": null
    },
    {
-    "id": "D101_T_L10__T_lift2",
+    "id": "D102_T_L10__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -819,7 +827,7 @@
     "blocked_at": null
    },
    {
-    "id": "D102_T_L11__T_lift2",
+    "id": "D103_T_L11__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -827,7 +835,7 @@
     "blocked_at": null
    },
    {
-    "id": "D103_T_L12__T_lift2",
+    "id": "D104_T_L12__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -835,7 +843,7 @@
     "blocked_at": null
    },
    {
-    "id": "D104_T_L13__T_lift2",
+    "id": "D105_T_L13__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -1505,7 +1513,7 @@
    {
     "name": "T_link",
     "floor": true,
-    "headroom_m": 3.98,
+    "headroom_m": 2.4,
     "ok": true
    },
    {
@@ -1687,34 +1695,34 @@
    "T_L0": [
     "D00_forecourt__portal_tunnel",
     "D02_portal_tunnel__gallery",
-    "D15_gallery__T_link",
-    "D62_T_link__T_L0"
+    "D16_gallery__T_link",
+    "D63_T_link__T_L0"
    ],
    "T_L1": [
     "D00_forecourt__portal_tunnel",
     "D02_portal_tunnel__gallery",
-    "D15_gallery__T_link",
-    "D62_T_link__T_L0",
+    "D16_gallery__T_link",
+    "D63_T_link__T_L0",
     "T_stairA_0"
    ],
    "T_L13": [
     "D00_forecourt__portal_tunnel",
     "D02_portal_tunnel__gallery",
-    "D15_gallery__T_link",
-    "D62_T_link__T_L0",
-    "D63_T_L0__T_lift0",
-    "D76_T_L13__T_lift0"
+    "D16_gallery__T_link",
+    "D63_T_link__T_L0",
+    "D64_T_L0__T_lift0",
+    "D77_T_L13__T_lift0"
    ]
   },
   "graph": {
    "nodes": 60,
-   "door_edges": 105,
+   "door_edges": 106,
    "stair_edges": 32
   },
   "PASS": true
  },
  {
-  "label": "negative test: D62_T_link__T_L0 blocked",
+  "label": "negative test: D63_T_link__T_L0 blocked",
   "doors": [
    {
     "id": "D00_forecourt__portal_tunnel",
@@ -1821,7 +1829,15 @@
     "blocked_at": null
    },
    {
-    "id": "D13_gallery__W_link",
+    "id": "D13_courtyard__gallery",
+    "type": "opening",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D14_gallery__W_link",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -1829,7 +1845,7 @@
     "blocked_at": null
    },
    {
-    "id": "D14_gallery__E_link",
+    "id": "D15_gallery__E_link",
     "type": "door",
     "clear": true,
     "pierces_wall": true,
@@ -1837,387 +1853,7 @@
     "blocked_at": null
    },
    {
-    "id": "D15_gallery__T_link",
-    "type": "door",
-    "clear": false,
-    "pierces_wall": true,
-    "ok": false,
-    "blocked_at": [
-     2.0,
-     0.0,
-     0.74
-    ]
-   },
-   {
-    "id": "D16_W_link__W_hall",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D17_W_hall__W_room_s",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D18_W_hall__W_room_n",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D19_W_vest__W_room_s",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D20_W_room_s__W_room_n",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D21_W_hall__W_core",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D22_W_hall_L1__W_room_s_L1",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D23_W_hall_L1__W_room_n_L1",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D24_W_room_s_L1__W_room_n_L1",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D25_W_hall_L1__W_core_L1",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D26_W_hall_L2__W_room_s_L2",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D27_W_hall_L2__W_room_n_L2",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D28_W_room_s_L2__W_room_n_L2",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D29_W_hall_L2__W_core_L2",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D30_W_hall_L3__W_room_s_L3",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D31_W_hall_L3__W_room_n_L3",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D32_W_room_s_L3__W_room_n_L3",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D33_W_hall_L3__W_core_L3",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D34_forecourt__W_vest",
-    "type": "ext_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D35_W_core__W_lift",
-    "type": "lift_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D36_W_core_L1__W_lift",
-    "type": "lift_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D37_W_core_L2__W_lift",
-    "type": "lift_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D38_W_core_L3__W_lift",
-    "type": "lift_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D39_E_link__E_hall",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D40_E_hall__E_room_s",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D41_E_hall__E_room_n",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D42_E_vest__E_room_s",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D43_E_room_s__E_room_n",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D44_E_room_n__E_core",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D45_E_hall_L1__E_room_s_L1",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D46_E_hall_L1__E_room_n_L1",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D47_E_room_s_L1__E_room_n_L1",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D48_E_room_n_L1__E_core_L1",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D49_E_hall_L2__E_room_s_L2",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D50_E_hall_L2__E_room_n_L2",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D51_E_room_s_L2__E_room_n_L2",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D52_E_room_n_L2__E_core_L2",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D53_E_hall_L3__E_room_s_L3",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D54_E_hall_L3__E_room_n_L3",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D55_E_room_s_L3__E_room_n_L3",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D56_E_room_n_L3__E_core_L3",
-    "type": "door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D57_forecourt__E_vest",
-    "type": "ext_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D58_E_core__E_lift",
-    "type": "lift_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D59_E_core_L1__E_lift",
-    "type": "lift_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D60_E_core_L2__E_lift",
-    "type": "lift_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D61_E_core_L3__E_lift",
-    "type": "lift_door",
-    "clear": true,
-    "pierces_wall": true,
-    "ok": true,
-    "blocked_at": null
-   },
-   {
-    "id": "D62_T_link__T_L0",
+    "id": "D16_gallery__T_link",
     "type": "door",
     "clear": false,
     "pierces_wall": true,
@@ -2225,11 +1861,163 @@
     "blocked_at": [
      2.0,
      0.0,
-     -0.58
+     -0.35
     ]
    },
    {
-    "id": "D63_T_L0__T_lift0",
+    "id": "D17_W_link__W_hall",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D18_W_hall__W_room_s",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D19_W_hall__W_room_n",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D20_W_vest__W_room_s",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D21_W_room_s__W_room_n",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D22_W_hall__W_core",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D23_W_hall_L1__W_room_s_L1",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D24_W_hall_L1__W_room_n_L1",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D25_W_room_s_L1__W_room_n_L1",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D26_W_hall_L1__W_core_L1",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D27_W_hall_L2__W_room_s_L2",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D28_W_hall_L2__W_room_n_L2",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D29_W_room_s_L2__W_room_n_L2",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D30_W_hall_L2__W_core_L2",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D31_W_hall_L3__W_room_s_L3",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D32_W_hall_L3__W_room_n_L3",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D33_W_room_s_L3__W_room_n_L3",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D34_W_hall_L3__W_core_L3",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D35_forecourt__W_vest",
+    "type": "ext_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D36_W_core__W_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2237,7 +2025,7 @@
     "blocked_at": null
    },
    {
-    "id": "D64_T_L1__T_lift0",
+    "id": "D37_W_core_L1__W_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2245,7 +2033,7 @@
     "blocked_at": null
    },
    {
-    "id": "D65_T_L2__T_lift0",
+    "id": "D38_W_core_L2__W_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2253,7 +2041,7 @@
     "blocked_at": null
    },
    {
-    "id": "D66_T_L3__T_lift0",
+    "id": "D39_W_core_L3__W_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2261,7 +2049,159 @@
     "blocked_at": null
    },
    {
-    "id": "D67_T_L4__T_lift0",
+    "id": "D40_E_link__E_hall",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D41_E_hall__E_room_s",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D42_E_hall__E_room_n",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D43_E_vest__E_room_s",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D44_E_room_s__E_room_n",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D45_E_room_n__E_core",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D46_E_hall_L1__E_room_s_L1",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D47_E_hall_L1__E_room_n_L1",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D48_E_room_s_L1__E_room_n_L1",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D49_E_room_n_L1__E_core_L1",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D50_E_hall_L2__E_room_s_L2",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D51_E_hall_L2__E_room_n_L2",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D52_E_room_s_L2__E_room_n_L2",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D53_E_room_n_L2__E_core_L2",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D54_E_hall_L3__E_room_s_L3",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D55_E_hall_L3__E_room_n_L3",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D56_E_room_s_L3__E_room_n_L3",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D57_E_room_n_L3__E_core_L3",
+    "type": "door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D58_forecourt__E_vest",
+    "type": "ext_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D59_E_core__E_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2269,7 +2209,7 @@
     "blocked_at": null
    },
    {
-    "id": "D68_T_L5__T_lift0",
+    "id": "D60_E_core_L1__E_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2277,7 +2217,7 @@
     "blocked_at": null
    },
    {
-    "id": "D69_T_L6__T_lift0",
+    "id": "D61_E_core_L2__E_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2285,7 +2225,7 @@
     "blocked_at": null
    },
    {
-    "id": "D70_T_L7__T_lift0",
+    "id": "D62_E_core_L3__E_lift",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2293,7 +2233,19 @@
     "blocked_at": null
    },
    {
-    "id": "D71_T_L8__T_lift0",
+    "id": "D63_T_link__T_L0",
+    "type": "door",
+    "clear": false,
+    "pierces_wall": true,
+    "ok": false,
+    "blocked_at": [
+     2.0,
+     0.0,
+     -0.64
+    ]
+   },
+   {
+    "id": "D64_T_L0__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2301,7 +2253,7 @@
     "blocked_at": null
    },
    {
-    "id": "D72_T_L9__T_lift0",
+    "id": "D65_T_L1__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2309,7 +2261,7 @@
     "blocked_at": null
    },
    {
-    "id": "D73_T_L10__T_lift0",
+    "id": "D66_T_L2__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2317,7 +2269,7 @@
     "blocked_at": null
    },
    {
-    "id": "D74_T_L11__T_lift0",
+    "id": "D67_T_L3__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2325,7 +2277,7 @@
     "blocked_at": null
    },
    {
-    "id": "D75_T_L12__T_lift0",
+    "id": "D68_T_L4__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2333,7 +2285,7 @@
     "blocked_at": null
    },
    {
-    "id": "D76_T_L13__T_lift0",
+    "id": "D69_T_L5__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2341,7 +2293,7 @@
     "blocked_at": null
    },
    {
-    "id": "D77_T_L0__T_lift1",
+    "id": "D70_T_L6__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2349,7 +2301,7 @@
     "blocked_at": null
    },
    {
-    "id": "D78_T_L1__T_lift1",
+    "id": "D71_T_L7__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2357,7 +2309,7 @@
     "blocked_at": null
    },
    {
-    "id": "D79_T_L2__T_lift1",
+    "id": "D72_T_L8__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2365,7 +2317,7 @@
     "blocked_at": null
    },
    {
-    "id": "D80_T_L3__T_lift1",
+    "id": "D73_T_L9__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2373,7 +2325,7 @@
     "blocked_at": null
    },
    {
-    "id": "D81_T_L4__T_lift1",
+    "id": "D74_T_L10__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2381,7 +2333,7 @@
     "blocked_at": null
    },
    {
-    "id": "D82_T_L5__T_lift1",
+    "id": "D75_T_L11__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2389,7 +2341,7 @@
     "blocked_at": null
    },
    {
-    "id": "D83_T_L6__T_lift1",
+    "id": "D76_T_L12__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2397,7 +2349,7 @@
     "blocked_at": null
    },
    {
-    "id": "D84_T_L7__T_lift1",
+    "id": "D77_T_L13__T_lift0",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2405,7 +2357,7 @@
     "blocked_at": null
    },
    {
-    "id": "D85_T_L8__T_lift1",
+    "id": "D78_T_L0__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2413,7 +2365,7 @@
     "blocked_at": null
    },
    {
-    "id": "D86_T_L9__T_lift1",
+    "id": "D79_T_L1__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2421,7 +2373,7 @@
     "blocked_at": null
    },
    {
-    "id": "D87_T_L10__T_lift1",
+    "id": "D80_T_L2__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2429,7 +2381,7 @@
     "blocked_at": null
    },
    {
-    "id": "D88_T_L11__T_lift1",
+    "id": "D81_T_L3__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2437,7 +2389,7 @@
     "blocked_at": null
    },
    {
-    "id": "D89_T_L12__T_lift1",
+    "id": "D82_T_L4__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2445,7 +2397,7 @@
     "blocked_at": null
    },
    {
-    "id": "D90_T_L13__T_lift1",
+    "id": "D83_T_L5__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2453,7 +2405,7 @@
     "blocked_at": null
    },
    {
-    "id": "D91_T_L0__T_lift2",
+    "id": "D84_T_L6__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2461,7 +2413,7 @@
     "blocked_at": null
    },
    {
-    "id": "D92_T_L1__T_lift2",
+    "id": "D85_T_L7__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2469,7 +2421,7 @@
     "blocked_at": null
    },
    {
-    "id": "D93_T_L2__T_lift2",
+    "id": "D86_T_L8__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2477,7 +2429,7 @@
     "blocked_at": null
    },
    {
-    "id": "D94_T_L3__T_lift2",
+    "id": "D87_T_L9__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2485,7 +2437,7 @@
     "blocked_at": null
    },
    {
-    "id": "D95_T_L4__T_lift2",
+    "id": "D88_T_L10__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2493,7 +2445,7 @@
     "blocked_at": null
    },
    {
-    "id": "D96_T_L5__T_lift2",
+    "id": "D89_T_L11__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2501,7 +2453,7 @@
     "blocked_at": null
    },
    {
-    "id": "D97_T_L6__T_lift2",
+    "id": "D90_T_L12__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2509,7 +2461,7 @@
     "blocked_at": null
    },
    {
-    "id": "D98_T_L7__T_lift2",
+    "id": "D91_T_L13__T_lift1",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2517,7 +2469,7 @@
     "blocked_at": null
    },
    {
-    "id": "D99_T_L8__T_lift2",
+    "id": "D92_T_L0__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2525,7 +2477,7 @@
     "blocked_at": null
    },
    {
-    "id": "D100_T_L9__T_lift2",
+    "id": "D93_T_L1__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2533,7 +2485,7 @@
     "blocked_at": null
    },
    {
-    "id": "D101_T_L10__T_lift2",
+    "id": "D94_T_L2__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2541,7 +2493,7 @@
     "blocked_at": null
    },
    {
-    "id": "D102_T_L11__T_lift2",
+    "id": "D95_T_L3__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2549,7 +2501,7 @@
     "blocked_at": null
    },
    {
-    "id": "D103_T_L12__T_lift2",
+    "id": "D96_T_L4__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -2557,7 +2509,71 @@
     "blocked_at": null
    },
    {
-    "id": "D104_T_L13__T_lift2",
+    "id": "D97_T_L5__T_lift2",
+    "type": "lift_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D98_T_L6__T_lift2",
+    "type": "lift_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D99_T_L7__T_lift2",
+    "type": "lift_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D100_T_L8__T_lift2",
+    "type": "lift_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D101_T_L9__T_lift2",
+    "type": "lift_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D102_T_L10__T_lift2",
+    "type": "lift_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D103_T_L11__T_lift2",
+    "type": "lift_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D104_T_L12__T_lift2",
+    "type": "lift_door",
+    "clear": true,
+    "pierces_wall": true,
+    "ok": true,
+    "blocked_at": null
+   },
+   {
+    "id": "D105_T_L13__T_lift2",
     "type": "lift_door",
     "clear": true,
     "pierces_wall": true,
@@ -3227,7 +3243,7 @@
    {
     "name": "T_link",
     "floor": true,
-    "headroom_m": 2.5,
+    "headroom_m": 2.4,
     "ok": true
    },
    {
@@ -3343,8 +3359,8 @@
    }
   ],
   "fail": [
-   "door D15_gallery__T_link: clear=False wall=True blocked_at(h,lat,dist)=[2.0, 0.0, 0.74]",
-   "door D62_T_link__T_L0: clear=False wall=True blocked_at(h,lat,dist)=[2.0, 0.0, -0.58]",
+   "door D16_gallery__T_link: clear=False wall=True blocked_at(h,lat,dist)=[2.0, 0.0, -0.35]",
+   "door D63_T_link__T_L0: clear=False wall=True blocked_at(h,lat,dist)=[2.0, 0.0, -0.64]",
    "unreachable spaces from 'forecourt': ['T_link', 'T_L0', 'T_L1', 'T_L2', 'T_L3', 'T_L4', 'T_L5', 'T_L6', 'T_L7', 'T_L8', 'T_L9', 'T_L10', 'T_L11', 'T_L12', 'T_L13']"
   ],
   "reachable": [
@@ -3414,7 +3430,7 @@
   },
   "graph": {
    "nodes": 60,
-   "door_edges": 103,
+   "door_edges": 104,
    "stair_edges": 32
   },
   "PASS": false,
