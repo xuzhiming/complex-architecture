@@ -23,7 +23,7 @@ for f in ["renders/four_views.png", "renders/perspective_hero.png", "renders/per
           "renders/top.png", "final_render.png", "final_vs_ref.png", "compare/final/overlay_sheet.png", "compare/final/side_by_side.png"]:
     if os.path.exists(os.path.join(H, f)): cp(f, "docs/" + os.path.basename(f))
 cp("gh_readme.md", "README.md")
-for f in ["CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md"]:
+for f in ["CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md", "CHANGES_v9.md"]:
     if os.path.exists(os.path.join(H, f)): cp(f, "docs/" + f)
 big = [f for f in glob.glob(os.path.join(R, "**", "*"), recursive=True) if os.path.isfile(f) and os.path.getsize(f) > 25*1024*1024 and "/.git/" not in f]
 print("synced; files > 25 MiB:", big, "| glb MB:", round(os.path.getsize(os.path.join(R, "web", "building_opt.glb"))/1e6, 2))

@@ -468,3 +468,33 @@ old single C crown, the model now has the symmetric pair; strict front/rear is l
 |---|---|---|---|
 | v7 final | 0.879/2.87 m, 0.876/2.90 m | 0.924/1.37 m, 0.927/1.18 m | 0.9013 / 2.08 m |
 | **v8 final (planar crescent pair)** | **0.889/2.03 m, 0.886/2.11 m** | **0.925/1.33 m, 0.928/1.11 m** | **0.9067 / 1.65 m** |
+
+## v9 — true circular-arc crescent moons (user's choice), no canopy intersections
+- Crown plates are now plain circles: outer R 24.56 m minus an inner circle through the tips; band 5.96 m at mid-arc, 1.3 m thick.
+  Each plate is turned 18.5°, tilted -4°, centre z 53, 6 m behind the tower axis; tips at z 74.9 with a 5 m gap; lower ends inside the tower.
+- Tuned only within circular shapes. The search was constrained to:
+  - tip z 74–79.5
+  - lower end inside the tower drum
+  - clear of the tower crown disc
+  - no intersection with any canopy disc or drum, infill mass, or bridge deck, with a 1 m margin
+- Steps:
+  - Random search: 40k samples gave 348 valid; 24 were evaluated.
+  - A wider second search (turned 20–60°, 80k samples, 108 valid) favoured a long side profile, but its best 16 were all worse
+    (side skyline errors 4.7–8.3 m).
+  - Coordinate descent (8 rounds, objective = strict-side score + 0.3 x front/rear score), starting from the best of the first search.
+- The final mesh was checked with a BVH overlap test. The crescents touch only TowerBand/TowerRib, where they enter the tower.
+
+| crown | front / rear (x1.313) | left / right (STRICT) | mean IoU / skyline |
+|---|---|---|---|
+| v7 horns (twisted) | 0.879/2.87, 0.876/2.90 | 0.924/1.37, 0.927/1.18 | 0.9013 / 2.08 m |
+| v8 planar ellipse | 0.889/2.03, 0.886/2.11 | 0.925/1.33, 0.928/1.11 | 0.9067 / 1.65 m |
+| v9 start: upright circle R 30, turned 20° (clashed with C_dome / T_side / M_C / E_high / M_E2 / bridges) | 0.888/2.17, 0.886/2.23 | 0.901/4.17, 0.903/3.97 | 0.8944 / 3.14 m |
+| **v9 final: circle R 24.6, turned 18.5°, clash-free** | **0.898/2.16, 0.895/2.22** | **0.900/4.34, 0.902/4.14** | see v9 summary |
+
+The cost in the side views is expected. The sheet's side panels show a long, low C, and a round upright moon seen from the side
+is a narrow arc behind the tower. The front and rear views are the best so far.
+
+## v9 summary (final run_all, no tuning rounds)
+- Mean IoU **0.8986**, mean skyline error **3.22 m**.
+- Per view: front 0.898/2.16 m | rear 0.895/2.22 m | left 0.900/4.34 m | right 0.902/4.14 m.
+- Checks: circulation PASS (negative test caught), glb 10.34 MB -> 2.19 MB, walk PASS. BVH clash test: the crescents touch only TowerBand1/TowerRib1.
