@@ -1,0 +1,7735 @@
+{
+ "spaces": {
+  "forecourt": {
+   "name": "forecourt",
+   "probe": [
+    0.0,
+    -57.5,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "outside"
+  },
+  "portal_tunnel": {
+   "name": "portal_tunnel",
+   "probe": [
+    0.0,
+    -26.014658342969664,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "passage"
+  },
+  "courtyard": {
+   "name": "courtyard",
+   "probe": [
+    0.0,
+    3.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "open"
+  },
+  "gallery": {
+   "name": "gallery",
+   "probe": [
+    -19.1,
+    3.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "passage"
+  },
+  "W_link": {
+   "name": "W_link",
+   "probe": [
+    -22.175,
+    3.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "passage"
+  },
+  "W_vest": {
+   "name": "W_vest",
+   "probe": [
+    -36.0,
+    -37.33399704175518,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "passage"
+  },
+  "W_hall": {
+   "name": "W_hall",
+   "probe": [
+    -25.0,
+    -8.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "corridor"
+  },
+  "W_room_s": {
+   "name": "W_room_s",
+   "probe": [
+    -34.5,
+    -18.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "room"
+  },
+  "W_room_n": {
+   "name": "W_room_n",
+   "probe": [
+    -34.5,
+    8.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "room"
+  },
+  "W_core": {
+   "name": "W_core",
+   "probe": [
+    -28.0,
+    18.6,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "core"
+  },
+  "W_hall_L1": {
+   "name": "W_hall_L1",
+   "probe": [
+    -25.0,
+    -8.0,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "corridor"
+  },
+  "W_room_s_L1": {
+   "name": "W_room_s_L1",
+   "probe": [
+    -34.5,
+    -18.0,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "room"
+  },
+  "W_room_n_L1": {
+   "name": "W_room_n_L1",
+   "probe": [
+    -34.5,
+    8.0,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "room"
+  },
+  "W_core_L1": {
+   "name": "W_core_L1",
+   "probe": [
+    -28.0,
+    18.6,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "core"
+  },
+  "W_hall_L2": {
+   "name": "W_hall_L2",
+   "probe": [
+    -25.0,
+    -8.0,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "corridor"
+  },
+  "W_room_s_L2": {
+   "name": "W_room_s_L2",
+   "probe": [
+    -34.5,
+    -18.0,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "room"
+  },
+  "W_room_n_L2": {
+   "name": "W_room_n_L2",
+   "probe": [
+    -34.5,
+    8.0,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "room"
+  },
+  "W_core_L2": {
+   "name": "W_core_L2",
+   "probe": [
+    -28.0,
+    18.6,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "core"
+  },
+  "W_hall_L3": {
+   "name": "W_hall_L3",
+   "probe": [
+    -25.0,
+    -8.0,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "corridor"
+  },
+  "W_room_s_L3": {
+   "name": "W_room_s_L3",
+   "probe": [
+    -32.25,
+    -15.75,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "room"
+  },
+  "W_room_n_L3": {
+   "name": "W_room_n_L3",
+   "probe": [
+    -32.25,
+    8.0,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "room"
+  },
+  "W_core_L3": {
+   "name": "W_core_L3",
+   "probe": [
+    -28.0,
+    18.6,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "core"
+  },
+  "E_link": {
+   "name": "E_link",
+   "probe": [
+    22.175,
+    3.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "passage"
+  },
+  "E_vest": {
+   "name": "E_vest",
+   "probe": [
+    39.0,
+    -36.37197473017157,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "passage"
+  },
+  "E_hall": {
+   "name": "E_hall",
+   "probe": [
+    25.0,
+    -10.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "corridor"
+  },
+  "E_room_s": {
+   "name": "E_room_s",
+   "probe": [
+    34.5,
+    -18.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "room"
+  },
+  "E_room_n": {
+   "name": "E_room_n",
+   "probe": [
+    34.5,
+    6.0,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "room"
+  },
+  "E_core": {
+   "name": "E_core",
+   "probe": [
+    32.0,
+    14.6,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "core"
+  },
+  "E_hall_L1": {
+   "name": "E_hall_L1",
+   "probe": [
+    25.0,
+    -10.0,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "corridor"
+  },
+  "E_room_s_L1": {
+   "name": "E_room_s_L1",
+   "probe": [
+    34.5,
+    -18.0,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "room"
+  },
+  "E_room_n_L1": {
+   "name": "E_room_n_L1",
+   "probe": [
+    34.5,
+    6.0,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "room"
+  },
+  "E_core_L1": {
+   "name": "E_core_L1",
+   "probe": [
+    32.0,
+    14.6,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "core"
+  },
+  "E_hall_L2": {
+   "name": "E_hall_L2",
+   "probe": [
+    25.0,
+    -10.0,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "corridor"
+  },
+  "E_room_s_L2": {
+   "name": "E_room_s_L2",
+   "probe": [
+    34.5,
+    -18.0,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "room"
+  },
+  "E_room_n_L2": {
+   "name": "E_room_n_L2",
+   "probe": [
+    34.5,
+    6.0,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "room"
+  },
+  "E_core_L2": {
+   "name": "E_core_L2",
+   "probe": [
+    32.0,
+    14.6,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "core"
+  },
+  "E_hall_L3": {
+   "name": "E_hall_L3",
+   "probe": [
+    25.0,
+    -10.0,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "corridor"
+  },
+  "E_room_s_L3": {
+   "name": "E_room_s_L3",
+   "probe": [
+    32.25,
+    -15.75,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "room"
+  },
+  "E_room_n_L3": {
+   "name": "E_room_n_L3",
+   "probe": [
+    32.25,
+    6.0,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "room"
+  },
+  "E_core_L3": {
+   "name": "E_core_L3",
+   "probe": [
+    32.0,
+    14.6,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "core"
+  },
+  "T_link": {
+   "name": "T_link",
+   "probe": [
+    7.58391817377243,
+    23.22378179672648,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "passage"
+  },
+  "T_L0": {
+   "name": "T_L0",
+   "probe": [
+    8.75983353855671,
+    26.359556102817898,
+    0.0
+   ],
+   "z": 0.0,
+   "kind": "lobby"
+  },
+  "T_L1": {
+   "name": "T_L1",
+   "probe": [
+    8.75983353855671,
+    26.359556102817898,
+    4.5
+   ],
+   "z": 4.5,
+   "kind": "floor"
+  },
+  "T_L2": {
+   "name": "T_L2",
+   "probe": [
+    8.75983353855671,
+    26.359556102817898,
+    9.0
+   ],
+   "z": 9.0,
+   "kind": "floor"
+  },
+  "T_L3": {
+   "name": "T_L3",
+   "probe": [
+    8.75983353855671,
+    26.359556102817898,
+    13.5
+   ],
+   "z": 13.5,
+   "kind": "floor"
+  },
+  "T_L4": {
+   "name": "T_L4",
+   "probe": [
+    8.75983353855671,
+    26.359556102817898,
+    18.0
+   ],
+   "z": 18.0,
+   "kind": "floor"
+  },
+  "T_L5": {
+   "name": "T_L5",
+   "probe": [
+    8.75983353855671,
+    26.359556102817898,
+    22.5
+   ],
+   "z": 22.5,
+   "kind": "floor"
+  },
+  "T_L6": {
+   "name": "T_L6",
+   "probe": [
+    8.935395259350907,
+    26.827720691602423,
+    27.0
+   ],
+   "z": 27.0,
+   "kind": "floor"
+  },
+  "T_L7": {
+   "name": "T_L7",
+   "probe": [
+    8.935395259350907,
+    26.827720691602423,
+    31.5
+   ],
+   "z": 31.5,
+   "kind": "floor"
+  },
+  "T_L8": {
+   "name": "T_L8",
+   "probe": [
+    8.935395259350907,
+    26.827720691602423,
+    36.0
+   ],
+   "z": 36.0,
+   "kind": "floor"
+  },
+  "T_L9": {
+   "name": "T_L9",
+   "probe": [
+    9.286518700939299,
+    27.764049869171465,
+    40.5
+   ],
+   "z": 40.5,
+   "kind": "floor"
+  },
+  "T_L10": {
+   "name": "T_L10",
+   "probe": [
+    9.286518700939299,
+    27.764049869171465,
+    45.0
+   ],
+   "z": 45.0,
+   "kind": "floor"
+  },
+  "T_L11": {
+   "name": "T_L11",
+   "probe": [
+    9.286518700939299,
+    27.764049869171465,
+    49.5
+   ],
+   "z": 49.5,
+   "kind": "floor"
+  },
+  "T_L12": {
+   "name": "T_L12",
+   "probe": [
+    9.63764214252769,
+    28.70037904674051,
+    54.0
+   ],
+   "z": 54.0,
+   "kind": "floor"
+  },
+  "T_L13": {
+   "name": "T_L13",
+   "probe": [
+    9.63764214252769,
+    28.70037904674051,
+    58.5
+   ],
+   "z": 58.5,
+   "kind": "floor"
+  }
+ },
+ "doors": [
+  {
+   "id": "D00_forecourt__portal_tunnel",
+   "a": "forecourt",
+   "b": "portal_tunnel",
+   "type": "open",
+   "center": [
+    0.0,
+    -45.5,
+    0.0
+   ],
+   "normal": [
+    0,
+    1
+   ],
+   "tangent": [
+    -1,
+    0
+   ],
+   "w": 18.0,
+   "h": 11.0,
+   "check_wall": false
+  },
+  {
+   "id": "D01_portal_tunnel__courtyard",
+   "a": "portal_tunnel",
+   "b": "courtyard",
+   "type": "open",
+   "center": [
+    0.0,
+    -13.5,
+    0.0
+   ],
+   "normal": [
+    0,
+    1
+   ],
+   "tangent": [
+    -1,
+    0
+   ],
+   "w": 18.0,
+   "h": 11.0,
+   "check_wall": false
+  },
+  {
+   "id": "D02_portal_tunnel__gallery",
+   "a": "portal_tunnel",
+   "b": "gallery",
+   "type": "opening",
+   "center": [
+    -9.3,
+    -13.644908927262211,
+    0.0
+   ],
+   "normal": [
+    -1,
+    0
+   ],
+   "tangent": [
+    0,
+    -1
+   ],
+   "w": 3.9899920710810637,
+   "h": 3.0,
+   "check_wall": true
+  },
+  {
+   "id": "D03_portal_tunnel__gallery",
+   "a": "portal_tunnel",
+   "b": "gallery",
+   "type": "opening",
+   "center": [
+    9.3,
+    -13.644908927262211,
+    0.0
+   ],
+   "normal": [
+    1,
+    0
+   ],
+   "tangent": [
+    0,
+    1
+   ],
+   "w": 3.9899920710810637,
+   "h": 3.0,
+   "check_wall": true
+  },
+  {
+   "id": "D04_courtyard__gallery",
+   "a": "courtyard",
+   "b": "gallery",
+   "type": "opening",
+   "center": [
+    16.694365126206478,
+    4.881003198535572,
+    0.0
+   ],
+   "normal": [
+    0.9937122098932426,
+    0.11196447610330786
+   ],
+   "tangent": [
+    -0.11196447610330786,
+    0.9937122098932426
+   ],
+   "w": 2.6,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D05_courtyard__gallery",
+   "a": "courtyard",
+   "b": "gallery",
+   "type": "opening",
+   "center": [
+    8.938138885457654,
+    17.224966547035173,
+    0.0
+   ],
+   "normal": [
+    0.5320320765153366,
+    0.8467241992282841
+   ],
+   "tangent": [
+    -0.8467241992282841,
+    0.5320320765153366
+   ],
+   "w": 2.6,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D06_courtyard__gallery",
+   "a": "courtyard",
+   "b": "gallery",
+   "type": "opening",
+   "center": [
+    -5.5486882408468094,
+    18.857239949180574,
+    0.0
+   ],
+   "normal": [
+    -0.3302790619551672,
+    0.9438833303083675
+   ],
+   "tangent": [
+    -0.9438833303083675,
+    -0.3302790619551672
+   ],
+   "w": 2.6,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D07_courtyard__gallery",
+   "a": "courtyard",
+   "b": "gallery",
+   "type": "opening",
+   "center": [
+    -15.857239949180576,
+    8.54868824084681,
+    0.0
+   ],
+   "normal": [
+    -0.9438833303083676,
+    0.3302790619551672
+   ],
+   "tangent": [
+    -0.3302790619551672,
+    -0.9438833303083676
+   ],
+   "w": 2.6,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D08_courtyard__gallery",
+   "a": "courtyard",
+   "b": "gallery",
+   "type": "opening",
+   "center": [
+    -14.224966547035176,
+    -5.9381388854576524,
+    0.0
+   ],
+   "normal": [
+    -0.8467241992282842,
+    -0.5320320765153365
+   ],
+   "tangent": [
+    0.5320320765153365,
+    -0.8467241992282842
+   ],
+   "w": 2.6,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D09_courtyard__gallery",
+   "a": "courtyard",
+   "b": "gallery",
+   "type": "opening",
+   "center": [
+    15.857239949180574,
+    -2.5486882408468112,
+    0.0
+   ],
+   "normal": [
+    0.9438833303083675,
+    -0.3302790619551673
+   ],
+   "tangent": [
+    0.3302790619551673,
+    0.9438833303083675
+   ],
+   "w": 2.6,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D10_gallery__W_link",
+   "a": "gallery",
+   "b": "W_link",
+   "type": "door",
+   "center": [
+    -21.35,
+    3.0000000000000027,
+    0.0
+   ],
+   "normal": [
+    -1.0,
+    1.2246467991473532e-16
+   ],
+   "tangent": [
+    -1.2246467991473532e-16,
+    -1.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D11_gallery__E_link",
+   "a": "gallery",
+   "b": "E_link",
+   "type": "door",
+   "center": [
+    21.35,
+    3.0,
+    0.0
+   ],
+   "normal": [
+    1.0,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D12_gallery__T_link",
+   "a": "gallery",
+   "b": "T_link",
+   "type": "door",
+   "center": [
+    7.496485477912163,
+    22.990627941099103,
+    0.0
+   ],
+   "normal": [
+    0.3511234415883917,
+    0.9363291775690445
+   ],
+   "tangent": [
+    -0.9363291775690445,
+    0.3511234415883917
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D13_W_link__W_hall",
+   "a": "W_link",
+   "b": "W_hall",
+   "type": "door",
+   "center": [
+    -23.0,
+    3.0,
+    0.0
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D14_W_hall__W_room_s",
+   "a": "W_hall",
+   "b": "W_room_s",
+   "type": "door",
+   "center": [
+    -27.0,
+    -18.0,
+    0.0
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D15_W_hall__W_room_n",
+   "a": "W_hall",
+   "b": "W_room_n",
+   "type": "door",
+   "center": [
+    -27.0,
+    8.0,
+    0.0
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D16_W_vest__W_room_s",
+   "a": "W_vest",
+   "b": "W_room_s",
+   "type": "door",
+   "center": [
+    -36.0,
+    -34.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D17_W_room_s__W_room_n",
+   "a": "W_room_s",
+   "b": "W_room_n",
+   "type": "door",
+   "center": [
+    -34.5,
+    -2.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D18_W_hall__W_core",
+   "a": "W_hall",
+   "b": "W_core",
+   "type": "door",
+   "center": [
+    -26.5,
+    18.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D19_W_hall_L1__W_room_s_L1",
+   "a": "W_hall_L1",
+   "b": "W_room_s_L1",
+   "type": "door",
+   "center": [
+    -27.0,
+    -18.0,
+    4.5
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D20_W_hall_L1__W_room_n_L1",
+   "a": "W_hall_L1",
+   "b": "W_room_n_L1",
+   "type": "door",
+   "center": [
+    -27.0,
+    8.0,
+    4.5
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D21_W_room_s_L1__W_room_n_L1",
+   "a": "W_room_s_L1",
+   "b": "W_room_n_L1",
+   "type": "door",
+   "center": [
+    -34.5,
+    -2.0,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D22_W_hall_L1__W_core_L1",
+   "a": "W_hall_L1",
+   "b": "W_core_L1",
+   "type": "door",
+   "center": [
+    -26.5,
+    18.0,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D23_W_hall_L2__W_room_s_L2",
+   "a": "W_hall_L2",
+   "b": "W_room_s_L2",
+   "type": "door",
+   "center": [
+    -27.0,
+    -18.0,
+    9.0
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D24_W_hall_L2__W_room_n_L2",
+   "a": "W_hall_L2",
+   "b": "W_room_n_L2",
+   "type": "door",
+   "center": [
+    -27.0,
+    8.0,
+    9.0
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D25_W_room_s_L2__W_room_n_L2",
+   "a": "W_room_s_L2",
+   "b": "W_room_n_L2",
+   "type": "door",
+   "center": [
+    -34.5,
+    -2.0,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D26_W_hall_L2__W_core_L2",
+   "a": "W_hall_L2",
+   "b": "W_core_L2",
+   "type": "door",
+   "center": [
+    -26.5,
+    18.0,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D27_W_hall_L3__W_room_s_L3",
+   "a": "W_hall_L3",
+   "b": "W_room_s_L3",
+   "type": "door",
+   "center": [
+    -27.0,
+    -15.75,
+    13.5
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D28_W_hall_L3__W_room_n_L3",
+   "a": "W_hall_L3",
+   "b": "W_room_n_L3",
+   "type": "door",
+   "center": [
+    -27.0,
+    8.0,
+    13.5
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D29_W_room_s_L3__W_room_n_L3",
+   "a": "W_room_s_L3",
+   "b": "W_room_n_L3",
+   "type": "door",
+   "center": [
+    -32.25,
+    -2.0,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D30_W_hall_L3__W_core_L3",
+   "a": "W_hall_L3",
+   "b": "W_core_L3",
+   "type": "door",
+   "center": [
+    -26.5,
+    18.0,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D31_forecourt__W_vest",
+   "a": "forecourt",
+   "b": "W_vest",
+   "type": "ext_door",
+   "center": [
+    -36.0,
+    -40.36799408351036,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 2.6,
+   "h": 3.7,
+   "check_wall": true
+  },
+  {
+   "id": "D32_W_core__W_lift",
+   "a": "W_core",
+   "b": "W_lift",
+   "type": "lift_door",
+   "center": [
+    -24.7,
+    25.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D33_W_core_L1__W_lift",
+   "a": "W_core_L1",
+   "b": "W_lift",
+   "type": "lift_door",
+   "center": [
+    -24.7,
+    25.0,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D34_W_core_L2__W_lift",
+   "a": "W_core_L2",
+   "b": "W_lift",
+   "type": "lift_door",
+   "center": [
+    -24.7,
+    25.0,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D35_W_core_L3__W_lift",
+   "a": "W_core_L3",
+   "b": "W_lift",
+   "type": "lift_door",
+   "center": [
+    -24.7,
+    25.0,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D36_E_link__E_hall",
+   "a": "E_link",
+   "b": "E_hall",
+   "type": "door",
+   "center": [
+    23.0,
+    3.0,
+    0.0
+   ],
+   "normal": [
+    -1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    -1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D37_E_hall__E_room_s",
+   "a": "E_hall",
+   "b": "E_room_s",
+   "type": "door",
+   "center": [
+    27.0,
+    -18.0,
+    0.0
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D38_E_hall__E_room_n",
+   "a": "E_hall",
+   "b": "E_room_n",
+   "type": "door",
+   "center": [
+    27.0,
+    6.0,
+    0.0
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D39_E_vest__E_room_s",
+   "a": "E_vest",
+   "b": "E_room_s",
+   "type": "door",
+   "center": [
+    39.0,
+    -34.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D40_E_room_s__E_room_n",
+   "a": "E_room_s",
+   "b": "E_room_n",
+   "type": "door",
+   "center": [
+    34.5,
+    -2.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D41_E_room_n__E_core",
+   "a": "E_room_n",
+   "b": "E_core",
+   "type": "door",
+   "center": [
+    30.5,
+    14.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D42_E_hall_L1__E_room_s_L1",
+   "a": "E_hall_L1",
+   "b": "E_room_s_L1",
+   "type": "door",
+   "center": [
+    27.0,
+    -18.0,
+    4.5
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D43_E_hall_L1__E_room_n_L1",
+   "a": "E_hall_L1",
+   "b": "E_room_n_L1",
+   "type": "door",
+   "center": [
+    27.0,
+    6.0,
+    4.5
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D44_E_room_s_L1__E_room_n_L1",
+   "a": "E_room_s_L1",
+   "b": "E_room_n_L1",
+   "type": "door",
+   "center": [
+    34.5,
+    -2.0,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D45_E_room_n_L1__E_core_L1",
+   "a": "E_room_n_L1",
+   "b": "E_core_L1",
+   "type": "door",
+   "center": [
+    30.5,
+    14.0,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D46_E_hall_L2__E_room_s_L2",
+   "a": "E_hall_L2",
+   "b": "E_room_s_L2",
+   "type": "door",
+   "center": [
+    27.0,
+    -18.0,
+    9.0
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D47_E_hall_L2__E_room_n_L2",
+   "a": "E_hall_L2",
+   "b": "E_room_n_L2",
+   "type": "door",
+   "center": [
+    27.0,
+    6.0,
+    9.0
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D48_E_room_s_L2__E_room_n_L2",
+   "a": "E_room_s_L2",
+   "b": "E_room_n_L2",
+   "type": "door",
+   "center": [
+    34.5,
+    -2.0,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D49_E_room_n_L2__E_core_L2",
+   "a": "E_room_n_L2",
+   "b": "E_core_L2",
+   "type": "door",
+   "center": [
+    30.5,
+    14.0,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D50_E_hall_L3__E_room_s_L3",
+   "a": "E_hall_L3",
+   "b": "E_room_s_L3",
+   "type": "door",
+   "center": [
+    27.0,
+    -15.75,
+    13.5
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D51_E_hall_L3__E_room_n_L3",
+   "a": "E_hall_L3",
+   "b": "E_room_n_L3",
+   "type": "door",
+   "center": [
+    27.0,
+    6.0,
+    13.5
+   ],
+   "normal": [
+    1,
+    0.0
+   ],
+   "tangent": [
+    -0.0,
+    1
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D52_E_room_s_L3__E_room_n_L3",
+   "a": "E_room_s_L3",
+   "b": "E_room_n_L3",
+   "type": "door",
+   "center": [
+    32.25,
+    -2.0,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D53_E_room_n_L3__E_core_L3",
+   "a": "E_room_n_L3",
+   "b": "E_core_L3",
+   "type": "door",
+   "center": [
+    30.5,
+    14.0,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D54_forecourt__E_vest",
+   "a": "forecourt",
+   "b": "E_vest",
+   "type": "ext_door",
+   "center": [
+    39.0,
+    -38.44394946034315,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    1.0
+   ],
+   "tangent": [
+    -1.0,
+    0.0
+   ],
+   "w": 2.6,
+   "h": 3.7,
+   "check_wall": true
+  },
+  {
+   "id": "D55_E_core__E_lift",
+   "a": "E_core",
+   "b": "E_lift",
+   "type": "lift_door",
+   "center": [
+    28.7,
+    21.0,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D56_E_core_L1__E_lift",
+   "a": "E_core_L1",
+   "b": "E_lift",
+   "type": "lift_door",
+   "center": [
+    28.7,
+    21.0,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D57_E_core_L2__E_lift",
+   "a": "E_core_L2",
+   "b": "E_lift",
+   "type": "lift_door",
+   "center": [
+    28.7,
+    21.0,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D58_E_core_L3__E_lift",
+   "a": "E_core_L3",
+   "b": "E_lift",
+   "type": "lift_door",
+   "center": [
+    28.7,
+    21.0,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D59_T_link__T_L0",
+   "a": "T_link",
+   "b": "T_L0",
+   "type": "door",
+   "center": [
+    7.583570009235598,
+    23.222853357961597,
+    0.0
+   ],
+   "normal": [
+    0.3511234415883917,
+    0.9363291775690444
+   ],
+   "tangent": [
+    -0.9363291775690444,
+    0.3511234415883917
+   ],
+   "w": 1.8,
+   "h": 2.4,
+   "check_wall": true
+  },
+  {
+   "id": "D60_T_L0__T_lift0",
+   "a": "T_L0",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D61_T_L1__T_lift0",
+   "a": "T_L1",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D62_T_L2__T_lift0",
+   "a": "T_L2",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D63_T_L3__T_lift0",
+   "a": "T_L3",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D64_T_L4__T_lift0",
+   "a": "T_L4",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    18.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D65_T_L5__T_lift0",
+   "a": "T_L5",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    22.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D66_T_L6__T_lift0",
+   "a": "T_L6",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    27.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D67_T_L7__T_lift0",
+   "a": "T_L7",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    31.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D68_T_L8__T_lift0",
+   "a": "T_L8",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    36.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D69_T_L9__T_lift0",
+   "a": "T_L9",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    40.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D70_T_L10__T_lift0",
+   "a": "T_L10",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    45.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D71_T_L11__T_lift0",
+   "a": "T_L11",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    49.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D72_T_L12__T_lift0",
+   "a": "T_L12",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    54.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D73_T_L13__T_lift0",
+   "a": "T_L13",
+   "b": "T_lift0",
+   "type": "lift_door",
+   "center": [
+    10.600000000000001,
+    38.2,
+    58.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D74_T_L0__T_lift1",
+   "a": "T_L0",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D75_T_L1__T_lift1",
+   "a": "T_L1",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D76_T_L2__T_lift1",
+   "a": "T_L2",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D77_T_L3__T_lift1",
+   "a": "T_L3",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D78_T_L4__T_lift1",
+   "a": "T_L4",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    18.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D79_T_L5__T_lift1",
+   "a": "T_L5",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    22.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D80_T_L6__T_lift1",
+   "a": "T_L6",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    27.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D81_T_L7__T_lift1",
+   "a": "T_L7",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    31.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D82_T_L8__T_lift1",
+   "a": "T_L8",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    36.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D83_T_L9__T_lift1",
+   "a": "T_L9",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    40.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D84_T_L10__T_lift1",
+   "a": "T_L10",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    45.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D85_T_L11__T_lift1",
+   "a": "T_L11",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    49.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D86_T_L12__T_lift1",
+   "a": "T_L12",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    54.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D87_T_L13__T_lift1",
+   "a": "T_L13",
+   "b": "T_lift1",
+   "type": "lift_door",
+   "center": [
+    13.500000000000002,
+    38.2,
+    58.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D88_T_L0__T_lift2",
+   "a": "T_L0",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    0.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D89_T_L1__T_lift2",
+   "a": "T_L1",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    4.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D90_T_L2__T_lift2",
+   "a": "T_L2",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    9.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D91_T_L3__T_lift2",
+   "a": "T_L3",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    13.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D92_T_L4__T_lift2",
+   "a": "T_L4",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    18.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D93_T_L5__T_lift2",
+   "a": "T_L5",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    22.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D94_T_L6__T_lift2",
+   "a": "T_L6",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    27.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D95_T_L7__T_lift2",
+   "a": "T_L7",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    31.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D96_T_L8__T_lift2",
+   "a": "T_L8",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    36.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D97_T_L9__T_lift2",
+   "a": "T_L9",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    40.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D98_T_L10__T_lift2",
+   "a": "T_L10",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    45.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D99_T_L11__T_lift2",
+   "a": "T_L11",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    49.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D100_T_L12__T_lift2",
+   "a": "T_L12",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    54.0
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  },
+  {
+   "id": "D101_T_L13__T_lift2",
+   "a": "T_L13",
+   "b": "T_lift2",
+   "type": "lift_door",
+   "center": [
+    16.400000000000002,
+    38.2,
+    58.5
+   ],
+   "normal": [
+    0.0,
+    -1.0
+   ],
+   "tangent": [
+    1.0,
+    0.0
+   ],
+   "w": 1.2,
+   "h": 2.2,
+   "check_wall": true
+  }
+ ],
+ "stairs": [
+  {
+   "id": "W_stair_0",
+   "a": "W_core",
+   "b": "W_core_L1",
+   "z0": 0.0,
+   "z1": 4.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     -31.65,
+     21.14,
+     0.17307692307692307
+    ],
+    [
+     -31.65,
+     21.42,
+     0.34615384615384615
+    ],
+    [
+     -31.65,
+     21.7,
+     0.5192307692307692
+    ],
+    [
+     -31.65,
+     21.98,
+     0.6923076923076923
+    ],
+    [
+     -31.65,
+     22.26,
+     0.8653846153846154
+    ],
+    [
+     -31.65,
+     22.54,
+     1.0384615384615383
+    ],
+    [
+     -31.65,
+     22.82,
+     1.2115384615384615
+    ],
+    [
+     -31.65,
+     23.1,
+     1.3846153846153846
+    ],
+    [
+     -31.65,
+     23.38,
+     1.5576923076923077
+    ],
+    [
+     -31.65,
+     23.66,
+     1.7307692307692308
+    ],
+    [
+     -31.65,
+     23.94,
+     1.9038461538461537
+    ],
+    [
+     -31.65,
+     24.22,
+     2.0769230769230766
+    ],
+    [
+     -30.9,
+     25.16,
+     2.25
+    ],
+    [
+     -30.150000000000002,
+     24.22,
+     2.423076923076923
+    ],
+    [
+     -30.150000000000002,
+     23.939999999999998,
+     2.5961538461538463
+    ],
+    [
+     -30.150000000000002,
+     23.66,
+     2.769230769230769
+    ],
+    [
+     -30.150000000000002,
+     23.38,
+     2.9423076923076925
+    ],
+    [
+     -30.150000000000002,
+     23.099999999999998,
+     3.1153846153846154
+    ],
+    [
+     -30.150000000000002,
+     22.82,
+     3.2884615384615383
+    ],
+    [
+     -30.150000000000002,
+     22.54,
+     3.4615384615384617
+    ],
+    [
+     -30.150000000000002,
+     22.259999999999998,
+     3.6346153846153846
+    ],
+    [
+     -30.150000000000002,
+     21.98,
+     3.8076923076923075
+    ],
+    [
+     -30.150000000000002,
+     21.7,
+     3.980769230769231
+    ],
+    [
+     -30.150000000000002,
+     21.419999999999998,
+     4.153846153846153
+    ],
+    [
+     -30.150000000000002,
+     21.14,
+     4.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    -30.9,
+    19.8,
+    0.0
+   ],
+   "exit": [
+    -30.150000000000002,
+    19.8,
+    4.5
+   ]
+  },
+  {
+   "id": "W_stair_1",
+   "a": "W_core_L1",
+   "b": "W_core_L2",
+   "z0": 4.5,
+   "z1": 9.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     -31.65,
+     21.14,
+     4.673076923076923
+    ],
+    [
+     -31.65,
+     21.42,
+     4.846153846153846
+    ],
+    [
+     -31.65,
+     21.7,
+     5.019230769230769
+    ],
+    [
+     -31.65,
+     21.98,
+     5.1923076923076925
+    ],
+    [
+     -31.65,
+     22.26,
+     5.365384615384615
+    ],
+    [
+     -31.65,
+     22.54,
+     5.538461538461538
+    ],
+    [
+     -31.65,
+     22.82,
+     5.711538461538462
+    ],
+    [
+     -31.65,
+     23.1,
+     5.884615384615385
+    ],
+    [
+     -31.65,
+     23.38,
+     6.0576923076923075
+    ],
+    [
+     -31.65,
+     23.66,
+     6.230769230769231
+    ],
+    [
+     -31.65,
+     23.94,
+     6.403846153846153
+    ],
+    [
+     -31.65,
+     24.22,
+     6.576923076923077
+    ],
+    [
+     -30.9,
+     25.16,
+     6.75
+    ],
+    [
+     -30.150000000000002,
+     24.22,
+     6.923076923076923
+    ],
+    [
+     -30.150000000000002,
+     23.939999999999998,
+     7.096153846153846
+    ],
+    [
+     -30.150000000000002,
+     23.66,
+     7.269230769230769
+    ],
+    [
+     -30.150000000000002,
+     23.38,
+     7.4423076923076925
+    ],
+    [
+     -30.150000000000002,
+     23.099999999999998,
+     7.615384615384615
+    ],
+    [
+     -30.150000000000002,
+     22.82,
+     7.788461538461538
+    ],
+    [
+     -30.150000000000002,
+     22.54,
+     7.961538461538462
+    ],
+    [
+     -30.150000000000002,
+     22.259999999999998,
+     8.134615384615385
+    ],
+    [
+     -30.150000000000002,
+     21.98,
+     8.307692307692308
+    ],
+    [
+     -30.150000000000002,
+     21.7,
+     8.48076923076923
+    ],
+    [
+     -30.150000000000002,
+     21.419999999999998,
+     8.653846153846153
+    ],
+    [
+     -30.150000000000002,
+     21.14,
+     8.826923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    -30.9,
+    19.8,
+    4.5
+   ],
+   "exit": [
+    -30.150000000000002,
+    19.8,
+    9.0
+   ]
+  },
+  {
+   "id": "W_stair_2",
+   "a": "W_core_L2",
+   "b": "W_core_L3",
+   "z0": 9.0,
+   "z1": 13.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     -31.65,
+     21.14,
+     9.173076923076923
+    ],
+    [
+     -31.65,
+     21.42,
+     9.346153846153847
+    ],
+    [
+     -31.65,
+     21.7,
+     9.51923076923077
+    ],
+    [
+     -31.65,
+     21.98,
+     9.692307692307692
+    ],
+    [
+     -31.65,
+     22.26,
+     9.865384615384615
+    ],
+    [
+     -31.65,
+     22.54,
+     10.038461538461538
+    ],
+    [
+     -31.65,
+     22.82,
+     10.211538461538462
+    ],
+    [
+     -31.65,
+     23.1,
+     10.384615384615385
+    ],
+    [
+     -31.65,
+     23.38,
+     10.557692307692308
+    ],
+    [
+     -31.65,
+     23.66,
+     10.73076923076923
+    ],
+    [
+     -31.65,
+     23.94,
+     10.903846153846153
+    ],
+    [
+     -31.65,
+     24.22,
+     11.076923076923077
+    ],
+    [
+     -30.9,
+     25.16,
+     11.25
+    ],
+    [
+     -30.150000000000002,
+     24.22,
+     11.423076923076923
+    ],
+    [
+     -30.150000000000002,
+     23.939999999999998,
+     11.596153846153847
+    ],
+    [
+     -30.150000000000002,
+     23.66,
+     11.76923076923077
+    ],
+    [
+     -30.150000000000002,
+     23.38,
+     11.942307692307692
+    ],
+    [
+     -30.150000000000002,
+     23.099999999999998,
+     12.115384615384615
+    ],
+    [
+     -30.150000000000002,
+     22.82,
+     12.288461538461538
+    ],
+    [
+     -30.150000000000002,
+     22.54,
+     12.461538461538462
+    ],
+    [
+     -30.150000000000002,
+     22.259999999999998,
+     12.634615384615385
+    ],
+    [
+     -30.150000000000002,
+     21.98,
+     12.807692307692308
+    ],
+    [
+     -30.150000000000002,
+     21.7,
+     12.98076923076923
+    ],
+    [
+     -30.150000000000002,
+     21.419999999999998,
+     13.153846153846153
+    ],
+    [
+     -30.150000000000002,
+     21.14,
+     13.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    -30.9,
+    19.8,
+    9.0
+   ],
+   "exit": [
+    -30.150000000000002,
+    19.8,
+    13.5
+   ]
+  },
+  {
+   "id": "E_stair_0",
+   "a": "E_core",
+   "b": "E_core_L1",
+   "z0": 0.0,
+   "z1": 4.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     34.150000000000006,
+     17.14,
+     0.17307692307692307
+    ],
+    [
+     34.150000000000006,
+     17.42,
+     0.34615384615384615
+    ],
+    [
+     34.150000000000006,
+     17.7,
+     0.5192307692307692
+    ],
+    [
+     34.150000000000006,
+     17.98,
+     0.6923076923076923
+    ],
+    [
+     34.150000000000006,
+     18.26,
+     0.8653846153846154
+    ],
+    [
+     34.150000000000006,
+     18.54,
+     1.0384615384615383
+    ],
+    [
+     34.150000000000006,
+     18.82,
+     1.2115384615384615
+    ],
+    [
+     34.150000000000006,
+     19.1,
+     1.3846153846153846
+    ],
+    [
+     34.150000000000006,
+     19.38,
+     1.5576923076923077
+    ],
+    [
+     34.150000000000006,
+     19.66,
+     1.7307692307692308
+    ],
+    [
+     34.150000000000006,
+     19.94,
+     1.9038461538461537
+    ],
+    [
+     34.150000000000006,
+     20.22,
+     2.0769230769230766
+    ],
+    [
+     34.900000000000006,
+     21.16,
+     2.25
+    ],
+    [
+     35.65,
+     20.22,
+     2.423076923076923
+    ],
+    [
+     35.65,
+     19.939999999999998,
+     2.5961538461538463
+    ],
+    [
+     35.65,
+     19.66,
+     2.769230769230769
+    ],
+    [
+     35.65,
+     19.38,
+     2.9423076923076925
+    ],
+    [
+     35.65,
+     19.099999999999998,
+     3.1153846153846154
+    ],
+    [
+     35.65,
+     18.82,
+     3.2884615384615383
+    ],
+    [
+     35.65,
+     18.54,
+     3.4615384615384617
+    ],
+    [
+     35.65,
+     18.259999999999998,
+     3.6346153846153846
+    ],
+    [
+     35.65,
+     17.98,
+     3.8076923076923075
+    ],
+    [
+     35.65,
+     17.7,
+     3.980769230769231
+    ],
+    [
+     35.65,
+     17.419999999999998,
+     4.153846153846153
+    ],
+    [
+     35.65,
+     17.14,
+     4.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    34.900000000000006,
+    15.799999999999999,
+    0.0
+   ],
+   "exit": [
+    35.65,
+    15.799999999999999,
+    4.5
+   ]
+  },
+  {
+   "id": "E_stair_1",
+   "a": "E_core_L1",
+   "b": "E_core_L2",
+   "z0": 4.5,
+   "z1": 9.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     34.150000000000006,
+     17.14,
+     4.673076923076923
+    ],
+    [
+     34.150000000000006,
+     17.42,
+     4.846153846153846
+    ],
+    [
+     34.150000000000006,
+     17.7,
+     5.019230769230769
+    ],
+    [
+     34.150000000000006,
+     17.98,
+     5.1923076923076925
+    ],
+    [
+     34.150000000000006,
+     18.26,
+     5.365384615384615
+    ],
+    [
+     34.150000000000006,
+     18.54,
+     5.538461538461538
+    ],
+    [
+     34.150000000000006,
+     18.82,
+     5.711538461538462
+    ],
+    [
+     34.150000000000006,
+     19.1,
+     5.884615384615385
+    ],
+    [
+     34.150000000000006,
+     19.38,
+     6.0576923076923075
+    ],
+    [
+     34.150000000000006,
+     19.66,
+     6.230769230769231
+    ],
+    [
+     34.150000000000006,
+     19.94,
+     6.403846153846153
+    ],
+    [
+     34.150000000000006,
+     20.22,
+     6.576923076923077
+    ],
+    [
+     34.900000000000006,
+     21.16,
+     6.75
+    ],
+    [
+     35.65,
+     20.22,
+     6.923076923076923
+    ],
+    [
+     35.65,
+     19.939999999999998,
+     7.096153846153846
+    ],
+    [
+     35.65,
+     19.66,
+     7.269230769230769
+    ],
+    [
+     35.65,
+     19.38,
+     7.4423076923076925
+    ],
+    [
+     35.65,
+     19.099999999999998,
+     7.615384615384615
+    ],
+    [
+     35.65,
+     18.82,
+     7.788461538461538
+    ],
+    [
+     35.65,
+     18.54,
+     7.961538461538462
+    ],
+    [
+     35.65,
+     18.259999999999998,
+     8.134615384615385
+    ],
+    [
+     35.65,
+     17.98,
+     8.307692307692308
+    ],
+    [
+     35.65,
+     17.7,
+     8.48076923076923
+    ],
+    [
+     35.65,
+     17.419999999999998,
+     8.653846153846153
+    ],
+    [
+     35.65,
+     17.14,
+     8.826923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    34.900000000000006,
+    15.799999999999999,
+    4.5
+   ],
+   "exit": [
+    35.65,
+    15.799999999999999,
+    9.0
+   ]
+  },
+  {
+   "id": "E_stair_2",
+   "a": "E_core_L2",
+   "b": "E_core_L3",
+   "z0": 9.0,
+   "z1": 13.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     34.150000000000006,
+     17.14,
+     9.173076923076923
+    ],
+    [
+     34.150000000000006,
+     17.42,
+     9.346153846153847
+    ],
+    [
+     34.150000000000006,
+     17.7,
+     9.51923076923077
+    ],
+    [
+     34.150000000000006,
+     17.98,
+     9.692307692307692
+    ],
+    [
+     34.150000000000006,
+     18.26,
+     9.865384615384615
+    ],
+    [
+     34.150000000000006,
+     18.54,
+     10.038461538461538
+    ],
+    [
+     34.150000000000006,
+     18.82,
+     10.211538461538462
+    ],
+    [
+     34.150000000000006,
+     19.1,
+     10.384615384615385
+    ],
+    [
+     34.150000000000006,
+     19.38,
+     10.557692307692308
+    ],
+    [
+     34.150000000000006,
+     19.66,
+     10.73076923076923
+    ],
+    [
+     34.150000000000006,
+     19.94,
+     10.903846153846153
+    ],
+    [
+     34.150000000000006,
+     20.22,
+     11.076923076923077
+    ],
+    [
+     34.900000000000006,
+     21.16,
+     11.25
+    ],
+    [
+     35.65,
+     20.22,
+     11.423076923076923
+    ],
+    [
+     35.65,
+     19.939999999999998,
+     11.596153846153847
+    ],
+    [
+     35.65,
+     19.66,
+     11.76923076923077
+    ],
+    [
+     35.65,
+     19.38,
+     11.942307692307692
+    ],
+    [
+     35.65,
+     19.099999999999998,
+     12.115384615384615
+    ],
+    [
+     35.65,
+     18.82,
+     12.288461538461538
+    ],
+    [
+     35.65,
+     18.54,
+     12.461538461538462
+    ],
+    [
+     35.65,
+     18.259999999999998,
+     12.634615384615385
+    ],
+    [
+     35.65,
+     17.98,
+     12.807692307692308
+    ],
+    [
+     35.65,
+     17.7,
+     12.98076923076923
+    ],
+    [
+     35.65,
+     17.419999999999998,
+     13.153846153846153
+    ],
+    [
+     35.65,
+     17.14,
+     13.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    34.900000000000006,
+    15.799999999999999,
+    9.0
+   ],
+   "exit": [
+    35.65,
+    15.799999999999999,
+    13.5
+   ]
+  },
+  {
+   "id": "T_stairA_0",
+   "a": "T_L0",
+   "b": "T_L1",
+   "z0": 0.0,
+   "z1": 4.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     0.17307692307692307
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     0.34615384615384615
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     0.5192307692307692
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     0.6923076923076923
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     0.8653846153846154
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     1.0384615384615383
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     1.2115384615384615
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     1.3846153846153846
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     1.5576923076923077
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     1.7307692307692308
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     1.9038461538461537
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     2.0769230769230766
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     2.25
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     2.423076923076923
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     2.5961538461538463
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     2.769230769230769
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     2.9423076923076925
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     3.1153846153846154
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     3.2884615384615383
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     3.4615384615384617
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     3.6346153846153846
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     3.8076923076923075
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     3.980769230769231
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     4.153846153846153
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     4.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    0.0
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    4.5
+   ]
+  },
+  {
+   "id": "T_stairA_1",
+   "a": "T_L1",
+   "b": "T_L2",
+   "z0": 4.5,
+   "z1": 9.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     4.673076923076923
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     4.846153846153846
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     5.019230769230769
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     5.1923076923076925
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     5.365384615384615
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     5.538461538461538
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     5.711538461538462
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     5.884615384615385
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     6.0576923076923075
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     6.230769230769231
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     6.403846153846153
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     6.576923076923077
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     6.75
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     6.923076923076923
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     7.096153846153846
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     7.269230769230769
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     7.4423076923076925
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     7.615384615384615
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     7.788461538461538
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     7.961538461538462
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     8.134615384615385
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     8.307692307692308
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     8.48076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     8.653846153846153
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     8.826923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    4.5
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    9.0
+   ]
+  },
+  {
+   "id": "T_stairA_2",
+   "a": "T_L2",
+   "b": "T_L3",
+   "z0": 9.0,
+   "z1": 13.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     9.173076923076923
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     9.346153846153847
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     9.51923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     9.692307692307692
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     9.865384615384615
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     10.038461538461538
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     10.211538461538462
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     10.384615384615385
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     10.557692307692308
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     10.73076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     10.903846153846153
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     11.076923076923077
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     11.25
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     11.423076923076923
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     11.596153846153847
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     11.76923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     11.942307692307692
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     12.115384615384615
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     12.288461538461538
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     12.461538461538462
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     12.634615384615385
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     12.807692307692308
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     12.98076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     13.153846153846153
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     13.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    9.0
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    13.5
+   ]
+  },
+  {
+   "id": "T_stairA_3",
+   "a": "T_L3",
+   "b": "T_L4",
+   "z0": 13.5,
+   "z1": 18.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     13.673076923076923
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     13.846153846153847
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     14.01923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     14.192307692307692
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     14.365384615384615
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     14.538461538461538
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     14.711538461538462
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     14.884615384615385
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     15.057692307692308
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     15.23076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     15.403846153846153
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     15.576923076923077
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     15.75
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     15.923076923076923
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     16.096153846153847
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     16.26923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     16.442307692307693
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     16.615384615384617
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     16.78846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     16.96153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     17.134615384615383
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     17.307692307692307
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     17.48076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     17.653846153846153
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     17.826923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    13.5
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    18.0
+   ]
+  },
+  {
+   "id": "T_stairA_4",
+   "a": "T_L4",
+   "b": "T_L5",
+   "z0": 18.0,
+   "z1": 22.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     18.173076923076923
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     18.346153846153847
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     18.51923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     18.692307692307693
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     18.865384615384617
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     19.03846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     19.21153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     19.384615384615383
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     19.557692307692307
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     19.73076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     19.903846153846153
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     20.076923076923077
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     20.25
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     20.423076923076923
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     20.596153846153847
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     20.76923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     20.942307692307693
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     21.115384615384617
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     21.28846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     21.46153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     21.634615384615383
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     21.807692307692307
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     21.98076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     22.153846153846153
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     22.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    18.0
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    22.5
+   ]
+  },
+  {
+   "id": "T_stairA_5",
+   "a": "T_L5",
+   "b": "T_L6",
+   "z0": 22.5,
+   "z1": 27.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     22.673076923076923
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     22.846153846153847
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     23.01923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     23.192307692307693
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     23.365384615384617
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     23.53846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     23.71153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     23.884615384615383
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     24.057692307692307
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     24.23076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     24.403846153846153
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     24.576923076923077
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     24.75
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     24.923076923076923
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     25.096153846153847
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     25.26923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     25.442307692307693
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     25.615384615384617
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     25.78846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     25.96153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     26.134615384615383
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     26.307692307692307
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     26.48076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     26.653846153846153
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     26.826923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    22.5
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    27.0
+   ]
+  },
+  {
+   "id": "T_stairA_6",
+   "a": "T_L6",
+   "b": "T_L7",
+   "z0": 27.0,
+   "z1": 31.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     27.173076923076923
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     27.346153846153847
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     27.51923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     27.692307692307693
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     27.865384615384617
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     28.03846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     28.21153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     28.384615384615383
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     28.557692307692307
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     28.73076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     28.903846153846153
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     29.076923076923077
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     29.25
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     29.423076923076923
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     29.596153846153847
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     29.76923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     29.942307692307693
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     30.115384615384617
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     30.28846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     30.46153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     30.634615384615383
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     30.807692307692307
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     30.98076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     31.153846153846153
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     31.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    27.0
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    31.5
+   ]
+  },
+  {
+   "id": "T_stairA_7",
+   "a": "T_L7",
+   "b": "T_L8",
+   "z0": 31.5,
+   "z1": 36.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     31.673076923076923
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     31.846153846153847
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     32.01923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     32.19230769230769
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     32.36538461538461
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     32.53846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     32.71153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     32.88461538461539
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     33.05769230769231
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     33.23076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     33.40384615384615
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     33.57692307692308
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     33.75
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     33.92307692307692
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     34.09615384615385
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     34.26923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     34.44230769230769
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     34.61538461538461
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     34.78846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     34.96153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     35.13461538461539
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     35.30769230769231
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     35.48076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     35.65384615384615
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     35.82692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    31.5
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    36.0
+   ]
+  },
+  {
+   "id": "T_stairA_8",
+   "a": "T_L8",
+   "b": "T_L9",
+   "z0": 36.0,
+   "z1": 40.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     36.17307692307692
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     36.34615384615385
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     36.51923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     36.69230769230769
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     36.86538461538461
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     37.03846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     37.21153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     37.38461538461539
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     37.55769230769231
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     37.73076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     37.90384615384615
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     38.07692307692308
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     38.25
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     38.42307692307692
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     38.59615384615385
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     38.76923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     38.94230769230769
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     39.11538461538461
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     39.28846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     39.46153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     39.63461538461539
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     39.80769230769231
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     39.98076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     40.15384615384615
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     40.32692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    36.0
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    40.5
+   ]
+  },
+  {
+   "id": "T_stairA_9",
+   "a": "T_L9",
+   "b": "T_L10",
+   "z0": 40.5,
+   "z1": 45.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     40.67307692307692
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     40.84615384615385
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     41.01923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     41.19230769230769
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     41.36538461538461
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     41.53846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     41.71153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     41.88461538461539
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     42.05769230769231
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     42.23076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     42.40384615384615
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     42.57692307692308
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     42.75
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     42.92307692307692
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     43.09615384615385
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     43.26923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     43.44230769230769
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     43.61538461538461
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     43.78846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     43.96153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     44.13461538461539
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     44.30769230769231
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     44.48076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     44.65384615384615
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     44.82692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    40.5
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    45.0
+   ]
+  },
+  {
+   "id": "T_stairA_10",
+   "a": "T_L10",
+   "b": "T_L11",
+   "z0": 45.0,
+   "z1": 49.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     45.17307692307692
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     45.34615384615385
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     45.51923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     45.69230769230769
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     45.86538461538461
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     46.03846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     46.21153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     46.38461538461539
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     46.55769230769231
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     46.73076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     46.90384615384615
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     47.07692307692308
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     47.25
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     47.42307692307692
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     47.59615384615385
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     47.76923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     47.94230769230769
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     48.11538461538461
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     48.28846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     48.46153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     48.63461538461539
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     48.80769230769231
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     48.98076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     49.15384615384615
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     49.32692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    45.0
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    49.5
+   ]
+  },
+  {
+   "id": "T_stairA_11",
+   "a": "T_L11",
+   "b": "T_L12",
+   "z0": 49.5,
+   "z1": 54.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     49.67307692307692
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     49.84615384615385
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     50.01923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     50.19230769230769
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     50.36538461538461
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     50.53846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     50.71153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     50.88461538461539
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     51.05769230769231
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     51.23076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     51.40384615384615
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     51.57692307692308
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     51.75
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     51.92307692307692
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     52.09615384615385
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     52.26923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     52.44230769230769
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     52.61538461538461
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     52.78846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     52.96153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     53.13461538461539
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     53.30769230769231
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     53.48076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     53.65384615384615
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     53.82692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    49.5
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    54.0
+   ]
+  },
+  {
+   "id": "T_stairA_12",
+   "a": "T_L12",
+   "b": "T_L13",
+   "z0": 54.0,
+   "z1": 58.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     6.250000000000001,
+     38.14,
+     54.17307692307692
+    ],
+    [
+     6.250000000000001,
+     38.42,
+     54.34615384615385
+    ],
+    [
+     6.250000000000001,
+     38.7,
+     54.51923076923077
+    ],
+    [
+     6.250000000000001,
+     38.98,
+     54.69230769230769
+    ],
+    [
+     6.250000000000001,
+     39.26,
+     54.86538461538461
+    ],
+    [
+     6.250000000000001,
+     39.54,
+     55.03846153846154
+    ],
+    [
+     6.250000000000001,
+     39.82,
+     55.21153846153846
+    ],
+    [
+     6.250000000000001,
+     40.1,
+     55.38461538461539
+    ],
+    [
+     6.250000000000001,
+     40.38,
+     55.55769230769231
+    ],
+    [
+     6.250000000000001,
+     40.66,
+     55.73076923076923
+    ],
+    [
+     6.250000000000001,
+     40.94,
+     55.90384615384615
+    ],
+    [
+     6.250000000000001,
+     41.22,
+     56.07692307692308
+    ],
+    [
+     7.000000000000002,
+     42.16,
+     56.25
+    ],
+    [
+     7.750000000000002,
+     41.22,
+     56.42307692307692
+    ],
+    [
+     7.750000000000002,
+     40.94,
+     56.59615384615385
+    ],
+    [
+     7.750000000000002,
+     40.66,
+     56.76923076923077
+    ],
+    [
+     7.750000000000002,
+     40.38,
+     56.94230769230769
+    ],
+    [
+     7.750000000000002,
+     40.1,
+     57.11538461538461
+    ],
+    [
+     7.750000000000002,
+     39.82,
+     57.28846153846154
+    ],
+    [
+     7.750000000000002,
+     39.54,
+     57.46153846153846
+    ],
+    [
+     7.750000000000002,
+     39.26,
+     57.63461538461539
+    ],
+    [
+     7.750000000000002,
+     38.98,
+     57.80769230769231
+    ],
+    [
+     7.750000000000002,
+     38.7,
+     57.98076923076923
+    ],
+    [
+     7.750000000000002,
+     38.42,
+     58.15384615384615
+    ],
+    [
+     7.750000000000002,
+     38.14,
+     58.32692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    7.000000000000002,
+    36.800000000000004,
+    54.0
+   ],
+   "exit": [
+    7.750000000000002,
+    36.800000000000004,
+    58.5
+   ]
+  },
+  {
+   "id": "T_stairB_0",
+   "a": "T_L0",
+   "b": "T_L1",
+   "z0": 0.0,
+   "z1": 4.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     0.17307692307692307
+    ],
+    [
+     20.75,
+     38.42,
+     0.34615384615384615
+    ],
+    [
+     20.75,
+     38.7,
+     0.5192307692307692
+    ],
+    [
+     20.75,
+     38.98,
+     0.6923076923076923
+    ],
+    [
+     20.75,
+     39.26,
+     0.8653846153846154
+    ],
+    [
+     20.75,
+     39.54,
+     1.0384615384615383
+    ],
+    [
+     20.75,
+     39.82,
+     1.2115384615384615
+    ],
+    [
+     20.75,
+     40.1,
+     1.3846153846153846
+    ],
+    [
+     20.75,
+     40.38,
+     1.5576923076923077
+    ],
+    [
+     20.75,
+     40.66,
+     1.7307692307692308
+    ],
+    [
+     20.75,
+     40.94,
+     1.9038461538461537
+    ],
+    [
+     20.75,
+     41.22,
+     2.0769230769230766
+    ],
+    [
+     20.0,
+     42.16,
+     2.25
+    ],
+    [
+     19.25,
+     41.22,
+     2.423076923076923
+    ],
+    [
+     19.25,
+     40.94,
+     2.5961538461538463
+    ],
+    [
+     19.25,
+     40.66,
+     2.769230769230769
+    ],
+    [
+     19.25,
+     40.38,
+     2.9423076923076925
+    ],
+    [
+     19.25,
+     40.1,
+     3.1153846153846154
+    ],
+    [
+     19.25,
+     39.82,
+     3.2884615384615383
+    ],
+    [
+     19.25,
+     39.54,
+     3.4615384615384617
+    ],
+    [
+     19.25,
+     39.26,
+     3.6346153846153846
+    ],
+    [
+     19.25,
+     38.98,
+     3.8076923076923075
+    ],
+    [
+     19.25,
+     38.7,
+     3.980769230769231
+    ],
+    [
+     19.25,
+     38.42,
+     4.153846153846153
+    ],
+    [
+     19.25,
+     38.14,
+     4.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    0.0
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    4.5
+   ]
+  },
+  {
+   "id": "T_stairB_1",
+   "a": "T_L1",
+   "b": "T_L2",
+   "z0": 4.5,
+   "z1": 9.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     4.673076923076923
+    ],
+    [
+     20.75,
+     38.42,
+     4.846153846153846
+    ],
+    [
+     20.75,
+     38.7,
+     5.019230769230769
+    ],
+    [
+     20.75,
+     38.98,
+     5.1923076923076925
+    ],
+    [
+     20.75,
+     39.26,
+     5.365384615384615
+    ],
+    [
+     20.75,
+     39.54,
+     5.538461538461538
+    ],
+    [
+     20.75,
+     39.82,
+     5.711538461538462
+    ],
+    [
+     20.75,
+     40.1,
+     5.884615384615385
+    ],
+    [
+     20.75,
+     40.38,
+     6.0576923076923075
+    ],
+    [
+     20.75,
+     40.66,
+     6.230769230769231
+    ],
+    [
+     20.75,
+     40.94,
+     6.403846153846153
+    ],
+    [
+     20.75,
+     41.22,
+     6.576923076923077
+    ],
+    [
+     20.0,
+     42.16,
+     6.75
+    ],
+    [
+     19.25,
+     41.22,
+     6.923076923076923
+    ],
+    [
+     19.25,
+     40.94,
+     7.096153846153846
+    ],
+    [
+     19.25,
+     40.66,
+     7.269230769230769
+    ],
+    [
+     19.25,
+     40.38,
+     7.4423076923076925
+    ],
+    [
+     19.25,
+     40.1,
+     7.615384615384615
+    ],
+    [
+     19.25,
+     39.82,
+     7.788461538461538
+    ],
+    [
+     19.25,
+     39.54,
+     7.961538461538462
+    ],
+    [
+     19.25,
+     39.26,
+     8.134615384615385
+    ],
+    [
+     19.25,
+     38.98,
+     8.307692307692308
+    ],
+    [
+     19.25,
+     38.7,
+     8.48076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     8.653846153846153
+    ],
+    [
+     19.25,
+     38.14,
+     8.826923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    4.5
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    9.0
+   ]
+  },
+  {
+   "id": "T_stairB_2",
+   "a": "T_L2",
+   "b": "T_L3",
+   "z0": 9.0,
+   "z1": 13.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     9.173076923076923
+    ],
+    [
+     20.75,
+     38.42,
+     9.346153846153847
+    ],
+    [
+     20.75,
+     38.7,
+     9.51923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     9.692307692307692
+    ],
+    [
+     20.75,
+     39.26,
+     9.865384615384615
+    ],
+    [
+     20.75,
+     39.54,
+     10.038461538461538
+    ],
+    [
+     20.75,
+     39.82,
+     10.211538461538462
+    ],
+    [
+     20.75,
+     40.1,
+     10.384615384615385
+    ],
+    [
+     20.75,
+     40.38,
+     10.557692307692308
+    ],
+    [
+     20.75,
+     40.66,
+     10.73076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     10.903846153846153
+    ],
+    [
+     20.75,
+     41.22,
+     11.076923076923077
+    ],
+    [
+     20.0,
+     42.16,
+     11.25
+    ],
+    [
+     19.25,
+     41.22,
+     11.423076923076923
+    ],
+    [
+     19.25,
+     40.94,
+     11.596153846153847
+    ],
+    [
+     19.25,
+     40.66,
+     11.76923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     11.942307692307692
+    ],
+    [
+     19.25,
+     40.1,
+     12.115384615384615
+    ],
+    [
+     19.25,
+     39.82,
+     12.288461538461538
+    ],
+    [
+     19.25,
+     39.54,
+     12.461538461538462
+    ],
+    [
+     19.25,
+     39.26,
+     12.634615384615385
+    ],
+    [
+     19.25,
+     38.98,
+     12.807692307692308
+    ],
+    [
+     19.25,
+     38.7,
+     12.98076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     13.153846153846153
+    ],
+    [
+     19.25,
+     38.14,
+     13.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    9.0
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    13.5
+   ]
+  },
+  {
+   "id": "T_stairB_3",
+   "a": "T_L3",
+   "b": "T_L4",
+   "z0": 13.5,
+   "z1": 18.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     13.673076923076923
+    ],
+    [
+     20.75,
+     38.42,
+     13.846153846153847
+    ],
+    [
+     20.75,
+     38.7,
+     14.01923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     14.192307692307692
+    ],
+    [
+     20.75,
+     39.26,
+     14.365384615384615
+    ],
+    [
+     20.75,
+     39.54,
+     14.538461538461538
+    ],
+    [
+     20.75,
+     39.82,
+     14.711538461538462
+    ],
+    [
+     20.75,
+     40.1,
+     14.884615384615385
+    ],
+    [
+     20.75,
+     40.38,
+     15.057692307692308
+    ],
+    [
+     20.75,
+     40.66,
+     15.23076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     15.403846153846153
+    ],
+    [
+     20.75,
+     41.22,
+     15.576923076923077
+    ],
+    [
+     20.0,
+     42.16,
+     15.75
+    ],
+    [
+     19.25,
+     41.22,
+     15.923076923076923
+    ],
+    [
+     19.25,
+     40.94,
+     16.096153846153847
+    ],
+    [
+     19.25,
+     40.66,
+     16.26923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     16.442307692307693
+    ],
+    [
+     19.25,
+     40.1,
+     16.615384615384617
+    ],
+    [
+     19.25,
+     39.82,
+     16.78846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     16.96153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     17.134615384615383
+    ],
+    [
+     19.25,
+     38.98,
+     17.307692307692307
+    ],
+    [
+     19.25,
+     38.7,
+     17.48076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     17.653846153846153
+    ],
+    [
+     19.25,
+     38.14,
+     17.826923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    13.5
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    18.0
+   ]
+  },
+  {
+   "id": "T_stairB_4",
+   "a": "T_L4",
+   "b": "T_L5",
+   "z0": 18.0,
+   "z1": 22.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     18.173076923076923
+    ],
+    [
+     20.75,
+     38.42,
+     18.346153846153847
+    ],
+    [
+     20.75,
+     38.7,
+     18.51923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     18.692307692307693
+    ],
+    [
+     20.75,
+     39.26,
+     18.865384615384617
+    ],
+    [
+     20.75,
+     39.54,
+     19.03846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     19.21153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     19.384615384615383
+    ],
+    [
+     20.75,
+     40.38,
+     19.557692307692307
+    ],
+    [
+     20.75,
+     40.66,
+     19.73076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     19.903846153846153
+    ],
+    [
+     20.75,
+     41.22,
+     20.076923076923077
+    ],
+    [
+     20.0,
+     42.16,
+     20.25
+    ],
+    [
+     19.25,
+     41.22,
+     20.423076923076923
+    ],
+    [
+     19.25,
+     40.94,
+     20.596153846153847
+    ],
+    [
+     19.25,
+     40.66,
+     20.76923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     20.942307692307693
+    ],
+    [
+     19.25,
+     40.1,
+     21.115384615384617
+    ],
+    [
+     19.25,
+     39.82,
+     21.28846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     21.46153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     21.634615384615383
+    ],
+    [
+     19.25,
+     38.98,
+     21.807692307692307
+    ],
+    [
+     19.25,
+     38.7,
+     21.98076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     22.153846153846153
+    ],
+    [
+     19.25,
+     38.14,
+     22.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    18.0
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    22.5
+   ]
+  },
+  {
+   "id": "T_stairB_5",
+   "a": "T_L5",
+   "b": "T_L6",
+   "z0": 22.5,
+   "z1": 27.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     22.673076923076923
+    ],
+    [
+     20.75,
+     38.42,
+     22.846153846153847
+    ],
+    [
+     20.75,
+     38.7,
+     23.01923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     23.192307692307693
+    ],
+    [
+     20.75,
+     39.26,
+     23.365384615384617
+    ],
+    [
+     20.75,
+     39.54,
+     23.53846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     23.71153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     23.884615384615383
+    ],
+    [
+     20.75,
+     40.38,
+     24.057692307692307
+    ],
+    [
+     20.75,
+     40.66,
+     24.23076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     24.403846153846153
+    ],
+    [
+     20.75,
+     41.22,
+     24.576923076923077
+    ],
+    [
+     20.0,
+     42.16,
+     24.75
+    ],
+    [
+     19.25,
+     41.22,
+     24.923076923076923
+    ],
+    [
+     19.25,
+     40.94,
+     25.096153846153847
+    ],
+    [
+     19.25,
+     40.66,
+     25.26923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     25.442307692307693
+    ],
+    [
+     19.25,
+     40.1,
+     25.615384615384617
+    ],
+    [
+     19.25,
+     39.82,
+     25.78846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     25.96153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     26.134615384615383
+    ],
+    [
+     19.25,
+     38.98,
+     26.307692307692307
+    ],
+    [
+     19.25,
+     38.7,
+     26.48076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     26.653846153846153
+    ],
+    [
+     19.25,
+     38.14,
+     26.826923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    22.5
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    27.0
+   ]
+  },
+  {
+   "id": "T_stairB_6",
+   "a": "T_L6",
+   "b": "T_L7",
+   "z0": 27.0,
+   "z1": 31.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     27.173076923076923
+    ],
+    [
+     20.75,
+     38.42,
+     27.346153846153847
+    ],
+    [
+     20.75,
+     38.7,
+     27.51923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     27.692307692307693
+    ],
+    [
+     20.75,
+     39.26,
+     27.865384615384617
+    ],
+    [
+     20.75,
+     39.54,
+     28.03846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     28.21153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     28.384615384615383
+    ],
+    [
+     20.75,
+     40.38,
+     28.557692307692307
+    ],
+    [
+     20.75,
+     40.66,
+     28.73076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     28.903846153846153
+    ],
+    [
+     20.75,
+     41.22,
+     29.076923076923077
+    ],
+    [
+     20.0,
+     42.16,
+     29.25
+    ],
+    [
+     19.25,
+     41.22,
+     29.423076923076923
+    ],
+    [
+     19.25,
+     40.94,
+     29.596153846153847
+    ],
+    [
+     19.25,
+     40.66,
+     29.76923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     29.942307692307693
+    ],
+    [
+     19.25,
+     40.1,
+     30.115384615384617
+    ],
+    [
+     19.25,
+     39.82,
+     30.28846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     30.46153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     30.634615384615383
+    ],
+    [
+     19.25,
+     38.98,
+     30.807692307692307
+    ],
+    [
+     19.25,
+     38.7,
+     30.98076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     31.153846153846153
+    ],
+    [
+     19.25,
+     38.14,
+     31.326923076923077
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    27.0
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    31.5
+   ]
+  },
+  {
+   "id": "T_stairB_7",
+   "a": "T_L7",
+   "b": "T_L8",
+   "z0": 31.5,
+   "z1": 36.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     31.673076923076923
+    ],
+    [
+     20.75,
+     38.42,
+     31.846153846153847
+    ],
+    [
+     20.75,
+     38.7,
+     32.01923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     32.19230769230769
+    ],
+    [
+     20.75,
+     39.26,
+     32.36538461538461
+    ],
+    [
+     20.75,
+     39.54,
+     32.53846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     32.71153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     32.88461538461539
+    ],
+    [
+     20.75,
+     40.38,
+     33.05769230769231
+    ],
+    [
+     20.75,
+     40.66,
+     33.23076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     33.40384615384615
+    ],
+    [
+     20.75,
+     41.22,
+     33.57692307692308
+    ],
+    [
+     20.0,
+     42.16,
+     33.75
+    ],
+    [
+     19.25,
+     41.22,
+     33.92307692307692
+    ],
+    [
+     19.25,
+     40.94,
+     34.09615384615385
+    ],
+    [
+     19.25,
+     40.66,
+     34.26923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     34.44230769230769
+    ],
+    [
+     19.25,
+     40.1,
+     34.61538461538461
+    ],
+    [
+     19.25,
+     39.82,
+     34.78846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     34.96153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     35.13461538461539
+    ],
+    [
+     19.25,
+     38.98,
+     35.30769230769231
+    ],
+    [
+     19.25,
+     38.7,
+     35.48076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     35.65384615384615
+    ],
+    [
+     19.25,
+     38.14,
+     35.82692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    31.5
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    36.0
+   ]
+  },
+  {
+   "id": "T_stairB_8",
+   "a": "T_L8",
+   "b": "T_L9",
+   "z0": 36.0,
+   "z1": 40.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     36.17307692307692
+    ],
+    [
+     20.75,
+     38.42,
+     36.34615384615385
+    ],
+    [
+     20.75,
+     38.7,
+     36.51923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     36.69230769230769
+    ],
+    [
+     20.75,
+     39.26,
+     36.86538461538461
+    ],
+    [
+     20.75,
+     39.54,
+     37.03846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     37.21153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     37.38461538461539
+    ],
+    [
+     20.75,
+     40.38,
+     37.55769230769231
+    ],
+    [
+     20.75,
+     40.66,
+     37.73076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     37.90384615384615
+    ],
+    [
+     20.75,
+     41.22,
+     38.07692307692308
+    ],
+    [
+     20.0,
+     42.16,
+     38.25
+    ],
+    [
+     19.25,
+     41.22,
+     38.42307692307692
+    ],
+    [
+     19.25,
+     40.94,
+     38.59615384615385
+    ],
+    [
+     19.25,
+     40.66,
+     38.76923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     38.94230769230769
+    ],
+    [
+     19.25,
+     40.1,
+     39.11538461538461
+    ],
+    [
+     19.25,
+     39.82,
+     39.28846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     39.46153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     39.63461538461539
+    ],
+    [
+     19.25,
+     38.98,
+     39.80769230769231
+    ],
+    [
+     19.25,
+     38.7,
+     39.98076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     40.15384615384615
+    ],
+    [
+     19.25,
+     38.14,
+     40.32692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    36.0
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    40.5
+   ]
+  },
+  {
+   "id": "T_stairB_9",
+   "a": "T_L9",
+   "b": "T_L10",
+   "z0": 40.5,
+   "z1": 45.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     40.67307692307692
+    ],
+    [
+     20.75,
+     38.42,
+     40.84615384615385
+    ],
+    [
+     20.75,
+     38.7,
+     41.01923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     41.19230769230769
+    ],
+    [
+     20.75,
+     39.26,
+     41.36538461538461
+    ],
+    [
+     20.75,
+     39.54,
+     41.53846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     41.71153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     41.88461538461539
+    ],
+    [
+     20.75,
+     40.38,
+     42.05769230769231
+    ],
+    [
+     20.75,
+     40.66,
+     42.23076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     42.40384615384615
+    ],
+    [
+     20.75,
+     41.22,
+     42.57692307692308
+    ],
+    [
+     20.0,
+     42.16,
+     42.75
+    ],
+    [
+     19.25,
+     41.22,
+     42.92307692307692
+    ],
+    [
+     19.25,
+     40.94,
+     43.09615384615385
+    ],
+    [
+     19.25,
+     40.66,
+     43.26923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     43.44230769230769
+    ],
+    [
+     19.25,
+     40.1,
+     43.61538461538461
+    ],
+    [
+     19.25,
+     39.82,
+     43.78846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     43.96153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     44.13461538461539
+    ],
+    [
+     19.25,
+     38.98,
+     44.30769230769231
+    ],
+    [
+     19.25,
+     38.7,
+     44.48076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     44.65384615384615
+    ],
+    [
+     19.25,
+     38.14,
+     44.82692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    40.5
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    45.0
+   ]
+  },
+  {
+   "id": "T_stairB_10",
+   "a": "T_L10",
+   "b": "T_L11",
+   "z0": 45.0,
+   "z1": 49.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     45.17307692307692
+    ],
+    [
+     20.75,
+     38.42,
+     45.34615384615385
+    ],
+    [
+     20.75,
+     38.7,
+     45.51923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     45.69230769230769
+    ],
+    [
+     20.75,
+     39.26,
+     45.86538461538461
+    ],
+    [
+     20.75,
+     39.54,
+     46.03846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     46.21153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     46.38461538461539
+    ],
+    [
+     20.75,
+     40.38,
+     46.55769230769231
+    ],
+    [
+     20.75,
+     40.66,
+     46.73076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     46.90384615384615
+    ],
+    [
+     20.75,
+     41.22,
+     47.07692307692308
+    ],
+    [
+     20.0,
+     42.16,
+     47.25
+    ],
+    [
+     19.25,
+     41.22,
+     47.42307692307692
+    ],
+    [
+     19.25,
+     40.94,
+     47.59615384615385
+    ],
+    [
+     19.25,
+     40.66,
+     47.76923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     47.94230769230769
+    ],
+    [
+     19.25,
+     40.1,
+     48.11538461538461
+    ],
+    [
+     19.25,
+     39.82,
+     48.28846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     48.46153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     48.63461538461539
+    ],
+    [
+     19.25,
+     38.98,
+     48.80769230769231
+    ],
+    [
+     19.25,
+     38.7,
+     48.98076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     49.15384615384615
+    ],
+    [
+     19.25,
+     38.14,
+     49.32692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    45.0
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    49.5
+   ]
+  },
+  {
+   "id": "T_stairB_11",
+   "a": "T_L11",
+   "b": "T_L12",
+   "z0": 49.5,
+   "z1": 54.0,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     49.67307692307692
+    ],
+    [
+     20.75,
+     38.42,
+     49.84615384615385
+    ],
+    [
+     20.75,
+     38.7,
+     50.01923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     50.19230769230769
+    ],
+    [
+     20.75,
+     39.26,
+     50.36538461538461
+    ],
+    [
+     20.75,
+     39.54,
+     50.53846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     50.71153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     50.88461538461539
+    ],
+    [
+     20.75,
+     40.38,
+     51.05769230769231
+    ],
+    [
+     20.75,
+     40.66,
+     51.23076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     51.40384615384615
+    ],
+    [
+     20.75,
+     41.22,
+     51.57692307692308
+    ],
+    [
+     20.0,
+     42.16,
+     51.75
+    ],
+    [
+     19.25,
+     41.22,
+     51.92307692307692
+    ],
+    [
+     19.25,
+     40.94,
+     52.09615384615385
+    ],
+    [
+     19.25,
+     40.66,
+     52.26923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     52.44230769230769
+    ],
+    [
+     19.25,
+     40.1,
+     52.61538461538461
+    ],
+    [
+     19.25,
+     39.82,
+     52.78846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     52.96153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     53.13461538461539
+    ],
+    [
+     19.25,
+     38.98,
+     53.30769230769231
+    ],
+    [
+     19.25,
+     38.7,
+     53.48076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     53.65384615384615
+    ],
+    [
+     19.25,
+     38.14,
+     53.82692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    49.5
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    54.0
+   ]
+  },
+  {
+   "id": "T_stairB_12",
+   "a": "T_L12",
+   "b": "T_L13",
+   "z0": 54.0,
+   "z1": 58.5,
+   "riser": 0.17307692307692307,
+   "tread": 0.28,
+   "steps": [
+    [
+     20.75,
+     38.14,
+     54.17307692307692
+    ],
+    [
+     20.75,
+     38.42,
+     54.34615384615385
+    ],
+    [
+     20.75,
+     38.7,
+     54.51923076923077
+    ],
+    [
+     20.75,
+     38.98,
+     54.69230769230769
+    ],
+    [
+     20.75,
+     39.26,
+     54.86538461538461
+    ],
+    [
+     20.75,
+     39.54,
+     55.03846153846154
+    ],
+    [
+     20.75,
+     39.82,
+     55.21153846153846
+    ],
+    [
+     20.75,
+     40.1,
+     55.38461538461539
+    ],
+    [
+     20.75,
+     40.38,
+     55.55769230769231
+    ],
+    [
+     20.75,
+     40.66,
+     55.73076923076923
+    ],
+    [
+     20.75,
+     40.94,
+     55.90384615384615
+    ],
+    [
+     20.75,
+     41.22,
+     56.07692307692308
+    ],
+    [
+     20.0,
+     42.16,
+     56.25
+    ],
+    [
+     19.25,
+     41.22,
+     56.42307692307692
+    ],
+    [
+     19.25,
+     40.94,
+     56.59615384615385
+    ],
+    [
+     19.25,
+     40.66,
+     56.76923076923077
+    ],
+    [
+     19.25,
+     40.38,
+     56.94230769230769
+    ],
+    [
+     19.25,
+     40.1,
+     57.11538461538461
+    ],
+    [
+     19.25,
+     39.82,
+     57.28846153846154
+    ],
+    [
+     19.25,
+     39.54,
+     57.46153846153846
+    ],
+    [
+     19.25,
+     39.26,
+     57.63461538461539
+    ],
+    [
+     19.25,
+     38.98,
+     57.80769230769231
+    ],
+    [
+     19.25,
+     38.7,
+     57.98076923076923
+    ],
+    [
+     19.25,
+     38.42,
+     58.15384615384615
+    ],
+    [
+     19.25,
+     38.14,
+     58.32692307692308
+    ]
+   ],
+   "headroom_min": 2.1,
+   "entry": [
+    20.0,
+    36.800000000000004,
+    54.0
+   ],
+   "exit": [
+    19.25,
+    36.800000000000004,
+    58.5
+   ]
+  }
+ ],
+ "lifts": [
+  {
+   "id": "W_lift",
+   "floors": [
+    "W_core",
+    "W_core_L1",
+    "W_core_L2",
+    "W_core_L3"
+   ],
+   "levels": [
+    0.0,
+    4.5,
+    9.0,
+    13.5
+   ],
+   "doors": [
+    "D32_W_core__W_lift",
+    "D33_W_core_L1__W_lift",
+    "D34_W_core_L2__W_lift",
+    "D35_W_core_L3__W_lift"
+   ],
+   "shaft": [
+    -26.0,
+    25.0,
+    -23.4,
+    27.6
+   ]
+  },
+  {
+   "id": "E_lift",
+   "floors": [
+    "E_core",
+    "E_core_L1",
+    "E_core_L2",
+    "E_core_L3"
+   ],
+   "levels": [
+    0.0,
+    4.5,
+    9.0,
+    13.5
+   ],
+   "doors": [
+    "D55_E_core__E_lift",
+    "D56_E_core_L1__E_lift",
+    "D57_E_core_L2__E_lift",
+    "D58_E_core_L3__E_lift"
+   ],
+   "shaft": [
+    27.4,
+    21.0,
+    30.0,
+    23.6
+   ]
+  },
+  {
+   "id": "T_lift0",
+   "floors": [
+    "T_L0",
+    "T_L1",
+    "T_L2",
+    "T_L3",
+    "T_L4",
+    "T_L5",
+    "T_L6",
+    "T_L7",
+    "T_L8",
+    "T_L9",
+    "T_L10",
+    "T_L11",
+    "T_L12",
+    "T_L13"
+   ],
+   "levels": [
+    0.0,
+    4.5,
+    9.0,
+    13.5,
+    18.0,
+    22.5,
+    27.0,
+    31.5,
+    36.0,
+    40.5,
+    45.0,
+    49.5,
+    54.0,
+    58.5
+   ],
+   "doors": [
+    "D60_T_L0__T_lift0",
+    "D61_T_L1__T_lift0",
+    "D62_T_L2__T_lift0",
+    "D63_T_L3__T_lift0",
+    "D64_T_L4__T_lift0",
+    "D65_T_L5__T_lift0",
+    "D66_T_L6__T_lift0",
+    "D67_T_L7__T_lift0",
+    "D68_T_L8__T_lift0",
+    "D69_T_L9__T_lift0",
+    "D70_T_L10__T_lift0",
+    "D71_T_L11__T_lift0",
+    "D72_T_L12__T_lift0",
+    "D73_T_L13__T_lift0"
+   ],
+   "shaft": [
+    9.3,
+    38.2,
+    11.9,
+    40.800000000000004
+   ]
+  },
+  {
+   "id": "T_lift1",
+   "floors": [
+    "T_L0",
+    "T_L1",
+    "T_L2",
+    "T_L3",
+    "T_L4",
+    "T_L5",
+    "T_L6",
+    "T_L7",
+    "T_L8",
+    "T_L9",
+    "T_L10",
+    "T_L11",
+    "T_L12",
+    "T_L13"
+   ],
+   "levels": [
+    0.0,
+    4.5,
+    9.0,
+    13.5,
+    18.0,
+    22.5,
+    27.0,
+    31.5,
+    36.0,
+    40.5,
+    45.0,
+    49.5,
+    54.0,
+    58.5
+   ],
+   "doors": [
+    "D74_T_L0__T_lift1",
+    "D75_T_L1__T_lift1",
+    "D76_T_L2__T_lift1",
+    "D77_T_L3__T_lift1",
+    "D78_T_L4__T_lift1",
+    "D79_T_L5__T_lift1",
+    "D80_T_L6__T_lift1",
+    "D81_T_L7__T_lift1",
+    "D82_T_L8__T_lift1",
+    "D83_T_L9__T_lift1",
+    "D84_T_L10__T_lift1",
+    "D85_T_L11__T_lift1",
+    "D86_T_L12__T_lift1",
+    "D87_T_L13__T_lift1"
+   ],
+   "shaft": [
+    12.200000000000001,
+    38.2,
+    14.8,
+    40.800000000000004
+   ]
+  },
+  {
+   "id": "T_lift2",
+   "floors": [
+    "T_L0",
+    "T_L1",
+    "T_L2",
+    "T_L3",
+    "T_L4",
+    "T_L5",
+    "T_L6",
+    "T_L7",
+    "T_L8",
+    "T_L9",
+    "T_L10",
+    "T_L11",
+    "T_L12",
+    "T_L13"
+   ],
+   "levels": [
+    0.0,
+    4.5,
+    9.0,
+    13.5,
+    18.0,
+    22.5,
+    27.0,
+    31.5,
+    36.0,
+    40.5,
+    45.0,
+    49.5,
+    54.0,
+    58.5
+   ],
+   "doors": [
+    "D88_T_L0__T_lift2",
+    "D89_T_L1__T_lift2",
+    "D90_T_L2__T_lift2",
+    "D91_T_L3__T_lift2",
+    "D92_T_L4__T_lift2",
+    "D93_T_L5__T_lift2",
+    "D94_T_L6__T_lift2",
+    "D95_T_L7__T_lift2",
+    "D96_T_L8__T_lift2",
+    "D97_T_L9__T_lift2",
+    "D98_T_L10__T_lift2",
+    "D99_T_L11__T_lift2",
+    "D100_T_L12__T_lift2",
+    "D101_T_L13__T_lift2"
+   ],
+   "shaft": [
+    15.100000000000001,
+    38.2,
+    17.700000000000003,
+    40.800000000000004
+   ]
+  }
+ ],
+ "entrance": "forecourt",
+ "params": "params.json"
+}

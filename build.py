@@ -1,0 +1,665 @@
+# =====================================================================
+# v4 PARAMETRIC BUILD  -  all geometry generated from params.json
+#   blender -b -P build.py                 (full: exterior + interior, saves .blend/.glb + spaces.json)
+#   MODE=sil blender -b -P build.py        (fast exterior-only build used by the compare loop; renders silhouettes)
+# env: PARAMS=path/to/params.json  OUTDIR=dir  SIL_DIR=dir
+# =====================================================================
+import bpy, bmesh, math, os, json, sys
+from mathutils import Vector, Matrix
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+P = json.load(open(os.environ.get("PARAMS", os.path.join(HERE, "params.json"))))
+MODE = os.environ.get("MODE", "full")
+FULL = MODE == "full"
+OUT = os.environ.get("OUTDIR", HERE)
+
+bpy.ops.wm.read_factory_settings(use_empty=True)
+scene = bpy.context.scene
+COL = bpy.data.collections.new("Building"); scene.collection.children.link(COL)
+exec(open(os.path.join(HERE, "src", "geom.py")).read())
+
+G, POD, ARC, TUN, CY, TW, ST = P["global"], P["podium"], P["arch"], P["tunnel"], P["courtyard"], P["tower"], P["stairs"]
+DR = P["doors"]
+FH = G["floor_h"]
+
+# ---------------------------------------------------------------------
+# plan outlines (superellipse, sampled)
+# ---------------------------------------------------------------------
+class Outline:
+    def __init__(s, hw, hd, cy, n, N=256):
+        s.N = N; s.pts = []
+        for i in range(N):
+            th = 2*math.pi*i/N; c, sn = math.cos(th), math.sin(th)
+            r = (abs(c/hw)**n + abs(sn/hd)**n) ** (-1.0/n)
+            s.pts.append((r*c, cy + r*sn))
+        s.nrm = []
+        for i in range(N):
+            p0, p1 = s.pts[i - 1], s.pts[(i + 1) % N]
+            tx, ty = p1[0] - p0[0], p1[1] - p0[1]; L = math.hypot(tx, ty); s.nrm.append((ty/L, -tx/L))
+        s.cy = cy; s.hw = hw; s.hd = hd; s.n = n
+    def off(s, i, d):
+        p, q = s.pts[i % s.N], s.nrm[i % s.N]; return (p[0] + q[0]*d, p[1] + q[1]*d)
+    def y_front(s, x):   # front (south) boundary y at given x
+        n = s.n; v = 1 - abs(x/s.hw)**n
+        return s.cy - s.hd*max(v, 0)**(1.0/n)
+    def inside(s, x, y, margin=0.0):
+        return (abs(x/(s.hw - margin))**s.n + abs((y - s.cy)/(s.hd - margin))**s.n) < 1.0
+    def loft(s, name, prof, m=None):
+        m = m or CLAY; N = s.N; verts, faces = [], []
+        for (d, z) in prof:
+            for i in range(N):
+                x, y = s.off(i, d); verts.append((x, y, z))
+        R = len(prof)
+        for j in range(R - 1):
+            for i in range(N):
+                a, b = j*N + i, j*N + (i + 1) % N; faces.append([a, b, b + N, a + N])
+        cb = len(verts); verts.append((0, s.cy, prof[0][1])); ct = len(verts); verts.append((0, s.cy, prof[-1][1]))
+        for i in range(N):
+            faces.append([cb, (i + 1) % N, i]); faces.append([ct, (R - 1)*N + i, (R - 1)*N + (i + 1) % N])
+        return mesh_from(name, verts, faces, m)
+    def loft_ring(s, name, d_out, d_in, z0, z1, m=None):
+        m = m or CLAY; N = s.N; verts, faces = [], []
+        for (d, z) in ((d_out, z0), (d_out, z1), (d_in, z1), (d_in, z0)):
+            for i in range(N):
+                x, y = s.off(i, d); verts.append((x, y, z))
+        for j in range(4):
+            j2 = (j + 1) % 4
+            for i in range(N):
+                a, b = j*N + i, j*N + (i + 1) % N; c2, d2 = j2*N + (i + 1) % N, j2*N + i
+                faces.append([a, b, c2, d2])
+        return mesh_from(name, verts, faces, m)
+
+WALL = Outline(POD["wall_half_w"], POD["wall_half_d"], POD["wall_cy"], POD["wall_n"])
+DECK = Outline(POD["deck_half_w"], POD["deck_half_d"], POD["deck_cy"], POD["deck_n"])
+DB, DT = POD["deck_bot"], POD["deck_top"]
+CC = (CY["cx"], CY["cy"]); CR = CY["r"]
+R_ARC_OUT = CR + CY["wall_t"]                      # outer face of arcade wall
+R_GAL_OUT = R_ARC_OUT + CY["gallery_w"]            # inner face of gallery outer wall
+TC = (TW["cx"], TW["cy"])
+FRONT_Y = WALL.y_front(ARC["cx"])
+
+def tower_r_at(z):
+    for (r, z0, z1) in TW["drums"]:
+        if z0 - 1e-6 <= z < z1: return r
+    return TW["drums"][-1][0]
+
+def cyl_cut(r, c, z0=-2, z1=200, seg=96): return cyl("cut", r, z0, z1, (c[0], c[1], 0), seg)
+
+# =====================================================================
+# EXTERIOR
+# =====================================================================
+ROLE = "ground"
+DECK.loft("GroundSlab", [(14.0, -0.35), (14.0, 0.0)])
+ROLE = "shell"
+shell = WALL.loft_ring("PodiumShell", 0.0, -POD["wall_t"], 0.0, DB + 0.2)
+DE, FO = POD.get("deck_edge_z", DB + 2.4), POD["fascia_out"]
+# knife-edge deck: concave soffit rising from deck_bot to a thin lip at deck_edge_z, thin plate back to the wall line, deck_top inboard
+deck = DECK.loft("PodiumDeck", [(-16, DB), (-7.0, DB), (-3.0, DB + (DE - DB)*0.35), (FO - 1.6, DE - 0.75), (FO - 0.3, DE - 0.25), (FO, DE + 0.1),
+                                (FO - 0.4, DE + 0.45), (-8.0, DE + 0.7), (-13.0, DT), (-16, DT)])
+smooth(deck)
+
+# doors / portal positions on the shell
+EXT_DOORS = []
+for side, wd in (("W", P["wings"]["west"]), ("E", P["wings"]["east"])):
+    x = wd["ext_door_x"]; EXT_DOORS.append((side, x, WALL.y_front(x)))
+
+shell_cuts, deck_cuts = [], []
+win_items, win_lights = [], []
+loggia_items, loggia_lights = [], []
+if FULL:
+    # arcade windows: recessed arches around the shell on each podium level (not through)
+    acc, last = 0.0, None
+    for i in range(WALL.N):
+        p = WALL.off(i, 0.0)
+        if last is not None: acc += math.hypot(p[0] - last[0], p[1] - last[1])
+        last = p
+        if acc < POD["window_pitch"]: continue
+        acc = 0.0
+        if p[1] < WALL.cy and abs(p[0] - ARC["cx"]) < ARC["hw"] + 3: continue
+        if any(abs(p[0] - x) < 4 and abs(p[1] - y) < 4 for (_, x, y) in EXT_DOORS): continue
+        if math.hypot(p[0] - TC[0], p[1] - TC[1]) < TW["drums"][0][0] + 2: continue
+        nx, ny = WALL.nrm[i]; ang = math.atan2(ny, nx)
+        LG = POD.get("loggia")
+        for lv in (POD["levels"][:-1] if LG else POD["levels"]):
+            win_items.append((p[0], p[1], lv + 0.9, ang, POD["window_hw"], POD["window_spring"], POD["window_rise"], 2*POD["window_recess"]))
+            win_lights.append((p[0] - nx*(POD["window_recess"] - 0.02), p[1] - ny*(POD["window_recess"] - 0.02), lv + 0.9, ang))
+    LG = POD.get("loggia")
+    if LG:   # top storey = continuous open arcaded loggia: arches cut right through the shell at their own pitch
+        acc, last = 0.0, None
+        for i in range(WALL.N*4):
+            th = 2*math.pi*i/(WALL.N*4); c_, sn_ = math.cos(th), math.sin(th)
+            rr = (abs(c_/WALL.hw)**WALL.n + abs(sn_/WALL.hd)**WALL.n) ** (-1.0/WALL.n)
+            p = (rr*c_, WALL.cy + rr*sn_)
+            if last is not None: acc += math.hypot(p[0] - last[0], p[1] - last[1])
+            last = p
+            if acc < LG["pitch"]: continue
+            acc = 0.0
+            if p[1] < WALL.cy and abs(p[0] - ARC["cx"]) < ARC["hw"] + 3.2: continue
+            if math.hypot(p[0] - TC[0], p[1] - TC[1]) < TW["drums"][0][0] + 2.5: continue
+            nx, ny = WALL.nrm[(i//4) % WALL.N]; ang = math.atan2(ny, nx)
+            loggia_items.append((p[0], p[1], POD["levels"][-1] + LG["sill"], ang, LG["hw"], LG["spring"], LG["rise"], 3.0))
+            loggia_lights.append((p[0] - nx*(LG["depth"] - 0.05), p[1] - ny*(LG["depth"] - 0.05), POD["levels"][-1] + LG["sill"], ang))
+    shell_cuts.append(arch_prisms("cut_win", win_items))
+    if loggia_items: shell_cuts.append(arch_prisms("cut_loggia_arcade", loggia_items))
+    # great portal through the shell
+    shell_cuts.append(arch_prisms("cut_portal", [(ARC["cx"], FRONT_Y, 0.0, -math.pi/2, ARC["hw"], ARC["spring"], ARC["rise"], 3.0)]))
+    # exterior pedestrian doors (arched, through)
+    for (_, x, y) in EXT_DOORS:
+        shell_cuts.append(arch_prisms("cut_extdoor", [(x, y + 0.2, 0.0, -math.pi/2, DR["ext_w"]/2, DR["ext_h"] - DR["ext_w"]/2, DR["ext_w"]/2, 3.0)]))
+    shell_cuts.append(cyl_cut(TW["drums"][0][0] - 0.2, TC, -1, DB + 1))
+    boolean(shell, shell_cuts)
+    # loggia recesses in the deck fascia
+    fitems, acc, last = [], 0.0, None
+    for i in range(DECK.N):
+        p = DECK.off(i, POD["fascia_out"])
+        if last is not None: acc += math.hypot(p[0] - last[0], p[1] - last[1])
+        last = p
+        if acc < 4.0: continue
+        acc = 0.0
+        if math.hypot(p[0] - TC[0], p[1] - TC[1]) < TW["drums"][0][0] + 3: continue
+        nx, ny = DECK.nrm[i]; fitems.append((p[0], p[1], DB + 1.0, math.atan2(ny, nx), 1.0, 1.3, 1.0, 2.6))
+    if POD.get("fascia_loggia", False): deck_cuts.append(arch_prisms("cut_loggia", fitems))   # off: the deck edge is now a thin knife-edge
+deck_cuts += [cyl_cut(CR + 0.05, CC, DB - 1, DT + 3, 128), cyl_cut(TW["drums"][0][0] - 0.2, TC, DB - 1, DT + 3)]
+boolean(deck, deck_cuts)
+
+# loggia back wall (open arcade gallery behind the top-storey arches)
+if FULL and loggia_items:
+    LG = POD["loggia"]; zl = POD["levels"][-1]
+    lbw = WALL.loft_ring("LoggiaBackWall", -LG["depth"], -LG["depth"] - 0.35, zl, DB + 0.3)
+    lbw_cuts = [cyl_cut(TW["drums"][0][0] + 0.5, TC, zl - 1, DB + 1),
+                arch_prisms("c", [(ARC["cx"], FRONT_Y + 2, -0.5, -math.pi/2, ARC["hw"] + 0.6, ARC["spring"] + 0.5, ARC["rise"] + 0.6, 14.0)])]
+    boolean(lbw, lbw_cuts)
+    win_lights += [("loggia",) + l for l in loggia_lights]
+# window glow planes (role window_light) inside recesses
+if FULL and win_lights:
+    ROLE = "window_light"
+    bm = bmesh.new()
+    for wl in win_lights:
+        lg = wl[0] == "loggia"; (x, y, z0, ang) = wl[1:] if lg else wl
+        nx, ny = math.cos(ang), math.sin(ang); tx, ty = -ny, nx
+        if lg: hw = POD["loggia"]["hw"]*0.85; h = POD["loggia"]["spring"] + POD["loggia"]["rise"]*0.7
+        else: hw = POD["window_hw"]*0.9; h = POD["window_spring"] + POD["window_rise"]*0.6
+        vs = [bm.verts.new((x + tx*u, y + ty*u, z0 + v)) for (u, v) in ((-hw, 0.1), (hw, 0.1), (hw, h), (-hw, h))]
+        bm.faces.new(vs)
+    me = bpy.data.meshes.new("WindowLights"); bm.to_mesh(me); bm.free()
+    o = bpy.data.objects.new("WindowLights", me); scene.collection.objects.link(o); link(o)
+    ROLE = "shell"
+
+# ---------------- portal recess + tunnel vault ----------------
+def arch_tube(name, x, y_mid, length, hw, sp, rise, t):
+    outer = arch_prisms(name, [(x, y_mid, 0.0, -math.pi/2, hw + t, sp, rise + t, length)])
+    if FULL or True:
+        boolean(outer, [arch_prisms("c", [(x, y_mid, -0.5, -math.pi/2, hw, sp + 0.5, rise, length + 2)])])
+    return outer
+PORTAL_BACK = FRONT_Y + ARC["portal_depth"]
+arch_tube("PortalLining", ARC["cx"], (FRONT_Y + PORTAL_BACK)/2, ARC["portal_depth"] + 0.2, ARC["hw"], ARC["spring"], ARC["rise"], 0.6)
+pb = arch_prisms("PortalBackWall", [(ARC["cx"], PORTAL_BACK, 0.0, -math.pi/2, ARC["hw"] + 0.3, ARC["spring"], ARC["rise"] + 0.3, 0.6)])
+boolean(pb, [arch_prisms("c", [(ARC["cx"], PORTAL_BACK, -0.5, -math.pi/2, TUN["hw"], TUN["spring"] + 0.5, TUN["rise"], 2.0)])])
+# archivolts on the shell face
+for k, (grow, dep) in enumerate([(1.4, 1.6), (2.8, 1.0)]):
+    av = arch_prisms(f"Archivolt{k}", [(ARC["cx"], FRONT_Y - dep/2 + 0.2, 0.0, -math.pi/2, ARC["hw"] + grow, ARC["spring"], ARC["rise"] + grow*0.8, dep)])
+    boolean(av, [arch_prisms("c", [(ARC["cx"], FRONT_Y - dep/2 + 0.2, -0.5, -math.pi/2, ARC["hw"] + grow - 1.4, ARC["spring"] + 0.5, ARC["rise"] + grow*0.8 - 1.4, dep + 2)])])
+# tunnel from portal back wall to the arcade wall of the courtyard
+Y_TUN_END = CC[1] - math.sqrt(CR**2 - TUN["hw"]**2) + 0.3
+tun = arch_tube("TunnelVault", ARC["cx"], (PORTAL_BACK + Y_TUN_END)/2, Y_TUN_END - PORTAL_BACK, TUN["hw"], TUN["spring"], TUN["rise"], 0.6)
+# side openings where the gallery ring crosses the tunnel
+def ring_y(R, x): return CC[1] - math.sqrt(max(R*R - x*x, 0))
+GX = TUN["hw"] + 0.3
+gy0, gy1 = ring_y(R_GAL_OUT, GX), ring_y(R_ARC_OUT, GX)
+TUN_SIDE_OPEN = (gy0 + 0.3, gy1 - 0.3)
+if FULL:
+    boolean(tun, [box("c", (2.0, TUN_SIDE_OPEN[1] - TUN_SIDE_OPEN[0], 3.0), (sx*GX, (TUN_SIDE_OPEN[0] + TUN_SIDE_OPEN[1])/2, 1.5)) for sx in (-1, 1)])
+
+# ---------------- courtyard arcade wall (4 tiers) + rim ----------------
+cwall = ring("CourtArcadeWall", CR, R_ARC_OUT, 0.0, DT + CY["rim_h"], (CC[0], CC[1], 0), 128)
+ARCADE_OPEN = []   # L0 arcade openings (courtyard <-> gallery)
+citems = []
+n = CY["n_arches"]
+for lv in CY["tiers"]:
+    for k in range(n):
+        a = 2*math.pi*(k + 0.5)/n
+        if abs(((a - 1.5*math.pi + math.pi) % (2*math.pi)) - math.pi) < math.asin(min(1, (TUN["hw"] + 1.5)/CR)): continue
+        r = (CR + R_ARC_OUT)/2
+        citems.append((CC[0] + r*math.cos(a), CC[1] + r*math.sin(a), lv + (0.0 if lv == 0 else 1.0), a, CY["arch_hw"], CY["arch_spring"], CY["arch_rise"], CY["wall_t"] + 1.0))
+        if lv == 0: ARCADE_OPEN.append(a)
+citems.append((ARC["cx"], CC[1] - CR, -0.5, -math.pi/2, TUN["hw"], TUN["spring"] + 0.5, TUN["rise"], 6.0))
+if FULL: boolean(cwall, [arch_prisms("cut_courtarch", citems)])
+rounded_band("CourtRim", (CC[0], CC[1], 0), R_ARC_OUT, DT + CY["rim_h"], 0.9, 0.7, 128)
+for lv in CY["tiers"][1:]:   # balcony rails on upper tiers (inside face)
+    ring(f"CourtRail_{lv}", CR - 0.35, CR - 0.15, lv, lv + 1.1, (CC[0], CC[1], 0), 128)
+
+# ---------------- flared tree columns ----------------
+COLS = P["columns"]
+def column_profile():
+    br, sr, fr = COLS["base_r"], COLS["shaft_r"], COLS["flare_r"]
+    fz0, fp = COLS.get("flare_z0", 14.0), COLS.get("flare_p", 1.1)
+    ztop = DE - 0.6
+    prof = [(0, 0), (br, 0), (br*0.7 + sr*0.3, 0.5), (sr, 1.6), (sr, fz0)]
+    for k in range(1, 9):
+        z = fz0 + (ztop - fz0)*k/8; prof.append((sr + (fr - sr)*(k/8)**fp, z))
+    prof += [(fr, ztop + 0.6), (0, ztop + 0.6)]
+    return prof
+for k, (x, y) in enumerate(COLS["positions"]):
+    prof = column_profile()
+    lathe(f"TreeColumn{k}", prof, 64, (x, y, 0))
+    for j in range(COLS["ribs"]):
+        a = 2*math.pi*j/COLS["ribs"]
+        lathe(f"TreeRib{k}_{j}", [(r + 0.3, z) for (r, z) in prof[3:-2]], 2, (x, y, 0), a0=a - 0.03, a1=a + 0.03, closed=False, sm=False)
+
+# ---------------- tower exterior ----------------
+DOOR_ANG_T = math.atan2(CC[1] - TC[1], CC[0] - TC[0])   # tower faces the courtyard here
+tower_shells = []
+for k, (r, z0, z1) in enumerate(TW["drums"]):
+    sh = ring(f"TowerShell{k}", r - 0.5 - TW["shell_t"], r - 0.5, z0, z1, (TC[0], TC[1], 0), 128, GLAZE)
+    tower_shells.append(sh)
+    skip = [(DOOR_ANG_T, 0.16)] if z0 < 1 else None
+    fins_around(f"TowerMull{k}", TC, r - 0.5, z0 + (3.0 if z0 < 1 else 0), z1, int(2*math.pi*r/1.4), w=0.32, d=0.8, a_skip=skip)
+    zz = [z for z in [FH*j for j in range(0, 30)] if z0 < z < z1 + 0.01]
+    for z in zz:
+        rounded_band(f"TowerBand{k}_{int(z*10)}", (TC[0], TC[1], 0), r - 0.3, z, 0.7, 0.8, 128)
+    for j in range(TW["ribs_per_drum"]):
+        a = 2*math.pi*(j + 0.5*(k % 2))/TW["ribs_per_drum"] + 0.15
+        if z0 < 1 and abs(((a - DOOR_ANG_T + math.pi) % (2*math.pi)) - math.pi) < 0.25: continue
+        p = (TC[0] + (r + 0.2)*math.cos(a), TC[1] + (r + 0.2)*math.sin(a))
+        lathe(f"TowerRib{k}_{j}", [(0, z0), (0.9, z0), (0.65, (z0 + z1)/2), (0.9, z1), (0, z1)], 12, (p[0], p[1], 0))
+    rounded_band(f"TowerStep{k}", (TC[0], TC[1], 0), r, z1, 1.4, 1.4, 128)
+for k, (z, dx, dy, ro) in enumerate(TW["belts"]):
+    ri = tower_r_at(z) - 1.0
+    lathe(f"TowerBelt{k}", [(ri, z - 0.7), (ro - 1.0, z - 0.7), (ro - 0.1, z - 0.35), (ro + 0.1, z), (ro - 0.1, z + 0.35), (ro - 1.0, z + 0.7), (ri, z + 0.7), (ri, z - 0.7)],
+          128, (TC[0] + dx, TC[1] + dy, 0))
+canopy("TowerCrown", TW["crown_R"], TW["crown_z"], TC, t=1.8, fins=12, r_drum=TW["drums"][-1][0] - 0.5, lip_k=0.45)
+lathe("TowerDome", [(TW["dome_r"], 0), (TW["dome_r"]*0.92, TW["dome_h"]*0.45), (TW["dome_r"]*0.6, TW["dome_h"]*0.85), (0, TW["dome_h"])], 96, (TC[0], TC[1], TW["crown_z"] + 0.6))
+ring("TowerParapet", TW["drums"][-1][0] - 1.2, TW["drums"][-1][0] - 0.4, TW["drums"][-1][2], TW["crown_z"], (TC[0], TC[1], 0), 96)
+
+# ---------------- canopies with drums ----------------
+CS = P.get("canopy_scale", 1.0)
+RIMS = []
+for cp in P["canopies"]:
+    c = (cp["cx"], cp["cy"]); r = cp["drum_r"]
+    drum(cp["name"], c, r, DE - 0.3, cp["z"], band=FH)
+    rx, ry = cp["rx"]*CS, cp["ry"]*CS
+    R = max(rx, ry)
+    canopy(cp["name"] + "_canopy", R, cp["z"] + 0.6, c, sx=rx/R, sy=ry/R, lip_k=cp.get("lip", 0.3))
+    canopy(cp["name"] + "_fins", r + 0.6, cp["z"] + 0.3, c, t=0.7, fins=8, r_drum=r - 0.3, fin_c=min(min(rx, ry)*0.6, r + 6.0))
+    if cp.get("dome"):
+        lathe(cp["name"] + "_dome", [(r*0.8, 0), (r*0.72, r*0.3), (r*0.5, r*0.55), (r*0.22, r*0.7), (0, r*0.74)], 48, (c[0], c[1], cp["z"] + 1.0))
+    RIMS.append((c, R, rx/R, ry/R, cp["z"] + 0.6, cp.get("lip", 0.3)))
+    # v5: a canopy that reaches into the tower is trimmed to the tower's inner face, so it never
+    # intrudes into the tower floors (found by the circulation headroom probe on T_L6)
+    ri = tower_r_at(cp["z"]) - 0.5 - TW["shell_t"]
+    if math.hypot(c[0] - TC[0], c[1] - TC[1]) - R < ri:
+        for nm in (cp["name"] + "_canopy", cp["name"] + "_fins"):
+            ob = bpy.data.objects.get(nm)
+            if ob: boolean(ob, [cyl("cut", ri, cp["z"] - 3.0, cp["z"] + 4.0, (TC[0], TC[1], 0), 128)])
+RIMS.append((TC, TW["crown_R"], 1, 1, TW["crown_z"], 0.45))
+if FULL:
+    ROLE = "rim"
+    for k, (c, R, sx, sy, z, lip) in enumerate(RIMS):
+        t = min(1.9, 0.055*R + 0.55); zl = z + lip*t
+        lathe(f"CanopyRim{k}", [(R - 0.05, zl - 0.12), (R + 0.12, zl - 0.04), (R + 0.12, zl + 0.06), (R - 0.05, zl + 0.1), (R - 0.05, zl - 0.12)], 128, (c[0], c[1], 0), sx, sy)
+    ROLE = "shell"
+
+# ---------------- infill masses (dense cluster between wings and tower) ----------------
+for ms in P.get("masses", []):
+    if ms["r"] <= 0.5 or ms["z1"] <= DT + 1: continue
+    drum(ms["name"], (ms["cx"], ms["cy"]), ms["r"]*P.get("mass_scale", 1.0), DE - 0.3, ms["z1"], band=FH)
+    rounded_band(ms["name"] + "_cap", (ms["cx"], ms["cy"], 0), ms["r"]*P.get("mass_scale", 1.0), ms["z1"], 1.2, 1.2, 96)
+    cyl(ms["name"] + "_roof", ms["r"]*P.get("mass_scale", 1.0) - 0.3, ms["z1"] - 0.5, ms["z1"] + 0.6, (ms["cx"], ms["cy"], 0), 96)
+
+# ---------------- crescent crown ----------------
+CRS = P["crescent"]
+def sweep_bank(name, pts, wfun, tfun, samples=220, bank=0.0):
+    Pp = [Vector(p) for p in pts]
+    def cr(t):
+        n = len(Pp) - 1; f = t*n; i = min(int(f), n - 1); u = f - i
+        p0 = Pp[max(i - 1, 0)]; p1 = Pp[i]; p2 = Pp[i + 1]; p3 = Pp[min(i + 2, n)]
+        return 0.5*((2*p1) + (-p0 + p2)*u + (2*p0 - 5*p1 + 4*p2 - p3)*u*u + (-p0 + 3*p1 - 3*p2 + p3)*u**3)
+    C = [cr(k/samples) for k in range(samples + 1)]
+    NS = 24
+    sec = [(math.copysign(abs(math.cos(a))**0.7, math.cos(a)), math.copysign(abs(math.sin(a))**0.7, math.sin(a))) for a in [2*math.pi*k/NS for k in range(NS)]]
+    verts, faces = [], []
+    for k, p in enumerate(C):
+        T = (C[min(k + 1, samples)] - C[max(k - 1, 0)]).normalized()
+        S = T.cross(Vector((0, 0, 1)))
+        if S.length < 1e-3: S = Vector((1, 0, 0))
+        S.normalize(); U = S.cross(T).normalized()
+        S, U = S*math.cos(bank) + U*math.sin(bank), U*math.cos(bank) - S*math.sin(bank)
+        t = k/samples; w, h = wfun(t), tfun(t)
+        for (a, b) in sec: verts.append(tuple(p + S*(a*w) + U*(b*h)))
+    for k in range(samples):
+        for j in range(NS):
+            a = k*NS + j; b = k*NS + (j + 1) % NS; faces.append([a, b, b + NS, a + NS])
+    faces.append(list(range(NS))[::-1]); faces.append([samples*NS + j for j in range(NS)])
+    ob = mesh_from(name, verts, faces); smooth(ob); return ob
+def crescent_pts(mirror=False, scale=1.0):
+    base = Vector(CRS["pts"][0]); out = []
+    for p in CRS["pts"]:
+        v = Vector(p) - base
+        q = base + Vector((v.x*CRS.get("spread", 1.0), v.y*CRS.get("spread", 1.0), v.z*CRS.get("rise", 1.0)))
+        q.z += CRS.get("dz", 0.0)
+        if mirror:
+            q.x = 2*TC[0] - q.x
+            q = Vector((TC[0], TC[1], q.z)) + (q - Vector((TC[0], TC[1], q.z)))*scale
+            q.z = base.z + CRS.get("dz", 0.0) + (q.z - base.z - CRS.get("dz", 0.0))*scale
+        out.append(tuple(q))
+    return out
+def crescent_d(t):
+    D = CRS["d"]; f = t*(len(D) - 1); i = min(int(f), len(D) - 2); u = f - i
+    return max(0.25, (D[i]*(1 - u) + D[i + 1]*u)*CRS.get("d_scale", 1.0))
+pts = crescent_pts()
+sweep_bank("CrescentCrown", pts, lambda t: crescent_d(t)/2, lambda t: crescent_d(t)/2*CRS.get("flat", 0.8), bank=math.radians(CRS.get("bank", 0.0)))
+cyl("CrescentPost", CRS["post_r"], DT, pts[0][2] + 0.5, (pts[0][0], pts[0][1], 0), 48)
+drum("CrescentPostDrum", (pts[0][0], pts[0][1]), CRS["post_r"] + 0.8, DT, pts[0][2] - 3.0, band=FH)
+if CRS.get("horn2", 0.0) > 0.05:      # second horn (roof plan shows two horns embracing the tower)
+    p2 = crescent_pts(True, CRS["horn2"])
+    sweep_bank("CrescentHorn2", p2, lambda t: crescent_d(t)/2*CRS["horn2"], lambda t: crescent_d(t)/2*CRS.get("flat", 0.8)*CRS["horn2"])
+    cyl("CrescentHorn2Post", CRS["post_r"]*CRS["horn2"], DT, p2[0][2] + 0.5, (p2[0][0], p2[0][1], 0), 48)
+
+# ---------------- bridges ----------------
+prof = profile_rect("BridgeProfile", 3.0, 0.8)
+for k, pl in enumerate(P["bridges"]):
+    curve_obj(f"Bridge{k}", [tuple(p) for p in pl], bevel_obj=prof)
+bpy.data.objects.remove(prof, do_unlink=True)
+for ob in [o for o in bpy.data.objects if o.type == 'CURVE']: bpy.data.objects.remove(ob, do_unlink=True)
+
+# =====================================================================
+# INTERIOR (full mode): spaces, walls with real door gaps, stairs, lifts, slabs
+# =====================================================================
+SPACES, DOORS, STAIRS, LIFTS = {}, [], [], []
+class Boxes:
+    def __init__(s): s.bm = bmesh.new()
+    def add(s, c, size, rotz=0.0):
+        m = Matrix.Translation(c) @ Matrix.Rotation(rotz, 4, 'Z') @ Matrix.Diagonal((size[0], size[1], size[2], 1))
+        bmesh.ops.create_cube(s.bm, size=1.0, matrix=m)
+    def flush(s, name, role, m=None):
+        global ROLE
+        me = bpy.data.meshes.new(name); s.bm.to_mesh(me); s.bm.free(); s.bm = bmesh.new()
+        o = bpy.data.objects.new(name, me); scene.collection.objects.link(o)
+        old = ROLE; ROLE = role; link(o, m or CLAY); ROLE = old; return o
+WALLB, STAIRB, SLABB = Boxes(), Boxes(), Boxes()
+DOOR_LEAVES = []
+
+def space(name, probe, z, kind="room"):
+    SPACES[name] = {"name": name, "probe": [probe[0], probe[1], z], "z": z, "kind": kind}
+
+def add_door(a, b, c, nrm, w, h, z, kind="door", check_wall=True, leaf=True):
+    did = f"D{len(DOORS):02d}_{a}__{b}"
+    tng = (-nrm[1], nrm[0])
+    DOORS.append({"id": did, "a": a, "b": b, "type": kind, "center": [c[0], c[1], z], "normal": list(nrm), "tangent": list(tng),
+                  "w": w, "h": h, "check_wall": check_wall})
+    if leaf and kind in ("door", "ext_door"):
+        DOOR_LEAVES.append((did, c, nrm, w, h, z))
+    return did
+
+def wall_line(p0, p1, z0, z1, t, openings=(), batch=None):
+    """openings: list of (s_center, width, zb, h). Emits boxes around real gaps."""
+    batch = batch or WALLB
+    dx, dy = p1[0] - p0[0], p1[1] - p0[1]; L = math.hypot(dx, dy); ux, uy = dx/L, dy/L; rot = math.atan2(uy, ux)
+    br = {0.0, L}
+    for (s, w, zb, h) in openings: br.add(max(0, min(L, s - w/2))); br.add(max(0, min(L, s + w/2)))
+    br = sorted(br)
+    for sa, sb in zip(br[:-1], br[1:]):
+        if sb - sa < 1e-4: continue
+        mid = (sa + sb)/2
+        holes = sorted([(zb, zb + h) for (s, w, zb, h) in openings if s - w/2 - 1e-6 <= mid <= s + w/2 + 1e-6])
+        zc = z0; segs = []
+        for (ha, hb) in holes:
+            if ha > zc: segs.append((zc, min(ha, z1)))
+            zc = max(zc, hb)
+        if zc < z1: segs.append((zc, z1))
+        for (za, zb_) in segs:
+            if zb_ - za < 1e-3: continue
+            sa2 = sa - (t/2 if sa == 0.0 else 0.0); sb2 = sb + (t/2 if sb == L else 0.0); m2 = (sa2 + sb2)/2
+            cx = p0[0] + ux*m2; cy = p0[1] + uy*m2
+            batch.add(Vector((cx, cy, (za + zb_)/2)), (sb2 - sa2, t, zb_ - za), rot)
+
+def arc_wall(c, r, t, z0, z1, a0, a1, openings=(), seg_len=0.8):
+    """openings: list of (angle, width, zb, h)"""
+    n = max(4, int(abs(a1 - a0)*r/seg_len))
+    for i in range(n):
+        aa = a0 + (a1 - a0)*i/n; ab = a0 + (a1 - a0)*(i + 1)/n; am = (aa + ab)/2
+        holes = sorted([(zb, zb + h) for (ang, w, zb, h) in openings if abs(((am - ang + math.pi) % (2*math.pi)) - math.pi)*r <= w/2])
+        zc = z0; segs = []
+        for (ha, hb) in holes:
+            if ha > zc: segs.append((zc, ha))
+            zc = max(zc, hb)
+        if zc < z1: segs.append((zc, z1))
+        for (za, zb_) in segs:
+            WALLB.add(Vector((c[0] + r*math.cos(am), c[1] + r*math.sin(am), (za + zb_)/2)), (r*abs(ab - aa)*1.04, t, zb_ - za), am + math.pi/2)
+
+def stair_module(sid, x0, y0, levels, lower_name, upper_names, flip=False):
+    """Dog-leg stair in a shaft whose SW corner is (x0,y0), entry on the south side. Returns slab-hole rects per upper level."""
+    W, Ls, EL, LL, FW = ST["shaft_w"], ST["shaft_l"], ST["entry_l"], ST["landing_l"], ST["flight_w"]
+    n = ST["riser_n"]; r = None; tread = ST["tread"]; n1 = n//2; n2 = n - n1
+    t_in = 0.2
+    holes = []
+    for li in range(len(levels) - 1):
+        za, zb = levels[li], levels[li + 1]; r = (zb - za)/n
+        xa = x0 + t_in; xb = x0 + W - t_in       # inner shaft x
+        x1a, x1b = (xa, xa + FW) if not flip else (xb - FW, xb)       # flight 1 lane
+        x2a, x2b = (xb - FW, xb) if not flip else (xa, xa + FW)       # flight 2 lane
+        ys = y0 + EL                                                   # flight start
+        steps = []
+        for k in range(n1 - 1):                                        # flight 1 treads (going +y)
+            top = za + (k + 1)*r; yc = ys + (k + 0.5)*tread
+            STAIRB.add(Vector(((x1a + x1b)/2, yc, (za + top)/2)), (x1b - x1a, tread, top - za))
+            steps.append([(x1a + x1b)/2, yc, top])
+        yl = ys + (n1 - 1)*tread; zl = za + n1*r                        # mid landing
+        STAIRB.add(Vector(((xa + xb)/2, yl + LL/2, zl - 0.15)), (xb - xa, LL, 0.3))
+        steps.append([(xa + xb)/2, yl + LL/2, zl])
+        for k in range(n2 - 1):                                        # flight 2 treads (going -y)
+            top = zl + (k + 1)*r; yc = yl - (k + 0.5)*tread
+            STAIRB.add(Vector(((x2a + x2b)/2, yc, (zl - 0.3 + top)/2)), (x2b - x2a, tread, top - zl + 0.3))
+            steps.append([(x2a + x2b)/2, yc, top])
+        # the last riser of flight 2 reaches the upper floor slab at y = ys
+        holes.append((min(x2a, x2b) - 0.05, ys - 0.05 + 0.0, max(x2a, x2b) + 0.05, yl + LL + 0.05))
+        holes.append((xa, yl - 0.05, xb, yl + LL + 0.05))
+        STAIRS.append({"id": f"{sid}_{li}", "a": lower_name if li == 0 else upper_names[li - 1], "b": upper_names[li],
+                       "z0": za, "z1": zb, "riser": r, "tread": tread, "steps": steps, "headroom_min": ST["headroom_min"],
+                       "entry": [(xa + xb)/2, y0 + 0.6, za], "exit": [(x2a + x2b)/2, y0 + 0.6, zb]})
+    # shaft walls (W, E, N) full height; south wall with an opening per floor
+    zt = levels[-1] + FH*0.95
+    wall_line((x0, y0), (x0, y0 + Ls), levels[0], zt, 0.3)
+    wall_line((x0 + W, y0), (x0 + W, y0 + Ls), levels[0], zt, 0.3)
+    wall_line((x0, y0 + Ls), (x0 + W, y0 + Ls), levels[0], zt, 0.3)
+    wall_line((x0, y0), (x0 + W, y0), levels[0], zt, 0.3, [(W/2, W - 0.4, z, 2.4) for z in levels])
+    return holes
+
+def lift_module(lid, x0, y0, levels, names):
+    S = P["lifts"]["shaft"]; dw, dh = P["lifts"]["door_w"], P["lifts"]["door_h"]
+    zt = levels[-1] + FH*0.95
+    wall_line((x0, y0), (x0, y0 + S), levels[0], zt, 0.25)
+    wall_line((x0 + S, y0), (x0 + S, y0 + S), levels[0], zt, 0.25)
+    wall_line((x0, y0 + S), (x0 + S, y0 + S), levels[0], zt, 0.25)
+    wall_line((x0, y0), (x0 + S, y0), levels[0], zt, 0.25, [(S/2, dw, z, dh) for z in levels])
+    dids = []
+    for z, nm in zip(levels, names):
+        dids.append(add_door(nm, lid, (x0 + S/2, y0), (0.0, -1.0), dw, dh, z, kind="lift_door", leaf=False))
+    LIFTS.append({"id": lid, "floors": names, "levels": levels, "doors": dids, "shaft": [x0, y0, x0 + S, y0 + S]})
+    return (x0, y0, x0 + S, y0 + S)
+
+if FULL:
+    WT, WH = DR["wall_t"], FH - POD["slab_t"]
+    # ---- outside / entrance sequence ----
+    space("forecourt", (ARC["cx"], FRONT_Y - 12.0), 0.0, "outside")
+    space("portal_tunnel", (ARC["cx"], (PORTAL_BACK + Y_TUN_END)/2), 0.0, "passage")
+    space("courtyard", (CC[0], CC[1]), 0.0, "open")
+    space("gallery", (CC[0] - (R_ARC_OUT + R_GAL_OUT)/2, CC[1]), 0.0, "passage")
+    add_door("forecourt", "portal_tunnel", (ARC["cx"], FRONT_Y), (0, 1), 2*TUN["hw"], TUN["spring"] + TUN["rise"], 0.0, "open", check_wall=False)
+    add_door("portal_tunnel", "courtyard", (ARC["cx"], CC[1] - CR), (0, 1), 2*TUN["hw"], TUN["spring"] + TUN["rise"], 0.0, "open", check_wall=False)
+    for sx in (-1, 1):
+        add_door("portal_tunnel", "gallery", (sx*(TUN["hw"] + 0.3), sum(TUN_SIDE_OPEN)/2), (sx, 0), TUN_SIDE_OPEN[1] - TUN_SIDE_OPEN[0], 3.0, 0.0, "opening")
+    for a in ARCADE_OPEN:
+        if abs(math.cos(a)) > 0.97 or abs(math.sin(a)) > 0.97 or True:
+            pass
+    for a in ARCADE_OPEN[::4]:
+        add_door("courtyard", "gallery", (CC[0] + (CR + R_ARC_OUT)/2*math.cos(a), CC[1] + (CR + R_ARC_OUT)/2*math.sin(a)), (math.cos(a), math.sin(a)),
+                 2*CY["arch_hw"], CY["arch_spring"], 0.0, "opening")
+    # ---- gallery outer wall (L0) with doors ----
+    ang_W, ang_E = math.pi, 0.0
+    ang_T = math.atan2(TC[1] - CC[1], TC[0] - CC[0])
+    RG = R_GAL_OUT + CY["outer_wall_t"]/2
+    lw = DR["link_w"]
+    a_tun = math.asin(min(1, (TUN["hw"] + 0.6)/RG))
+    arc_wall(CC, RG, CY["outer_wall_t"], 0.0, WH, -math.pi/2 + a_tun, 3*math.pi/2 - a_tun,
+             [(ang_W, DR["int_w"], 0.0, DR["int_h"]), (ang_E, DR["int_w"], 0.0, DR["int_h"]), (ang_T, DR["int_w"], 0.0, DR["int_h"])])
+    for nm, ang in (("W", ang_W), ("E", ang_E), ("T", ang_T)):
+        c = (CC[0] + RG*math.cos(ang), CC[1] + RG*math.sin(ang))
+        add_door("gallery", f"{nm}_link", c, (math.cos(ang), math.sin(ang)), DR["int_w"], DR["int_h"], 0.0)
+    # ---- wings ----
+    def wing(tag, wd, sgn):
+        """Wing with stacked floors on every podium level (section A-A): hall + 2 rooms + core per level,
+        stair + lift in the core connect all levels; ground floor adds the gallery link and the street vestibule."""
+        hall, rs0, rn0, core = wd["hall"], wd["room_s"], wd["room_n"], wd["core"]
+        hx_in = hall[2] if sgn < 0 else hall[0]      # hall wall facing the courtyard
+        hx_out = hall[0] if sgn < 0 else hall[2]
+        levels = POD["levels"]; LGc = POD.get("loggia")
+        sfx = lambda k: "" if k == 0 else f"_L{k}"
+        space(f"{tag}_link", ((hx_in + CC[0] + sgn*RG)/2, CC[1]), 0.0, "passage")
+        space(f"{tag}_vest", (wd["ext_door_x"], (WALL.y_front(wd["ext_door_x"]) + rs0[1])/2), 0.0, "passage")
+        # link corridor gallery -> hall (ground floor)
+        xg = CC[0] + sgn*(RG + CY["outer_wall_t"]/2)
+        for dy in (-lw/2, lw/2):
+            wall_line((xg, CC[1] + dy), (hx_in, CC[1] + dy), 0.0, WH, WT)
+        add_door(f"{tag}_link", f"{tag}_hall", (hx_in, CC[1]), (-sgn, 0.0), DR["int_w"], DR["int_h"], 0.0)
+        c0, c1 = core[0], core[2]
+        dx = (c0 + c1)/2 + (1.5 if sgn < 0 else -1.5)
+        for k, lv in enumerate(levels):
+            rs, rn = list(rs0), list(rn0)
+            if LGc and k == len(levels) - 1:          # top storey sits behind the open loggia: pull the outer rooms in
+                sh = LGc["depth"] + 1.0
+                if sgn < 0: rs[0] += sh; rn[0] += sh
+                else: rs[2] -= sh; rn[2] -= sh
+                rs[1] += sh
+            z0, z1 = lv, lv + WH
+            H_, RS, RN, CO = f"{tag}_hall{sfx(k)}", f"{tag}_room_s{sfx(k)}", f"{tag}_room_n{sfx(k)}", f"{tag}_core{sfx(k)}"
+            space(H_, ((hall[0] + hall[2])/2, (hall[1] + hall[3])/2), lv, "corridor")
+            space(RS, ((rs[0] + rs[2])/2, (rs[1] + rs[3])/2), lv)
+            space(RN, ((rn[0] + rn[2])/2, (rn[1] + rn[3])/2), lv)
+            space(CO, ((c0 + c1)/2, core[1] + 0.6), lv, "core")
+            hs = max(hall[1], rs[1])
+            wall_line((hx_in, hs), (hx_in, hall[3]), z0, z1, WT, [(CC[1] - hs, DR["int_w"], z0, DR["int_h"])] if k == 0 else [])
+            ys_door, yn_door = (rs[1] + rs[3])/2, (rn[1] + rn[3])/2
+            wall_line((hx_out, hs), (hx_out, hall[3]), z0, z1, WT,
+                      [(ys_door - hs, DR["int_w"], z0, DR["int_h"]), (yn_door - hs, DR["int_w"], z0, DR["int_h"])])
+            add_door(H_, RS, (hx_out, ys_door), (sgn, 0.0), DR["int_w"], DR["int_h"], lv)
+            add_door(H_, RN, (hx_out, yn_door), (sgn, 0.0), DR["int_w"], DR["int_h"], lv)
+            xo = rs[0] if sgn < 0 else rs[2]
+            wall_line((xo, rs[1]), (xo, rn[3]), z0, z1, WT)
+            xs0, xs1 = min(xo, hx_in), max(xo, hx_in)
+            ex = wd["ext_door_x"]
+            if k == 0:
+                wall_line((xs0, rs[1]), (xs1, rs[1]), z0, z1, WT, [(ex - xs0, DR["int_w"], z0, DR["int_h"])])
+                add_door(f"{tag}_vest", RS, (ex, rs[1]), (0.0, 1.0), DR["int_w"], DR["int_h"], 0.0)
+            else:
+                wall_line((xs0, rs[1]), (xs1, rs[1]), z0, z1, WT)
+            rx0, rx1 = min(rs[0], rs[2]), max(rs[0], rs[2]); xm = (rx0 + rx1)/2
+            wall_line((rx0, rs[3]), (rx1, rs[3]), z0, z1, WT, [(xm - rx0, DR["int_w"], z0, DR["int_h"])])
+            add_door(RS, RN, (xm, rs[3]), (0.0, 1.0), DR["int_w"], DR["int_h"], lv)
+            wall_line((xs0, rn[3]), (xs1, rn[3]), z0, z1, WT, [(dx - xs0, DR["int_w"], z0, DR["int_h"])])
+            nb_space = H_ if (hall[0] <= dx <= hall[2]) else RN
+            add_door(nb_space, CO, (dx, rn[3]), (0.0, 1.0), DR["int_w"], DR["int_h"], lv)
+            wall_line((c0, core[1]), (c0, core[3]), z0, z1, WT)
+            wall_line((c1, core[1]), (c1, core[3]), z0, z1, WT)
+            wall_line((c0, core[3]), (c1, core[3]), z0, z1, WT)
+        # vestibule from the exterior door
+        ex = wd["ext_door_x"]; ysh = WALL.y_front(ex) + POD["wall_t"]
+        for dxv in (-lw/2, lw/2):
+            wall_line((ex + dxv, ysh - 0.3), (ex + dxv, rs0[1]), 0.0, WH, WT)
+        add_door("forecourt", f"{tag}_vest", (ex, WALL.y_front(ex) + POD["wall_t"]/2), (0.0, 1.0), DR["ext_w"], DR["ext_h"] - DR["ext_w"]/2, 0.0, "ext_door")
+        # stair + lift in the core, serving every level
+        names = [f"{tag}_core{sfx(k)}" for k in range(len(levels))]
+        sx0 = c0 + 0.4 if sgn < 0 else c1 - 0.4 - ST["shaft_w"]
+        holes = stair_module(f"{tag}_stair", sx0, core[1] + 1.2, levels, names[0], names[1:])
+        lx0 = c1 - 0.4 - P["lifts"]["shaft"] if sgn < 0 else c0 + 0.4
+        lift = lift_module(f"{tag}_lift", lx0, core[3] - 0.4 - P["lifts"]["shaft"], levels, names)
+        return holes + [lift]
+    holesW = wing("W", P["wings"]["west"], -1)
+    holesE = wing("E", P["wings"]["east"], +1)
+    # ---- tower link + lobby + core ----
+    tdir = (math.cos(ang_T), math.sin(ang_T)); tn = (-tdir[1], tdir[0])
+    p_g = (CC[0] + (RG + 0.25)*tdir[0], CC[1] + (RG + 0.25)*tdir[1])
+    R_T0 = TW["drums"][0][0] - 0.5 - TW["shell_t"]
+    dct = math.hypot(TC[0] - p_g[0], TC[1] - p_g[1])
+    p_t = (TC[0] - tdir[0]*(TW["drums"][0][0] - 0.5 - TW["shell_t"]/2), TC[1] - tdir[1]*(TW["drums"][0][0] - 0.5 - TW["shell_t"]/2))
+    p_t = (TC[0] + (p_g[0] - TC[0])/dct*(TW["drums"][0][0] - 0.5 - TW["shell_t"]/2), TC[1] + (p_g[1] - TC[1])/dct*(TW["drums"][0][0] - 0.5 - TW["shell_t"]/2))
+    space("T_link", ((p_g[0] + p_t[0])/2, (p_g[1] + p_t[1])/2), 0.0, "passage")
+    for s_ in (-lw/2, lw/2):
+        wall_line((p_g[0] + tn[0]*s_, p_g[1] + tn[1]*s_), (p_t[0] + tn[0]*s_ + tdir[0]*0.6, p_t[1] + tn[1]*s_ + tdir[1]*0.6), 0.0, WH, WT)
+    td = (TC[0] - p_t[0], TC[1] - p_t[1]); L_ = math.hypot(*td); td = (td[0]/L_, td[1]/L_)
+    did_tower = add_door("T_link", "T_L0", p_t, td, DR["int_w"], DR["int_h"], 0.0)
+    ang_door_t = math.atan2(p_t[1] - TC[1], p_t[0] - TC[0])
+    boolean(tower_shells[0], [box("c", (2.0, DR["int_w"], DR["int_h"]), (p_t[0], p_t[1], DR["int_h"]/2), rot=ang_door_t)])
+    # tower floors
+    t_levels = [FH*k for k in range(0, int(TW["floors_top"]/FH) + 1)]
+    t_names = [f"T_L{k}" for k in range(len(t_levels))]
+    for k, z in enumerate(t_levels):
+        space(t_names[k], (TC[0] + (tower_r_at(z) - 4.0)*math.cos(ang_door_t), TC[1] + (tower_r_at(z) - 4.0)*math.sin(ang_door_t)), z, "floor" if k else "lobby")
+    # core: lift bank (centre) + 2 stairs (west/east)
+    LS = P["lifts"]["shaft"]; nl = TW["core"]["lifts"]
+    bank_w = nl*LS + (nl - 1)*0.3
+    by = TC[1] - LS/2 + 0.5
+    core_holes = []
+    for i in range(nl):
+        lx = TC[0] - bank_w/2 + i*(LS + 0.3)
+        core_holes.append(lift_module(f"T_lift{i}", lx, by, t_levels, t_names))
+    sy0 = TC[1] - ST["shaft_l"]/2 + 1.0
+    core_holes += stair_module("T_stairA", TC[0] - bank_w/2 - 0.6 - ST["shaft_w"], sy0, t_levels, "T_L0", t_names[1:])
+    core_holes += stair_module("T_stairB", TC[0] + bank_w/2 + 0.6, sy0, t_levels, "T_L0", t_names[1:], flip=True)
+    # ---- slabs ----
+    ROLE = "slab"
+    st = POD["slab_t"]
+    def rect_cut(h, z): return box("c", (h[2] - h[0], h[3] - h[1], 1.0), ((h[0] + h[2])/2, (h[1] + h[3])/2, z))
+    def rects_cutter(rects, z):
+        bx = Boxes()
+        for h in rects: bx.add(Vector(((h[0] + h[2])/2, (h[1] + h[3])/2, z)), (h[2] - h[0], h[3] - h[1], 1.0))
+        return bx.flush("cut_rects", "cut")
+    for k, z in enumerate(t_levels[1:], start=1):
+        sl = cyl(f"TowerSlab{k}", tower_r_at(z) - 0.5 - TW["shell_t"] + 0.05, z - st, z, (TC[0], TC[1], 0), 96)
+        boolean(sl, [rects_cutter(core_holes, z - st/2)])
+    for k, z in enumerate(POD["levels"][1:], start=1):
+        sl = WALL.loft(f"PodiumSlab{k}", [(-POD["wall_t"] + 0.02, z - st), (-POD["wall_t"] + 0.02, z)])
+        cuts = [cyl_cut(CR + 0.02, CC, z - 2, z + 2, 96), cyl_cut(TW["drums"][0][0] - 0.2, TC, z - 2, z + 2)]
+        if z < TUN["spring"] + TUN["rise"] + 0.6:
+            cuts.append(box("c", (2*TUN["hw"] + 1.2, Y_TUN_END - FRONT_Y + 4, 3.0), (ARC["cx"], (FRONT_Y + Y_TUN_END)/2, z)))
+        if z < ARC["spring"] + ARC["rise"] + 1.0:
+            cuts.append(box("c", (2*ARC["hw"] + 1.2, ARC["portal_depth"] + 4.0, 3.0), (ARC["cx"], FRONT_Y + ARC["portal_depth"]/2 - 1.0, z)))
+        cuts.append(rects_cutter(holesW + holesE, z - st/2))
+        boolean(sl, cuts)
+    ROLE = "shell"
+    WALLB.flush("InteriorWalls", "wall")
+    STAIRB.flush("Stairs", "stair")
+    # door leaves (auto doors)
+    ROLE = "door_leaf"
+    for (did, c, nrm, w, h, z) in DOOR_LEAVES:
+        o = box(f"DoorLeaf_{did}", (DR["leaf_t"], w - 0.06, h - 0.05), (c[0], c[1], z + (h - 0.05)/2 + 0.02), rot=math.atan2(nrm[1], nrm[0]))
+        o["door_id"] = did; o["slide"] = [-nrm[1]*w, nrm[0]*w, 0.0]
+    ROLE = "shell"
+    # ---- glowing plaza rings (forecourt + courtyard) ----
+    ROLE = "plaza_glow"
+    ring("PlazaRingCourt", CR*0.45, CR*0.52, 0.0, 0.04, (CC[0], CC[1], 0), 128)
+    ring("PlazaRingFore", 9.0, 10.0, 0.0, 0.04, (ARC["cx"], FRONT_Y - 14.0, 0), 128)
+    ROLE = "shell"
+    # spaces / graph export
+    json.dump({"spaces": SPACES, "doors": DOORS, "stairs": STAIRS, "lifts": LIFTS,
+               "entrance": "forecourt", "params": os.environ.get("PARAMS", "params.json")},
+              open(os.path.join(OUT, "spaces.json"), "w"), indent=1)
+
+# ---------------- clean meshes ----------------
+for o in list(COL.objects):
+    if o.type != 'MESH': continue
+    bm = bmesh.new(); bm.from_mesh(o.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=0.001)
+    bm.to_mesh(o.data); bm.free()
+
+print("BUILD OK", MODE, "objects:", len(COL.objects), "doors:", len(DOORS), "stairs:", len(STAIRS))
+
+# =====================================================================
+# SAVE / EXPORT (full)  |  SILHOUETTES (sil)
+# =====================================================================
+if FULL:
+    bpy.context.preferences.filepaths.save_version = 0
+    bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, "building.blend"))
+    bpy.ops.export_scene.gltf(filepath=os.path.join(OUT, "building.glb"), export_format='GLB', export_extras=True, export_apply=True)
+if MODE == "sil" or os.environ.get("SIL", "0") == "1":
+    exec(open(os.path.join(HERE, "src", "render_sil.py")).read())

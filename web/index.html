@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Building preview - orbit / walk</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#20222a;font-family:system-ui,sans-serif}
+  #hud{position:absolute;left:12px;top:10px;color:#eee;font-size:13px;line-height:1.45;background:rgba(0,0,0,.45);padding:8px 12px;border-radius:6px;max-width:420px;pointer-events:none}
+  #bar{position:absolute;right:12px;top:10px;display:flex;gap:6px}
+  #bar button{background:#3a3f52;color:#fff;border:0;border-radius:5px;padding:6px 10px;cursor:pointer}
+  #bar button.on{background:#6b7cff}
+  #cross{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#fff;opacity:.7;display:none}
+  #load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ddd;font-size:18px}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/build/three.module.js",
+  "three/addons/": "./vendor/three/jsm/",
+  "three-mesh-bvh": "./vendor/three-mesh-bvh/src/index.js"
+} }
+</script>
+</head>
+<body>
+<div id="load">loading model...</div>
+<div id="hud"></div>
+<div id="bar"><button id="bOrbit" class="on">Orbit</button><button id="bWalk">Walk</button></div>
+<div id="cross"></div>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
