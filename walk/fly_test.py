@@ -66,7 +66,7 @@ async def main():
         checks["climbed_over_crown"] = {"z": round(s["z"], 1), "crown_z": CROWN, "dist_to_tower_axis": round(math.hypot(s["x"] - TC[0], s["y"] - TC[1]), 1)}
         checks["climb_ok"] = s["z"] > CROWN + 15
         await shot("02_climbing_to_crown")
-        await pg.evaluate(f"{F}.lookFrom([{TC[0] - 38}, {TC[1] - 42}, 96], [{TC[0]}, {TC[1]}, 68])"); await shot("03_over_crown")
+        await pg.evaluate(f"{F}.preset(3)"); await shot("03_over_crown")
         # Q descends
         a = await st(); await hold(["q"], 1000); b = await st(); checks["Q_descends"] = b["z"] < a["z"] - 5
 
