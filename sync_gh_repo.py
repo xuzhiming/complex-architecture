@@ -24,10 +24,10 @@ shutil.copytree(os.path.join(H, "web", "vendor"), os.path.join(R, "web", "vendor
 # docs
 for f in glob.glob(os.path.join(R, "docs", "*.png")): os.remove(f)
 for f in ["renders/four_views.png", "renders/perspective_hero.png", "renders/perspective_hero_low.png", "renders/detail_tower.png", "renders/crown_detail.png",
-          "renders/top.png", "final_render.png", "final_vs_ref.png", "compare/final/overlay_sheet.png", "compare/final/side_by_side.png"]:
+          "renders/top.png", "final_render.png", "final_vs_ref.png", "compare/final/overlay_sheet.png", "compare/final/side_by_side.png", "renders/arch_view_before_after.png"]:
     if os.path.exists(os.path.join(H, f)): cp(f, "docs/" + os.path.basename(f))
 cp("gh_readme.md", "README.md")
-for f in ["CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md", "CHANGES_v9.md", "CHANGES_v10.md", "CHANGES_v11.md"]:
+for f in ["CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md", "CHANGES_v9.md", "CHANGES_v10.md", "CHANGES_v11.md", "CHANGES_v12.md"]:
     if os.path.exists(os.path.join(H, f)): cp(f, "docs/" + f)
 big = [f for f in glob.glob(os.path.join(R, "**", "*"), recursive=True) if os.path.isfile(f) and os.path.getsize(f) > 25*1024*1024 and "/.git/" not in f]
 print("synced; files > 25 MiB:", big, "| glb MB:", round(os.path.getsize(os.path.join(R, "web", "building_opt.glb"))/1e6, 2))

@@ -4,7 +4,7 @@
   "enter_from_orbit_keeps_pose": true,
   "no_gravity": true,
   "W_along_view_dir_cos": 1.0,
-  "W_dist_m": 17.96,
+  "W_dist_m": 17.95,
   "shift_boost_ratio": 3.0,
   "climbed_over_crown": {
    "z": 82.0,
@@ -15,7 +15,7 @@
   "Q_descends": true,
   "through_courtyard": {
    "from_y": -70.5,
-   "to_y": 78.2,
+   "to_y": 77.6,
    "z_drift": 0,
    "x_drift": 0,
    "solid_crossed_after_courtyard": true

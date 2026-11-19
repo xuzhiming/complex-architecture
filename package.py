@@ -5,7 +5,7 @@ D = "deliver"; shutil.rmtree(D, ignore_errors=True); os.makedirs(D)
 def cp(src, dst=None):
     dst = os.path.join(D, dst or src); os.makedirs(os.path.dirname(dst) or D, exist_ok=True); shutil.copy2(src, dst)
 for f in ["building.blend", "building.glb", "web/building_opt.glb", "circulation_report.json", "circulation_report.md", "compare_log.md",
-          "final_render.png", "final_vs_ref.png", "params.json", "params_table.md", "CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md", "CHANGES_v9.md", "CHANGES_v10.md", "CHANGES_v11.md"]:
+          "final_render.png", "final_vs_ref.png", "params.json", "params_table.md", "CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md", "CHANGES_v9.md", "CHANGES_v10.md", "CHANGES_v11.md", "CHANGES_v12.md"]:
     cp(f, os.path.basename(f))
 cp("renders/four_views.png", "four_views.png")
 for f in ["overlay_sheet.png", "scores.json", "side_by_side.png"]: cp(f"compare/final/{f}", f"compare/{f}")
@@ -20,5 +20,5 @@ src = ["build.py", "flatten.py", "sheet.py", "tools_params_table.py", "package.p
        *glob.glob("compare/*.py"), *glob.glob("check/*.py"), "walk/walk_test.py", "walk/fly_test.py", *[f for f in glob.glob("src/*.py") if not re.search(r"_(r|v)\d", os.path.basename(f))],
        "web/index.html", "web/main.js", "web/README.md", "compare_log.md", "CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md", "CHANGES_v9.md", "CHANGES_v10.md", "sources.json", "gh_readme.md"]
 zdir(os.path.join(D, "pipeline_src.zip"), src, "gothic_pipeline")
-out = shutil.make_archive(os.path.join(H, "gothic_deliver_v11"), "zip", root_dir=H, base_dir=D)
+out = shutil.make_archive(os.path.join(H, "gothic_deliver_v12"), "zip", root_dir=H, base_dir=D)
 print("packaged", out, round(os.path.getsize(out)/1e6, 1), "MB")

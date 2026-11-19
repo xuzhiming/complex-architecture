@@ -551,3 +551,17 @@ User: "从中间的建筑延伸上去，幅度大一些，平滑一点。"
 Mean: IoU 0.9001 → 0.9118, skyline 2.93 → 1.38 m, score 0.8708 → 0.8980.
 - **Checks (run_all):** circulation PASS (negative test caught), glb 10.42 → 2.23 MB, walk PASS (0 penetrations).
 - **Clash check (BVH, final building.blend):** the crescent touches only TowerShell2/3, where it grows out of the shell.
+
+## v12 — tunnel / courtyard junction cleaned (geometry only, crown and massing unchanged)
+- The silhouette scores are unchanged from v11, as expected: mean IoU 0.9118, mean skyline error 1.38 m.
+- Courtyard mouth:
+  - The courtyard rails `CourtRail_4.5` / `CourtRail_9.0` are cut back at the portal.
+  - The tunnel vault is trimmed flush with the courtyard face.
+  - The arcade wall is cut to the vault's outer profile, and a new `CourtPortalFrame` (1.0 m arch band, 0.35 m proud) frames the
+    opening. The nearest bays end one pier width (~1.1 m) away.
+  - The tunnel→gallery side openings are kept clear of the arcade wall.
+- Coplanar reveal faces (black z-fighting lines) were removed at three jambs: the courtyard mouth, the tunnel entrance (portal
+  back wall) and the outer great portal (shell, lining and first archivolt).
+- A BVH scan of the tunnel's clear profile from the portal back wall to the courtyard centre: 2 objects crossing before,
+  0 after.
+- Before/after images: `renders/arch_view_before_after.png`. Cameras are in `tools/arch_views.py`.

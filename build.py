@@ -149,7 +149,9 @@ if FULL:
     shell_cuts.append(arch_prisms("cut_win", win_items))
     if loggia_items: shell_cuts.append(arch_prisms("cut_loggia_arcade", loggia_items))
     # great portal through the shell
-    shell_cuts.append(arch_prisms("cut_portal", [(ARC["cx"], FRONT_Y, 0.0, -math.pi/2, ARC["hw"], ARC["spring"], ARC["rise"], 3.0)]))
+    # v12: cut to the portal lining's OUTER profile so the lining alone forms the reveal (the old cut at x = +-hw was coplanar
+    # with the lining and archivolt reveals -> black z-fighting lines on both jambs seen from the forecourt)
+    shell_cuts.append(arch_prisms("cut_portal", [(ARC["cx"], FRONT_Y, 0.0, -math.pi/2, ARC["hw"] + 0.6, ARC["spring"], ARC["rise"] + 0.6, 3.0)]))
     # exterior pedestrian doors (arched, through)
     for (_, x, y) in EXT_DOORS:
         shell_cuts.append(arch_prisms("cut_extdoor", [(x, y + 0.2, 0.0, -math.pi/2, DR["ext_w"]/2, DR["ext_h"] - DR["ext_w"]/2, DR["ext_w"]/2, 3.0)]))
@@ -199,9 +201,12 @@ def arch_tube(name, x, y_mid, length, hw, sp, rise, t):
         boolean(outer, [arch_prisms("c", [(x, y_mid, -0.5, -math.pi/2, hw, sp + 0.5, rise, length + 2)])])
     return outer
 PORTAL_BACK = FRONT_Y + ARC["portal_depth"]
-arch_tube("PortalLining", ARC["cx"], (FRONT_Y + PORTAL_BACK)/2, ARC["portal_depth"] + 0.2, ARC["hw"], ARC["spring"], ARC["rise"], 0.6)
+# v12: the lining starts where the first archivolt ends (FRONT_Y + 0.2) -> reveals meet edge to edge, no coplanar overlap
+arch_tube("PortalLining", ARC["cx"], (FRONT_Y + 0.2 + PORTAL_BACK + 0.1)/2, ARC["portal_depth"] - 0.1, ARC["hw"], ARC["spring"], ARC["rise"], 0.6)
 pb = arch_prisms("PortalBackWall", [(ARC["cx"], PORTAL_BACK, 0.0, -math.pi/2, ARC["hw"] + 0.3, ARC["spring"], ARC["rise"] + 0.3, 0.6)])
-boolean(pb, [arch_prisms("c", [(ARC["cx"], PORTAL_BACK, -0.5, -math.pi/2, TUN["hw"], TUN["spring"] + 0.5, TUN["rise"], 2.0)])])
+# v12: back wall cut to the vault's OUTER profile; the vault (which now starts flush with the back wall's face) forms the
+# tunnel-mouth reveal alone (the old cut at x = +-hw was coplanar with the vault -> black lines up both tunnel jambs)
+boolean(pb, [arch_prisms("c", [(ARC["cx"], PORTAL_BACK, -0.5, -math.pi/2, TUN["hw"] + 0.6, TUN["spring"] + 0.5, TUN["rise"] + 0.6, 2.0)])])
 # archivolts on the shell face
 for k, (grow, dep) in enumerate(P.get("detail", {}).get("archivolts", [[1.4, 1.6], [2.8, 1.0]])):   # v6: layered, stepped archivolts
     av = arch_prisms(f"Archivolt{k}", [(ARC["cx"], FRONT_Y - dep/2 + 0.2, 0.0, -math.pi/2, ARC["hw"] + grow, ARC["spring"], ARC["rise"] + grow*0.8, dep)])
@@ -211,13 +216,17 @@ box("ArchKeystone", (2.4, AVL[0][1] + 0.6, 3.2), (ARC["cx"], FRONT_Y - (AVL[0][1
 for sx_ in (-1, 1):   # impost blocks where the archivolts spring
     box(f"ArchImpost{sx_}", (gmax + 1.2, AVL[0][1] + 0.4, 0.9), (ARC["cx"] + sx_*(ARC["hw"] + gmax/2), FRONT_Y - (AVL[0][1] + 0.4)/2 + 0.2, ARC["spring"] - 0.45))
 # tunnel from portal back wall to the arcade wall of the courtyard
-Y_TUN_END = CC[1] - CR*math.sqrt(max(1 - (TUN["hw"]/(CR*KX))**2, 0)) + 0.3
-tun = arch_tube("TunnelVault", ARC["cx"], (PORTAL_BACK + Y_TUN_END)/2, Y_TUN_END - PORTAL_BACK, TUN["hw"], TUN["spring"], TUN["rise"], 0.6)
+# v12: the vault runs 1.5 m past the courtyard face and is then trimmed by the courtyard ellipse, so it ends exactly flush with
+# the arcade wall's inner face (no hood protruding into the courtyard, no overlap with the frame).
+Y_TUN_END = CC[1] - CR + 1.5
+TUN_Y0 = PORTAL_BACK - 0.3                                   # flush with the portal back wall's front face
+tun = arch_tube("TunnelVault", ARC["cx"], (TUN_Y0 + Y_TUN_END)/2, Y_TUN_END - TUN_Y0, TUN["hw"], TUN["spring"], TUN["rise"], 0.6)
+boolean(tun, [ecut(CR, -1.0, TUN["spring"] + TUN["rise"] + 3.0)])
 # side openings where the gallery ring crosses the tunnel
 def ring_y(R, x): return CC[1] - R*math.sqrt(max(1 - (x/(R*KX))**2, 0))
 GX = TUN["hw"] + 0.3
 gy0, gy1 = ring_y(R_GAL_OUT, GX), ring_y(R_ARC_OUT, GX)
-TUN_SIDE_OPEN = (gy0 + 0.3, gy1 - 0.3)
+TUN_SIDE_OPEN = (gy0 + 0.4, gy1 - 0.7)   # v12: kept clear of the arcade wall (the old cut notched the portal jamb -> dark slot)
 if FULL:
     boolean(tun, [box("c", (2.0, TUN_SIDE_OPEN[1] - TUN_SIDE_OPEN[0], 3.0), (sx*GX, (TUN_SIDE_OPEN[0] + TUN_SIDE_OPEN[1])/2, 1.5)) for sx in (-1, 1)])
 
@@ -245,11 +254,22 @@ for lv in CY["tiers"]:
         r = (CR + R_ARC_OUT)/2; pe = EP(r, a)
         citems.append((pe[0], pe[1], lv + (0.0 if lv == 0 else 1.0), EN(a), CY["arch_hw"], CY["arch_spring"], CY["arch_rise"], CY["wall_t"]*KX + 1.0))
         if lv == 0: ARCADE_OPEN.append(a)
-citems.append((ARC["cx"], CC[1] - CR, -0.5, -math.pi/2, TUN["hw"], TUN["spring"] + 0.5, TUN["rise"], 6.0))
+# v12: the arcade wall is cut to the vault's OUTER profile, so the vault itself forms the jambs (no overlapping wall/vault solids)
+citems.append((ARC["cx"], CC[1] - CR, -0.5, -math.pi/2, TUN["hw"] + 0.6, TUN["spring"] + 0.5, TUN["rise"] + 0.6, 6.0))
 if FULL: boolean(cwall, [arch_prisms("cut_courtarch", citems)])
+# v12: framed courtyard portal: an arch band (opening = the tunnel's clear profile, 1.0 m wide) that follows the curved arcade
+# face and stands 0.35 m proud of it; the nearest arcade bays end ~1.1 m from it (a normal pier width).
+PF_W = 1.0
+pf = arch_prisms("CourtPortalFrame", [(ARC["cx"], CC[1] - CR, 0.0, -math.pi/2, TUN["hw"] + PF_W, TUN["spring"], TUN["rise"] + PF_W, 5.0)])
+boolean(pf, [arch_prisms("c", [(ARC["cx"], CC[1] - CR, -0.5, -math.pi/2, TUN["hw"], TUN["spring"] + 0.5, TUN["rise"], 7.0)])])
+# band from the inner face 0.35 m into the courtyard only: the frame's reveal continues the vault's inner face edge-to-edge
+# (no coplanar overlap -> no black z-fighting strip at the jambs, which the old wall cut at x = +-hw produced)
+boolean(pf, [ring("c", CR - 0.35, CR, -0.5, DT, (CC[0], CC[1], 0), 160, sx=KX)], op='INTERSECT')
 rounded_band("CourtRim", (CC[0], CC[1], 0), R_ARC_OUT, DT + CY["rim_h"], 0.9, 0.7, 160, sx=KX)
 for lv in CY["tiers"][1:]:   # balcony rails on upper tiers (inside face)
-    ring(f"CourtRail_{lv}", CR - 0.35, CR - 0.15, lv, lv + 1.1, (CC[0], CC[1], 0), 160, sx=KX)
+    rl = ring(f"CourtRail_{lv}", CR - 0.35, CR - 0.15, lv, lv + 1.1, (CC[0], CC[1], 0), 160, sx=KX)
+    if lv < TUN["spring"] + TUN["rise"] + PF_W:   # v12: rails stop at the portal frame instead of crossing the tunnel mouth
+        boolean(rl, [box("c", (2*(TUN["hw"] + PF_W) + 0.04, 6.0, 3.0), (ARC["cx"], CC[1] - CR, lv + 0.5))])
 
 # ---------------- flared tree columns ----------------
 COLS = P["columns"]
