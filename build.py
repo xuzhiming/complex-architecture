@@ -461,6 +461,22 @@ def crescent_plate(name, ctr, e, R, ph_t, ph_b, w_mid, thick, vax=(0, 0, 1), sx=
 
 PR = CRS.get("pair")
 PL = CRS.get("plate")
+SG = CRS.get("single")
+if SG:
+    # v10 crown (user's four-view crown sheet): ONE crescent, not mirrored. A flat plate: outer circle R minus an offset inner
+    # circle through both tips (thickest mid-arc), constant section, rounded edges. Its plane is upright-ish, yawed by theta so
+    # that the bulge (back of the C) sits south-west of the tower top and the arc sweeps over to the north-east tip.
+    th, al, R_ = math.radians(SG["theta"]), math.radians(SG.get("alpha", 0.0)), SG["R"]
+    e = Vector((math.cos(th), math.sin(th), 0))
+    w = Vector((-e.y, e.x, 0))
+    v = Vector((0, 0, 1))*math.cos(al) + w*math.sin(al)
+    ctr = (TC[0] + SG["cx_off"], TC[1] + SG["dy"], SG["zc"])
+    ob, ptip, pbase = crescent_plate("CrescentCrown", ctr, e, R_, SG["ph_tip"], SG["ph_base"], SG["w_mid"], SG.get("thick", 1.3), vax=tuple(v))
+    cut = cyl("cut", tower_r_at(max(DT, pbase.z)) - 0.45, DT, TW["crown_z"] - 1.5, (TC[0], TC[1], 0), 96)
+    boolean(ob, [cut])
+    print("CRESCENT single yaw", SG["theta"], "R", R_, "tip", tuple(round(c, 1) for c in ptip), "base", tuple(round(c, 1) for c in pbase))
+    pts = [tuple(pbase)]
+    PL = None; PR = None
 if PL:
     # v8 crown (user: follow the reference strictly, no twist, natural): two mirror-image planar crescents framing the tower
     # like ( ). Each lies in a vertical plane yawed by theta (bulge front-outboard, tips rear-inboard), so the front
@@ -521,7 +537,7 @@ elif PR and not PL:
         cyl(nm + "_Post", CRS["post_r"], DT, zb + 0.6, (hp[0][0], hp[0][1], 0), 48)
         drum(nm + "_PostDrum", (hp[0][0], hp[0][1]), CRS["post_r"] + 0.8, DT, max(DT + 6, zb - 3.0), band=FH)
     pts = [(ax - bdx, yb, zb)]
-elif not PL:
+elif not PL and not SG:
     pts = crescent_pts()
     sweep_bank("CrescentCrown", pts, lambda t: crescent_d(t)/2, lambda t: crescent_d(t)/2*CRS.get("flat", 0.8), bank=math.radians(CRS.get("bank", 0.0)))
     cyl("CrescentPost", CRS["post_r"], DT, pts[0][2] + 0.5, (pts[0][0], pts[0][1], 0), 48)

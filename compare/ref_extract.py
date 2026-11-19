@@ -4,8 +4,12 @@ alignment is done by bbox (width -> params overall width)."""
 import numpy as np, json, sys
 from PIL import Image
 from scipy import ndimage as ndi
-SHEET = "/workspace/gothic_model/ref/sheet_elevations.png"
+import os
+SHEET = os.environ.get("SHEET", "/workspace/gothic_model/ref/sheet_elevations.png")
+OUT = os.environ.get("REF_OUT", ".")
+TRIM = int(os.environ.get("TRIM", "0"))     # v10 sheet has a thin dark frame
 im = np.asarray(Image.open(SHEET).convert("L")).astype(np.float32)
+if TRIM: im = im[TRIM:-TRIM, TRIM:-TRIM]
 H, W = im.shape
 out = {}
 quads = {"front": (0, 0), "rear": (0, 1), "left": (1, 0), "right": (1, 1)}
@@ -18,6 +22,8 @@ for name, (qy, qx) in quads.items():
     gl = int(np.argmax(rows[: int(h*0.97)]))
     m = sub < 235                     # non-white = building
     m[gl - 1:, :] = False             # drop ground line + label
+    for rr in range(max(0, gl - 8), gl):   # v10 sheet: thicker anti-aliased ground line -> drop near-full-width rows
+        if m[rr].mean() > 0.85: m[rr:gl, :] = False; break
     m = ndi.binary_closing(m, iterations=2)
     m = ndi.binary_fill_holes(m)
     lab, n = ndi.label(m)
@@ -26,9 +32,9 @@ for name, (qy, qx) in quads.items():
     ys, xs = np.where(keep)
     y0, y1, x0, x1 = ys.min(), gl, xs.min(), xs.max() + 1
     crop = keep[y0:y1, x0:x1]
-    Image.fromarray((crop*255).astype(np.uint8)).save(f"ref_{name}_sil.png")
-    Image.fromarray(sub[y0:y1, x0:x1].astype(np.uint8)).save(f"ref_{name}_crop.png")
+    Image.fromarray((crop*255).astype(np.uint8)).save(os.path.join(OUT, f"ref_{name}_sil.png"))
+    Image.fromarray(sub[y0:y1, x0:x1].astype(np.uint8)).save(os.path.join(OUT, f"ref_{name}_crop.png"))
     out[name] = {"ground_row": gl, "bbox_px": [int(x0), int(y0), int(x1), int(y1)], "w_px": int(x1 - x0), "h_px": int(y1 - y0),
                  "aspect_w_over_h": round((x1 - x0)/(y1 - y0), 3)}
     print(name, out[name])
-json.dump(out, open("ref_measure.json", "w"), indent=1)
+json.dump(out, open(os.path.join(OUT, "ref_measure.json"), "w"), indent=1)

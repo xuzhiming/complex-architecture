@@ -10,7 +10,7 @@ def crop_nonwhite(im):
 def fit(im, h): return im.resize((int(im.width*h/im.height), h), Image.LANCZOS)
 for v in ['front', 'rear', 'left', 'right']:
     rows.append((v, *(fit(crop_nonwhite(Image.open(p).convert('RGB')), H) for p in
-                      (f'compare/ref_{v}_crop.png', f'renders/{v}.png', f'compare/final/overlay_{v}.png'))))
+                      ((f'compare/ref_v10/ref_{v}_crop.png' if os.path.exists(f'compare/ref_v10/ref_{v}_crop.png') else f'compare/ref_{v}_crop.png'), f'renders/{v}.png', f'compare/final/overlay_{v}.png'))))
 c1 = max(r[1].width for r in rows); c2 = max(r[2].width for r in rows); c3 = max(r[3].width for r in rows)
 S = Image.new('RGB', (c1 + c2 + c3 + 80, len(rows)*(H + 50) + 50), 'white'); d = ImageDraw.Draw(S)
 d.text((20, 10), "REFERENCE (sheet crop)", fill='black', font=f); d.text((c1 + 40, 10), "MODEL (clay ortho)", fill='black', font=f)

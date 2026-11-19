@@ -15,15 +15,36 @@ except Exception:
 STRETCH_X = float(os.environ.get("REF_STRETCH_X", _G.get("ref_stretch_x", 1.0)))
 STRETCH_Y = float(os.environ.get("REF_STRETCH_Y", _G.get("ref_stretch_y", 1.0)))   # v7: depth grew with the larger courtyard
 
+# v10: reference panels come from global.ref_dir (the user's crown four-view sheet). The crown zone (global.crown_zone: rows above
+# z0, within half_w of the tower axis) is scored against the STRICT (unstretched) panel, re-anchored on the tower axis, so the
+# single crescent is fitted at its true proportions while the rest of the front/rear keeps the widened x-stretch target.
+try:
+    _P = json.load(open(os.path.join(os.path.dirname(HERE), "params.json")))
+except Exception:
+    _P = {}
+REF_DIR = os.path.join(os.path.dirname(HERE), os.environ.get("REF_DIR", _G.get("ref_dir", "compare")))
+CZ = _G.get("crown_zone")
+TCX = _P.get("tower", {}).get("cx", 0.0)
+
 def load_model(sil_dir, view):
     a = np.asarray(Image.open(os.path.join(sil_dir, f"sil_{view}.png")).convert("RGBA"))[..., 3] > 20
     return a
 
-def ref_mask(view, H_m, mpp, shape, ground_row, cx_px):
-    r = np.asarray(Image.open(os.path.join(HERE, f"ref_{view}_sil.png"))) > 127
+def ref_mask(view, H_m, mpp, shape, ground_row, cx_px, kx=None, shift_px=0):
+    r = np.asarray(Image.open(os.path.join(REF_DIR, f"ref_{view}_sil.png"))) > 127
     h, w = r.shape
     s = (H_m/mpp)/h
-    kx = STRETCH_X if view in ("front", "rear") else STRETCH_Y
+    top = kx is None
+    if kx is None: kx = STRETCH_X if view in ("front", "rear") else STRETCH_Y
+    if top and CZ and view in ("front", "rear") and abs(kx - 1) > 1e-6:
+        base = ref_mask(view, H_m, mpp, shape, ground_row, cx_px, kx)
+        sg = 1 if view == "front" else -1
+        tx = cx_px + sg*TCX/mpp                                   # tower axis column in this view
+        strict = ref_mask(view, H_m, mpp, shape, ground_row, cx_px + sg*TCX*(1 - 1/kx)/mpp, 1.0)
+        zone = np.zeros(shape, bool)
+        r0 = int(round(ground_row - CZ["z0"]/mpp)); c0 = max(0, int(tx - CZ["half_w"]/mpp)); c1 = min(shape[1], int(tx + CZ["half_w"]/mpp))
+        zone[:max(0, r0), c0:c1] = True
+        return np.where(zone, strict, base)
     nw, nh = max(1, int(round(w*s*kx))), max(1, int(round(h*s)))
     rr = np.asarray(Image.fromarray((r*255).astype(np.uint8)).resize((nw, nh), Image.BILINEAR)) > 127
     out = np.zeros(shape, bool)

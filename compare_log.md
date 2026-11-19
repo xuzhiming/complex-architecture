@@ -498,3 +498,28 @@ is a narrow arc behind the tower. The front and rear views are the best so far.
 - Mean IoU **0.8986**, mean skyline error **3.22 m**.
 - Per view: front 0.898/2.16 m | rear 0.895/2.22 m | left 0.900/4.34 m | right 0.902/4.14 m.
 - Checks: circulation PASS (negative test caught), glb 10.34 MB -> 2.19 MB, walk PASS. BVH clash test: the crescents touch only TowerBand1/TowerRib1.
+
+## v10 — single asymmetric crescent from the user's four-view crown sheet
+- The reference silhouettes are re-extracted from `ref/elevations_crown_v10.png` into `compare/ref_v10/`, with the 8 px dark
+  frame trimmed and the thicker ground line removed. Panel aspects match the old sheet (front 1.626, side 1.549).
+- **Crown zone strict:** rows above z 46 m and within ±36 m of the tower axis use the unstretched panel, re-anchored on the
+  tower axis. Everything else on the front/rear keeps the ×1.313 widened target. The sides are strict everywhere.
+- **Crown:** one planar circular crescent.
+  - Shape: R 19.22 m, band 8.82 m at mid-arc, 1.3 m thick.
+  - Placement: turned 48.8° in plan, leaning 10.7°, centre (tower x −14.2, tower y −17.5, z 60.6).
+  - Ends: lower tip enters the tower's west side at z 44.7; upper tip at z 72.0 above the crown.
+- **Search:**
+  - Constrained random search: 4 × 250k samples, 270 valid. The hard constraints were: clear of canopies, drums, masses,
+    bridges and the crown disc/lantern; lower tip inside the upper west tower (z 44–62.6); upper tip z 72–80; nothing below z 40.
+  - Then 24 quick evaluations, then coordinate descent (12 rounds) on the mean of the 4 views (IoU − 0.02 × skyline error).
+- **Rejected:** an earlier unconstrained optimum scored better (front 2.42 / rear 2.40 / left 2.52 / right 2.35 m). But its C
+  hung down in front of the tower to the courtyard rim and its tip ran into the lantern.
+
+| crown (all vs the v10 sheet) | front | rear | left | right |
+|---|---|---|---|---|
+| v9 mirror pair | 0.872 / 3.13 m | 0.866 / 3.29 m | 0.900 / 4.28 m | 0.901 / 4.10 m |
+| v8 ellipse pair (for reference) | 0.857 / 3.34 m | 0.851 / 3.51 m | 0.925 / 1.27 m | 0.928 / 1.08 m |
+| **v10 single crescent (final run_all)** | **0.885 / 3.15 m** | **0.884 / 3.13 m** | **0.915 / 2.81 m** | **0.917 / 2.63 m** |
+
+- **Checks:** circulation PASS (negative test caught), glb 10.22 → 2.17 MB, walk PASS.
+- **Clash check:** the BVH overlap test shows the crescent touches only TowerBelt2, where it enters the tower.
