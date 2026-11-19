@@ -82,7 +82,13 @@ def score_view(sil_dir, view, H_m):
     mw = (xs.max() - xs.min() + 1)*mpp if len(xs) else 0; mh = (ground_row - ys.min())*mpp if len(ys) else 0
     ry, rx = np.where(rm)
     rw = (rx.max() - rx.min() + 1)*mpp; rh = (ground_row - ry.min())*mpp
-    return {"iou": float(iou), "skyline_err_m": sky, "model_wh_m": [round(mw, 2), round(mh, 2)], "ref_wh_m": [round(rw, 2), round(rh, 2)],
+    # v11: crown-zone metrics (reported only, score unchanged): rows above crown_zone.z0; skyline error over columns where model or
+    # ref rises above z0; IoU of the masks restricted to those rows.
+    z0 = (CZ or {}).get("z0", 46.0); r0 = int(round(ground_row - z0/mpp))
+    smc, src = np.clip(sm - z0, 0, None), np.clip(sr - z0, 0, None); cc = (smc > 0) | (src > 0)
+    c_sky = float(np.abs(smc - src)[cc].mean()) if cc.any() else 0.0
+    c_iou = float((mm[:r0] & rm[:r0]).sum()/max((mm[:r0] | rm[:r0]).sum(), 1))
+    return {"iou": float(iou), "skyline_err_m": sky, "crown_iou": c_iou, "crown_sky_m": c_sky, "model_wh_m": [round(mw, 2), round(mh, 2)], "ref_wh_m": [round(rw, 2), round(rh, 2)],
             "regions": reg}, mm, rm
 
 def overlay(mm, rm, path):

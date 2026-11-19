@@ -462,7 +462,79 @@ def crescent_plate(name, ctr, e, R, ph_t, ph_b, w_mid, thick, vax=(0, 0, 1), sx=
 PR = CRS.get("pair")
 PL = CRS.get("plate")
 SG = CRS.get("single")
-if SG:
+if SG and SG.get("A"):
+    # v11 (user: grow out of the central tower, larger, smoother): one smooth crescent whose centreline is an elliptical arc
+    # in a near-vertical plane; tapering in-plane width (sharp tip), constant 1.3 m plate with rounded edges, and a root that
+    # widens and thickens (fillet-like flare) where it emerges from the tower shell. Root is trimmed at the tower shell.
+    exec(open(os.path.join(HERE, "src", "crescent_geom.py")).read(), globals())
+    cl, e_, v_, n_ = centreline(SG, TC, 260)
+    nV = Vector(n_); M = 28
+    sec = [(math.copysign(abs(math.cos(a))**0.25, math.cos(a)), math.copysign(abs(math.sin(a))**0.25, math.sin(a))) for a in [2*math.pi*k/M for k in range(M)]]
+    verts, faces = [], []
+    Nn = len(cl) - 1
+    _dsh = lambda p: math.hypot(p[0] - TC[0], p[1] - TC[1]) - (tower_r_at(p[2]) - 0.5)
+    k_fil = next((k for k, p in enumerate(cl) if _dsh(p) > 8.0), 0)     # fillet only on the root run, not where the arm passes the crown
+    def hw_ht(k):
+        # fillet: near the tower the plate fans out in width and thickness (exp. decay with the distance outside the shell),
+        # so the root spreads onto the shell like a cast blend instead of a plate plugged into it.
+        t = k/Nn; p = cl[k]
+        d = max(0.0, math.hypot(p[0] - TC[0], p[1] - TC[1]) - (tower_r_at(p[2]) - 0.5))
+        g = math.exp(-d/SG.get("fil_l", 2.5)) if k < k_fil else 0.0
+        return (max(half_width(SG, t), 0.03) + SG.get("fil_w", 0.0)*g,
+                half_thick(SG, t)*(1.0 if t < 0.92 else max(0.25, (1 - t)/0.08)) + SG.get("fil_th", 0.0)*g)
+    for k, p in enumerate(cl):
+        t = k/Nn; P_ = Vector(p)
+        T_ = (Vector(cl[min(k + 1, Nn)]) - Vector(cl[max(k - 1, 0)])).normalized()
+        U_ = nV.cross(T_).normalized()
+        hw, ht = hw_ht(k)
+        for (a, b) in sec: verts.append(tuple(P_ + U_*(a*hw) + nV*(b*ht)))
+    for k in range(Nn):
+        for j in range(M):
+            a = k*M + j; b = k*M + (j + 1) % M; faces.append([a, b, b + M, a + M])
+    faces.append(list(range(M))[::-1]); faces.append([Nn*M + j for j in range(M)])
+    ob = mesh_from("CrescentCrown", verts, faces); smooth(ob)
+    root = Vector(cl[0]); tip = Vector(cl[-1])
+    # trim at the INNER face of the tower shell, drum by drum: the root stays embedded in the shell wall (it grows out of it)
+    # and nothing reaches the tower interior (slabs, stairs).
+    cuts = [cyl("cut", r - 0.5 - TW["shell_t"] + 0.15, z0 - 0.01, z1 + 0.01, (TC[0], TC[1], 0), 128) for (r, z0, z1) in TW["drums"] if z1 > DT]
+    boolean(ob, cuts)
+    # clean root: where the crescent grows out of the shell, the tower's bands / belts / steps / ribs / balconies and any windows
+    # are cleared in a slightly inflated envelope of the root, so the plate emerges from plain shell like an extrusion.
+    s_out = next((k for k, p in enumerate(cl) if math.hypot(p[0] - TC[0], p[1] - TC[1]) > tower_r_at(p[2]) + 3.5), 0)
+    K = min(Nn, s_out + 6)
+    rv, rf = [], []
+    for k in range(K + 1):
+        t = k/Nn; P_ = Vector(cl[k]); T_ = (Vector(cl[min(k + 1, Nn)]) - Vector(cl[max(k - 1, 0)])).normalized(); U_ = nV.cross(T_).normalized()
+        hw, ht = hw_ht(k); hw, ht = hw + 0.7, ht + 1.0
+        for (a, b) in sec: rv.append(tuple(P_ + U_*(a*hw) + nV*(b*ht)))
+    for k in range(K):
+        for j in range(M):
+            a = k*M + j; b = k*M + (j + 1) % M; rf.append([a, b, b + M, a + M])
+    rf.append(list(range(M))[::-1]); rf.append([K*M + j for j in range(M)])
+    rc = mesh_from("cut", rv, rf); rc["role"] = "cut"
+    rbb = ([min(v[i] for v in rv) for i in range(3)], [max(v[i] for v in rv) for i in range(3)])
+    from mathutils.bvhtree import BVHTree
+    rbv = BVHTree.FromPolygons(rv, rf)
+    n_cut = n_win = 0
+    for o in list(bpy.data.objects):
+        if o.type != 'MESH' or o is rc or o is ob: continue
+        bb = [o.matrix_world @ Vector(c) for c in o.bound_box]
+        if any(max(q[i] for q in bb) < rbb[0][i] or min(q[i] for q in bb) > rbb[1][i] for i in range(3)): continue
+        if o.get("inst"):
+            loc = o.matrix_world.translation; hit = rbv.find_nearest(loc)
+            if hit[0] is not None and (hit[3] < 1.2 or rbv.ray_cast(loc, Vector((0, 0, 1)))[0] is not None and rbv.ray_cast(loc, Vector((0, 0, -1)))[0] is not None):
+                bpy.data.objects.remove(o, do_unlink=True); n_win += 1
+            continue
+        if o.name.startswith(("TowerBand", "TowerBelt", "TowerStep", "TowerRib", "TowerBalcon")):
+            boolean(o, [rc], keep=True); n_cut += 1
+    bpy.data.objects.remove(rc, do_unlink=True)
+    print("CRESCENT root clean: trimmed", n_cut, "tower trims, removed", n_win, "windows")
+    print("CRESCENT sweep root", tuple(round(c, 1) for c in root), "tip", tuple(round(c, 1) for c in tip))
+    pts = [tuple(root)]
+    PL = None; PR = None
+elif SG and SG.get("off"):
+    PL = None; PR = None                                   # crown omitted (used to build the no-crown base silhouette)
+elif SG:
     # v10 crown (user's four-view crown sheet): ONE crescent, not mirrored. A flat plate: outer circle R minus an offset inner
     # circle through both tips (thickest mid-arc), constant section, rounded edges. Its plane is upright-ish, yawed by theta so
     # that the bulge (back of the C) sits south-west of the tower top and the arc sweeps over to the north-east tip.

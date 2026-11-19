@@ -70,7 +70,8 @@ def region_totals(res):
     return tot
 
 def fmt(res):
-    return " | ".join(f"{v} {res[v]['iou']:.3f}/{res[v]['skyline_err_m']:.2f}m" for v in compare.VIEWS)
+    return " | ".join(f"{v} {res[v]['iou']:.3f}/{res[v]['skyline_err_m']:.2f}m" for v in compare.VIEWS) + " || crown " + \
+        " | ".join(f"{v} {res[v].get('crown_iou', 0):.3f}/{res[v].get('crown_sky_m', 0):.2f}m" for v in compare.VIEWS)
 
 def main():
     base = json.load(open(os.path.join(ROOT, "params.json")))

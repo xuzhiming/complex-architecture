@@ -523,3 +523,31 @@ is a narrow arc behind the tower. The front and rear views are the best so far.
 
 - **Checks:** circulation PASS (negative test caught), glb 10.22 → 2.17 MB, walk PASS.
 - **Clash check:** the BVH overlap test shows the crescent touches only TowerBelt2, where it enters the tower.
+
+## v11 — the crescent grows out of the central tower: a larger, smoother sweeping C
+User: "从中间的建筑延伸上去，幅度大一些，平滑一点。"
+- **Shape:** the two-circle construction is dropped. Centreline = one elliptical arc (semi-axes A 42.1 m in-plane horizontal,
+  B 13.5 m vertical) in a near-vertical plane (yaw 42.8°, lean 1.0°), from the root angle −102.5° round the back (the bulge,
+  south-west) to the tip at 69.5°. In-plane width tapers smoothly (7.3 m max near the lower run, cosine taper to a sharp tip);
+  constant 1.3 m plate with rounded (superellipse) edges. One continuous curve, planar, no twist, no kinks.
+- **Root:** it starts inside the tower shell at z 50.3 and is trimmed at the shell's inner face (per drum). Over the first few
+  metres outside the shell it fans out in width (+3 m) and thickness (+2 m), decaying with distance, so it reads as a cast
+  fillet growing from the tower. In that root envelope the tower bands/belts/steps/ribs/balconies are trimmed and 8 windows
+  removed, so it emerges from plain shell rather than being plugged into a belt.
+- **Span:** front view ≈ 45 m wide (back of the C ≈ 27 m west of the tower axis, tip ≈ 15 m east, at z 76.1); top z ≈ 77.6.
+- **Search:** a fast proxy (plate polygon rasterised over a no-crown base silhouette, same IoU/skyline maths; within 0.05 m
+  of the real evaluation). 240k constrained random samples (19.4k valid), then coordinate descent from the 6 best. Hard
+  constraints: root inside the tower at z 42–62.6; tip z 72–84 and east of the axis; nothing below z 40; clear of canopies
+  (may pass above), drums, masses, bridges (may pass above), crown disc and lantern.
+- New report column: **crown zone** = rows above z 46 m (IoU of those rows; skyline error over the columns rising above z 46).
+
+| vs the v10 sheet | front | rear | left | right |
+|---|---|---|---|---|
+| v10 whole view (IoU / sky) | 0.885 / 3.15 m | 0.884 / 3.13 m | 0.915 / 2.81 m | 0.917 / 2.63 m |
+| **v11 whole view** | **0.897 / 1.51 m** | **0.896 / 1.49 m** | **0.926 / 1.34 m** | **0.928 / 1.17 m** |
+| v10 crown zone | 0.721 / 3.61 m | 0.728 / 3.44 m | 0.792 / 3.77 m | 0.798 / 3.71 m |
+| **v11 crown zone** | **0.771 / 1.45 m** | **0.778 / 1.30 m** | **0.836 / 1.41 m** | **0.840 / 1.35 m** |
+
+Mean: IoU 0.9001 → 0.9118, skyline 2.93 → 1.38 m, score 0.8708 → 0.8980.
+- **Checks (run_all):** circulation PASS (negative test caught), glb 10.42 → 2.23 MB, walk PASS (0 penetrations).
+- **Clash check (BVH, final building.blend):** the crescent touches only TowerShell2/3, where it grows out of the shell.
