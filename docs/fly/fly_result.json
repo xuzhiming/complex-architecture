@@ -4,18 +4,18 @@
   "enter_from_orbit_keeps_pose": true,
   "no_gravity": true,
   "W_along_view_dir_cos": 1.0,
-  "W_dist_m": 17.95,
-  "shift_boost_ratio": 3.0,
+  "W_dist_m": 18.15,
+  "shift_boost_ratio": 2.97,
   "climbed_over_crown": {
-   "z": 82.0,
+   "z": 81.9,
    "crown_z": 65.6,
-   "dist_to_tower_axis": 20.4
+   "dist_to_tower_axis": 20.5
   },
   "climb_ok": true,
   "Q_descends": true,
   "through_courtyard": {
    "from_y": -70.5,
-   "to_y": 77.6,
+   "to_y": 78.0,
    "z_drift": 0,
    "x_drift": 0,
    "solid_crossed_after_courtyard": true

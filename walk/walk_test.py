@@ -4,6 +4,9 @@ along: forecourt -> arch/tunnel -> courtyard -> gallery -> west wing (link, hall
 tower link -> tower lobby -> stair A up to L1 -> lift 0 up to L3 -> exit on L3.
 Records the trajectory, checks every movement segment for wall penetration (BVH ray between consecutive samples at
 knee and chest height), detects getting stuck, checks auto-doors were open when passed, takes checkpoint screenshots.
+v13: + auto-door coverage (every door in spaces.json except open archways -> 2 animated leaves in the page) and a scripted
+pass through >= 10 doors of every type (exterior, gallery, interior, upper floor, tower, lift) logging open-on-approach,
+crossing open fraction, and close-after-leaving; + a fly-mode door check (camera proximity).
 usage: python3 walk/walk_test.py [--url http://localhost:8765/index.html]"""
 import asyncio, json, math, os, sys, time
 from playwright.async_api import async_playwright
@@ -18,6 +21,24 @@ def did(a, b):   # door id by the pair of spaces it joins (ids are renumbered wh
 _cg = [d for d in S["doors"] if {d["a"], d["b"]} == {"courtyard", "gallery"} and d["center"][1] > 0]
 D_CG = min(_cg, key=lambda d: d["center"][0])["id"]
 ST = {s["id"]: s for s in S["stairs"]}
+GAP_MIN = 0.7                                           # v13: min physical leaf gap when crossed (capsule 2R = 0.6 m + 0.1)
+LEAF_TYPES = ("door", "ext_door", "lift_door")          # door types that must be auto doors; "opening"/"open" are archways
+LEAFED = [d for d in S["doors"] if d["type"] in LEAF_TYPES]
+def crossings(a, b):
+    """doors whose plane the move a->b crossed inside the door width (Blender coords)"""
+    out = []
+    for d in LEAFED:
+        c, n, tg = d["center"], d["normal"], d["tangent"]
+        if abs(a[2] - c[2]) > 1.2 or math.hypot(b[0] - c[0], b[1] - c[1]) > 3: continue
+        sa = (a[0] - c[0])*n[0] + (a[1] - c[1])*n[1]; sb = (b[0] - c[0])*n[0] + (b[1] - c[1])*n[1]
+        if sa*sb < 0:
+            f = sa/(sa - sb); px, py = a[0] + (b[0] - a[0])*f, a[1] + (b[1] - a[1])*f
+            if abs((px - c[0])*tg[0] + (py - c[1])*tg[1]) < d["w"]/2 + 0.2: out.append(d["id"])
+    return out
+# v13 scripted door pass: >= 10 doors across all types (by space pair, so renumbering does not break it)
+PASS_DOORS = [did("forecourt", "W_vest"), did("forecourt", "E_vest"), did("gallery", "W_link"), did("gallery", "E_link"),
+              did("W_link", "W_hall"), did("W_hall", "W_core"), did("E_room_s", "E_room_n"), did("W_hall_L1", "W_room_n_L1"),
+              did("T_link", "T_L0"), did("W_core", "W_lift"), did("E_core_L1", "E_lift"), did("T_L2", "T_lift0"), did("E_link", "E_hall")]
 LF = {l["id"]: l for l in S["lifts"]}
 
 def through(did, k=1.6, rev=False):
@@ -81,8 +102,9 @@ async def main():
                     hit = await pg.evaluate(f"{W}.raySegment({json.dumps(a)},{json.dumps(b)})")
                     if hit is not None:
                         pen.append({"t": s["t"], "from": a, "to": b, "hit_at": hit})
-            for d in await pg.evaluate(f"{W}.doorsNear(0.9)"):
-                doorpass.append({"door": d["id"], "open": round(d["open"], 2), "t": s["t"]})
+                for dd in crossings((prev["x"], prev["y"], prev["z"]), (s["x"], s["y"], s["z"])):
+                    info = await pg.evaluate(f"{W}.door({json.dumps(dd)})")
+                    doorpass.append({"door": dd, "open": round(info["t"], 2) if info else -1, "gap_m": round(info["gap"], 2) if info else -1, "t": s["t"]})
             prev = s; return s
         ok_route = True
         for item in ROUTE:
@@ -116,16 +138,118 @@ async def main():
                 events.append({"warn_level": item, "z": s["z"]})
         await shot("99_end")
         final = await st()
+        # ---------------- v13: auto-door coverage ----------------
+        page_doors = {d["id"]: d for d in await pg.evaluate(f"{W}.doorList()")}
+        cov = {"spaces_doors": len(S["doors"]), "by_type": {}, "auto_doors_in_page": len(page_doors),
+               "missing": [], "bad": [], "archways_no_leaf": [d["id"] for d in S["doors"] if d["type"] not in LEAF_TYPES],
+               "extra_in_page": sorted(set(page_doors) - {d["id"] for d in LEAFED})}
+        for d in S["doors"]:
+            t = cov["by_type"].setdefault(d["type"], {"n": 0, "auto": 0})
+            t["n"] += 1
+            pd = page_doors.get(d["id"])
+            if pd and len(pd["leaves"]) == 2 and pd["animated"] and sorted(pd["sides"]) == ["A", "B"] and min(pd["slide"]) > 0.3: t["auto"] += 1
+            elif d["type"] in LEAF_TYPES: (cov["bad"] if pd else cov["missing"]).append(d["id"])
+        cov["PASS"] = not cov["missing"] and not cov["bad"] and not cov["extra_in_page"] and len(page_doors) == len(LEAFED)
+        # ---------------- v13: scripted pass through >= 10 doors ----------------
+        async def walk_to(tx, ty, on_sample=None, timeout=4.0):
+            await pg.keyboard.down("w"); best, best_t, ok = 1e9, time.time(), False
+            while True:
+                s = await sample()
+                if on_sample: await on_sample(s)
+                dx, dy = tx - s["x"], ty - s["y"]; dist = math.hypot(dx, dy)
+                if dist < 0.4: ok = True; break
+                await pg.evaluate(f"{W}.setYaw({math.atan2(-dx, dy)})")
+                if dist < best - 0.1: best, best_t = dist, time.time()
+                if time.time() - best_t > timeout: break
+                await pg.wait_for_timeout(40)
+            await pg.keyboard.up("w"); return ok
+        async def door_state(i): return await pg.evaluate(f"{W}.door({json.dumps(i)})")
+        door_log, shots = [], {}
+        for i in PASS_DOORS:
+            d = D[i]; c, n = d["center"], d["normal"]; lift = d["type"] == "lift_door"
+            if lift: sx, sy = -n[0], -n[1]                               # lift door normal points out of the shaft
+            else:
+                (a0, a1) = through(i, 1.0); sx, sy = (a1[0] - a0[0])/2, (a1[1] - a0[1])/2   # unit vector a -> b
+            k_in = 1.3 if lift else 1.8
+            start, end = None, None
+            for k_out in (3.6, 3.3):
+                st_ = (c[0] - sx*k_out, c[1] - sy*k_out); en_ = (c[0] + sx*k_in, c[1] + sy*k_in)
+                if await pg.evaluate(f"{W}.raySegment([{st_[0]},{st_[1]},{c[2] + 1.0}],[{en_[0]},{en_[1]},{c[2] + 1.0}])") is None:
+                    start, end = st_, en_; break
+            rec = {"door": i, "type": d["type"], "level": c[2]}
+            if start is None: rec["skipped"] = "no clear approach line"; door_log.append(rec); continue
+            await pg.evaluate(f"{W}.teleport({start[0]},{start[1]},{c[2] + 0.05},{math.atan2(-sx, sy)})")
+            prev = None                                                  # teleport: not a walked segment
+            for _ in range(40):                                          # wait for the door to be closed before approaching
+                ds = await door_state(i)
+                if ds["t"] == 0 and not ds["active"]: break
+                await pg.wait_for_timeout(100)
+            await pg.wait_for_timeout(300)
+            rec["closed_at_start"] = (await door_state(i))["t"] == 0
+            if lift: rec["car_before"] = (await door_state(i))["car"]
+            b0 = await pg.evaluate(f"{W}.leafBlocks()")
+            mx = {"t": 0.0, "first_dist": None, "t_open_s": None, "call_dist": None, "t0": time.time()}
+            async def watch(s, i=i, c=c, mx=mx):
+                ds = await door_state(i); dist = math.hypot(s["x"] - c[0], s["y"] - c[1])
+                if lift and mx["call_dist"] is None and ds["target"] is not None and abs(ds["target"] - c[2]) < 1e-3: mx["call_dist"] = round(dist, 2)
+                if ds["t"] > 0 and mx["first_dist"] is None: mx["first_dist"] = round(dist, 2); mx["t_first"] = time.time()
+                if ds["t"] >= 0.999 and mx["t_open_s"] is None: mx["t_open_s"] = round(ds["openDur"], 2) if ds["openDur"] is not None else None
+                mx["t"] = max(mx["t"], ds["t"])
+                if 0.35 < ds["t"] < 0.8 and d["type"] not in shots:
+                    await pg.evaluate(f"{W}.render()"); pth = os.path.join(OUT, f"door_opening_{d['type']}.png")
+                    await pg.screenshot(path=pth); shots[d["type"]] = pth
+            n_before = len(doorpass)
+            rec["reached_inside"] = await walk_to(*end, on_sample=watch, timeout=6.0 if lift else 4.0)
+            rec["trigger_dist_m"] = mx["first_dist"]
+            if lift: rec["call_dist_m"] = mx["call_dist"]; rec["car_waited"] = rec["car_before"] != c[2]
+            rec["open_time_s"] = mx["t_open_s"]; rec["max_open"] = round(mx["t"], 3)
+            rec["leaf_blocks_while_closed"] = await pg.evaluate(f"{W}.leafBlocks()") - b0
+            await pg.wait_for_timeout(300)
+            rec["back_out"] = await walk_to(*start, on_sample=watch)
+            cr = [p for p in doorpass[n_before:] if p["door"] == i]
+            rec["crossings"] = len(cr); rec["crossing_min_open"] = min((p["open"] for p in cr), default=None)
+            rec["crossing_min_gap_m"] = min((p["gap_m"] for p in cr), default=None)
+            tl = time.time(); closed = None
+            while time.time() - tl < 4.0:
+                ds = await door_state(i)
+                if ds["t"] == 0: closed = round(time.time() - tl, 2); break
+                await pg.wait_for_timeout(80)
+            rec["closed_after_leaving_s"] = closed
+            rec["PASS"] = bool(rec["closed_at_start"] and rec["reached_inside"] and rec["back_out"] and rec["max_open"] >= 0.999
+                               and ((rec.get("call_dist_m") or 9) <= 3.05 if lift and rec["car_waited"] else
+                                    (rec["trigger_dist_m"] is not None and 2.0 <= rec["trigger_dist_m"] <= 3.05))
+                               and rec["crossings"] >= 2 and rec["crossing_min_gap_m"] >= GAP_MIN and closed is not None)
+            door_log.append(rec)
+        # ---------------- v13: fly-mode proximity (camera) ----------------
+        fd = D[did("gallery", "E_link")]; c, n = fd["center"], fd["normal"]
+        fly = {"door": fd["id"]}
+        await pg.evaluate(f"window.__fly.setPose({c[0] - n[0]*8},{c[1] - n[1]*8},{c[2] + 1.6},{math.atan2(-n[0], n[1])},0)")
+        await pg.wait_for_timeout(1500); fly["far_t"] = (await door_state(fd["id"]))["t"]
+        await pg.evaluate(f"window.__fly.setPose({c[0] - n[0]*2.2},{c[1] - n[1]*2.2},{c[2] + 1.6},{math.atan2(-n[0], n[1])},0)")
+        await pg.wait_for_timeout(900); fly["near_t"] = (await door_state(fd["id"]))["t"]
+        await pg.evaluate(f"window.__walk.render()"); fly["shot"] = os.path.join(OUT, "door_open_fly.png"); await pg.screenshot(path=fly["shot"])
+        await pg.evaluate(f"window.__fly.setPose({c[0] - n[0]*9},{c[1] - n[1]*9},{c[2] + 1.6},{math.atan2(-n[0], n[1])},0)")
+        await pg.wait_for_timeout(2500); fly["after_leave_t"] = (await door_state(fd["id"]))["t"]
+        fly["PASS"] = fly["far_t"] == 0 and fly["near_t"] >= 0.999 and fly["after_leave_t"] == 0
+        await pg.evaluate("window.__walk.setMode('walk')")
         await br.close()
     # doors passed: minimum open fraction while within 0.9 m of the leaf
-    dmin = {}
-    for d in doorpass: dmin[d["door"]] = min(dmin.get(d["door"], 1.0), d["open"])
+    # v13: leaves are solid, so a crossing is legal once the physical gap clears the capsule (2R = 0.6 m) + 0.1 m;
+    # plain doors are always fully open when crossed at walking speed, lift doors may be crossed while still sliding.
+    dmin, gmin = {}, {}
+    for d in doorpass:
+        dmin[d["door"]] = min(dmin.get(d["door"], 1.0), d["open"]); gmin[d["door"]] = min(gmin.get(d["door"], 9.0), d["gap_m"])
+    passed = [r for r in door_log if r.get("PASS")]
+    door_suite = {"doors": door_log, "n_pass": len(passed), "types_passed": sorted({r["type"] for r in passed}),
+                  "screenshots": shots, "fly": fly}
+    door_suite["PASS"] = len(passed) >= 10 and len(passed) == len(door_log) and set(door_suite["types_passed"]) == set(LEAF_TYPES) and fly["PASS"]
     reached_upper = final["z"] > 13.0
     res = {"route_completed": ok_route, "final_state": final, "reached_upper_floor": reached_upper,
            "samples": len(traj), "duration_s": round(time.time() - t0, 1),
            "path_length_m": round(sum(math.dist((a['x'], a['y'], a['z']), (b['x'], b['y'], b['z'])) for a, b in zip(traj, traj[1:])), 1),
-           "penetrations": pen, "stuck": stuck, "doors_passed_min_open": dmin, "events": events, "page_errors": errs, "sanity_ray_hits_wall": sanity is not None,
-           "PASS": ok_route and not pen and not stuck and reached_upper and all(v >= 0.9 for v in dmin.values()) and not errs and sanity is not None}
+           "penetrations": pen, "stuck": stuck, "doors_passed_min_open": dmin, "doors_passed_min_gap_m": gmin, "events": events, "page_errors": errs, "sanity_ray_hits_wall": sanity is not None,
+           "door_coverage": cov, "door_suite": door_suite,
+           "PASS": cov["PASS"] and door_suite["PASS"] and ok_route and not pen and not stuck and reached_upper and all(v >= GAP_MIN for v in gmin.values()) and not errs and sanity is not None}
     json.dump(res, open(os.path.join(OUT, "walk_result.json"), "w"), indent=1)
     json.dump(traj, open(os.path.join(OUT, "trajectory.json"), "w"))
     with open(os.path.join(OUT, "trajectory.csv"), "w") as f:
@@ -133,7 +257,11 @@ async def main():
         for s in traj: f.write(f"{s['t']},{s['x']:.3f},{s['y']:.3f},{s['z']:.3f},{s['yaw']:.3f},{int(s['onGround'])},{(s['lift'] or {}).get('id','')}\n")
     plot(traj, events)
     print("WALK", "PASS" if res["PASS"] else "FAIL", {k: res[k] for k in ("route_completed", "reached_upper_floor", "samples", "path_length_m", "duration_s")},
-          "penetrations", len(pen), "stuck", len(stuck), "doors", dmin, "errs", errs[:3], "sanity_wall_ray", sanity)
+          "penetrations", len(pen), "stuck", len(stuck), "doors(min open)", dmin, "gap_m", gmin, "errs", errs[:3], "sanity_wall_ray", sanity)
+    print("DOOR COVERAGE", "PASS" if cov["PASS"] else "FAIL", cov["auto_doors_in_page"], "auto /", cov["spaces_doors"], "doors", cov["by_type"],
+          "archways(no leaf):", cov["archways_no_leaf"], "missing", cov["missing"], "bad", cov["bad"])
+    for r in door_log: print("  DOOR", "ok " if r.get("PASS") else "BAD", r)
+    print("DOOR SUITE", "PASS" if door_suite["PASS"] else "FAIL", f"{door_suite['n_pass']}/{len(door_log)} doors, types {door_suite['types_passed']}", "fly", fly, "shots", shots)
 
 def plot(traj, events):
     import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt

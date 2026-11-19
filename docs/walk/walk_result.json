@@ -1,22 +1,54 @@
 {
  "route_completed": true,
  "final_state": {
-  "x": 8.400570304606015,
-  "y": 35.92279236268578,
+  "x": 8.303464474315788,
+  "y": 35.85208364852147,
   "z": 13.499770654907227,
-  "yaw": 2.2086623329834425,
+  "yaw": 2.21267645084355,
   "onGround": true,
   "lift": null
  },
  "reached_upper_floor": true,
- "samples": 878,
- "duration_s": 81.3,
- "path_length_m": 256.7,
+ "samples": 1564,
+ "duration_s": 156.4,
+ "path_length_m": 1302.9,
  "penetrations": [],
  "stuck": [],
  "doors_passed_min_open": {
+  "D14_gallery__W_link": 1.0,
+  "D17_W_link__W_hall": 1.0,
+  "D22_W_hall__W_core": 1.0,
   "D16_gallery__T_link": 1.0,
-  "D63_T_link__T_L0": 1.0
+  "D63_T_link__T_L0": 1.0,
+  "D65_T_L1__T_lift0": 0.66,
+  "D67_T_L3__T_lift0": 1.0,
+  "D35_forecourt__W_vest": 1.0,
+  "D58_forecourt__E_vest": 1.0,
+  "D15_gallery__E_link": 1.0,
+  "D44_E_room_s__E_room_n": 1.0,
+  "D24_W_hall_L1__W_room_n_L1": 1.0,
+  "D36_W_core__W_lift": 1.0,
+  "D60_E_core_L1__E_lift": 0.77,
+  "D66_T_L2__T_lift0": 0.7,
+  "D40_E_link__E_hall": 1.0
+ },
+ "doors_passed_min_gap_m": {
+  "D14_gallery__W_link": 1.75,
+  "D17_W_link__W_hall": 1.75,
+  "D22_W_hall__W_core": 1.75,
+  "D16_gallery__T_link": 1.75,
+  "D63_T_link__T_L0": 1.75,
+  "D65_T_L1__T_lift0": 0.84,
+  "D67_T_L3__T_lift0": 1.15,
+  "D35_forecourt__W_vest": 2.55,
+  "D58_forecourt__E_vest": 2.55,
+  "D15_gallery__E_link": 1.75,
+  "D44_E_room_s__E_room_n": 1.75,
+  "D24_W_hall_L1__W_room_n_L1": 1.75,
+  "D36_W_core__W_lift": 1.15,
+  "D60_E_core_L1__E_lift": 1.0,
+  "D66_T_L2__T_lift0": 0.9,
+  "D40_E_link__E_hall": 1.75
  },
  "events": [
   {
@@ -47,22 +79,22 @@
    "shot": "04_courtyard",
    "at": [
     0.0,
-    -0.37,
+    -0.44,
     -0.0
    ]
   },
   {
    "shot": "05_gallery",
    "at": [
-    -30.69,
-    7.74,
+    -30.85,
+    7.81,
     -0.0
    ]
   },
   {
    "shot": "06_W_link_door",
    "at": [
-    -39.19,
+    -39.11,
     2.0,
     -0.0
    ]
@@ -71,22 +103,22 @@
    "shot": "07_W_hall",
    "at": [
     -43.0,
-    15.15,
+    15.23,
     -0.0
    ]
   },
   {
    "shot": "08_W_core",
    "at": [
-    -45.74,
-    20.24,
+    -45.8,
+    20.3,
     -0.0
    ]
   },
   {
    "shot": "09_gallery_ring",
    "at": [
-    3.37,
+    3.13,
     22.49,
     -0.0
    ]
@@ -94,16 +126,16 @@
   {
    "shot": "10_tower_lobby",
    "at": [
-    8.45,
-    25.78,
+    8.46,
+    25.83,
     -0.0
    ]
   },
   {
    "shot": "11_stair_landing",
    "at": [
-    6.87,
-    42.96,
+    6.92,
+    43.01,
     2.25
    ]
   },
@@ -111,7 +143,7 @@
    "shot": "12_tower_L1",
    "at": [
     7.75,
-    36.45,
+    36.17,
     4.5
    ]
   },
@@ -122,29 +154,329 @@
   {
    "shot": "13_in_lift_L3",
    "at": [
-    10.56,
-    40.15,
+    10.6,
+    40.17,
     13.5
    ]
   },
   {
    "shot": "14_tower_L3",
    "at": [
-    8.4,
-    35.92,
+    8.3,
+    35.85,
     13.5
    ]
   },
   {
    "shot": "99_end",
    "at": [
-    8.4,
-    35.92,
+    8.3,
+    35.85,
     13.5
    ]
   }
  ],
  "page_errors": [],
  "sanity_ray_hits_wall": true,
+ "door_coverage": {
+  "spaces_doors": 106,
+  "by_type": {
+   "open": {
+    "n": 2,
+    "auto": 0
+   },
+   "opening": {
+    "n": 12,
+    "auto": 0
+   },
+   "door": {
+    "n": 40,
+    "auto": 40
+   },
+   "ext_door": {
+    "n": 2,
+    "auto": 2
+   },
+   "lift_door": {
+    "n": 50,
+    "auto": 50
+   }
+  },
+  "auto_doors_in_page": 92,
+  "missing": [],
+  "bad": [],
+  "archways_no_leaf": [
+   "D00_forecourt__portal_tunnel",
+   "D01_portal_tunnel__courtyard",
+   "D02_portal_tunnel__gallery",
+   "D03_portal_tunnel__gallery",
+   "D04_courtyard__gallery",
+   "D05_courtyard__gallery",
+   "D06_courtyard__gallery",
+   "D07_courtyard__gallery",
+   "D08_courtyard__gallery",
+   "D09_courtyard__gallery",
+   "D10_courtyard__gallery",
+   "D11_courtyard__gallery",
+   "D12_courtyard__gallery",
+   "D13_courtyard__gallery"
+  ],
+  "extra_in_page": [],
+  "PASS": true
+ },
+ "door_suite": {
+  "doors": [
+   {
+    "door": "D35_forecourt__W_vest",
+    "type": "ext_door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.67,
+    "open_time_s": 1.57,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 2.55,
+    "closed_after_leaving_s": 1.34,
+    "PASS": true
+   },
+   {
+    "door": "D58_forecourt__E_vest",
+    "type": "ext_door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.8,
+    "open_time_s": 0.45,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 2.55,
+    "closed_after_leaving_s": 1.29,
+    "PASS": true
+   },
+   {
+    "door": "D14_gallery__W_link",
+    "type": "door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.73,
+    "open_time_s": 0.76,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.75,
+    "closed_after_leaving_s": 1.35,
+    "PASS": true
+   },
+   {
+    "door": "D15_gallery__E_link",
+    "type": "door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.8,
+    "open_time_s": 0.44,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.75,
+    "closed_after_leaving_s": 1.33,
+    "PASS": true
+   },
+   {
+    "door": "D17_W_link__W_hall",
+    "type": "door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.87,
+    "open_time_s": 0.44,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.75,
+    "closed_after_leaving_s": 1.36,
+    "PASS": true
+   },
+   {
+    "door": "D22_W_hall__W_core",
+    "type": "door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.8,
+    "open_time_s": 0.45,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.75,
+    "closed_after_leaving_s": 1.28,
+    "PASS": true
+   },
+   {
+    "door": "D44_E_room_s__E_room_n",
+    "type": "door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.87,
+    "open_time_s": 0.43,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.75,
+    "closed_after_leaving_s": 1.26,
+    "PASS": true
+   },
+   {
+    "door": "D24_W_hall_L1__W_room_n_L1",
+    "type": "door",
+    "level": 4.5,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.75,
+    "open_time_s": 0.46,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.75,
+    "closed_after_leaving_s": 1.26,
+    "PASS": true
+   },
+   {
+    "door": "D63_T_link__T_L0",
+    "type": "door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.8,
+    "open_time_s": 0.47,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.75,
+    "closed_after_leaving_s": 1.26,
+    "PASS": true
+   },
+   {
+    "door": "D36_W_core__W_lift",
+    "type": "lift_door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "car_before": 0,
+    "reached_inside": true,
+    "trigger_dist_m": 2.8,
+    "call_dist_m": 3.6,
+    "car_waited": false,
+    "open_time_s": 0.57,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.15,
+    "closed_after_leaving_s": 1.25,
+    "PASS": true
+   },
+   {
+    "door": "D60_E_core_L1__E_lift",
+    "type": "lift_door",
+    "level": 4.5,
+    "closed_at_start": true,
+    "car_before": 0,
+    "reached_inside": true,
+    "trigger_dist_m": 0.38,
+    "call_dist_m": 2.6,
+    "car_waited": true,
+    "open_time_s": 0.46,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 247,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 0.77,
+    "crossing_min_gap_m": 1.0,
+    "closed_after_leaving_s": 1.28,
+    "PASS": true
+   },
+   {
+    "door": "D66_T_L2__T_lift0",
+    "type": "lift_door",
+    "level": 9.0,
+    "closed_at_start": true,
+    "car_before": 13.5,
+    "reached_inside": true,
+    "trigger_dist_m": 0.38,
+    "call_dist_m": 2.67,
+    "car_waited": true,
+    "open_time_s": 0.45,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 245,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 0.7,
+    "crossing_min_gap_m": 0.9,
+    "closed_after_leaving_s": 1.21,
+    "PASS": true
+   },
+   {
+    "door": "D40_E_link__E_hall",
+    "type": "door",
+    "level": 0.0,
+    "closed_at_start": true,
+    "reached_inside": true,
+    "trigger_dist_m": 2.67,
+    "open_time_s": 0.44,
+    "max_open": 1,
+    "leaf_blocks_while_closed": 0,
+    "back_out": true,
+    "crossings": 2,
+    "crossing_min_open": 1,
+    "crossing_min_gap_m": 1.75,
+    "closed_after_leaving_s": 1.26,
+    "PASS": true
+   }
+  ],
+  "n_pass": 13,
+  "types_passed": [
+   "door",
+   "ext_door",
+   "lift_door"
+  ],
+  "screenshots": {
+   "ext_door": "/workspace/gothic_model/walk/door_opening_ext_door.png",
+   "door": "/workspace/gothic_model/walk/door_opening_door.png",
+   "lift_door": "/workspace/gothic_model/walk/door_opening_lift_door.png"
+  },
+  "fly": {
+   "door": "D15_gallery__E_link",
+   "far_t": 0,
+   "near_t": 1,
+   "shot": "/workspace/gothic_model/walk/door_open_fly.png",
+   "after_leave_t": 0,
+   "PASS": true
+  },
+  "PASS": true
+ },
  "PASS": true
 }

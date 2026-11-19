@@ -19,6 +19,16 @@ cd web && python3 -m http.server 8765    # open http://localhost:8765/
 Controls / 操作 (buttons 环绕 Orbit / 漫游 Walk / 飞行 Fly, top right):
 - **Orbit 环绕:** drag rotate · wheel zoom · right-drag pan.
 - **Walk 漫游 (Tab):** WASD · click for mouse look (Esc releases) · Shift run · R/F lift up/down inside a lift car.
+- **Automatic doors 自动门 (all modes):** all 92 real doors are automatic: 40 interior/gallery/tower doors, 2 exterior side-wing
+  doors and 50 lift doors. Each one is a split double sliding leaf (glazed panel in a clay frame) that slides into the wall
+  pockets. It opens when you come within 2.8 m (walk: the player, on that floor) or 3.0 m (fly: the camera). Opening and
+  closing are eased (≈0.45 s open, ≈0.7 s close), with a 0.7 s hold after you leave, and the frame shows a faint cool rim glow
+  while the door is active. Closed leaves are solid and block you; the gap opens up as they slide. **Lift doors** open only
+  while the car stands at that floor. Walking up to one calls the nearest car (3 m/s), and a car leaves only after its doors
+  have shut. The 14 open archways have no leaves: the arch portal, the tunnel→courtyard mouth, 2 tunnel side openings and
+  10 courtyard→gallery arcade openings.
+  全部 92 扇门都是自动门：靠近约 2.8 m 时双扇玻璃移门向两侧滑开，离开后停留 0.7 s 再关上。门关着时不能穿过。
+  电梯门只在轿厢停在本层时开启，走近时会呼叫电梯。14 处开敞拱券没有门扇。
 - **Fly 飞行 (F toggles):** free 6-DoF camera, no gravity, no collision (passes through walls). Click for mouse look, Esc releases ·
   WASD along the view direction · Space/E up · Q/C down · Shift ×3 boost · wheel or +/− base speed · 1–5 preset viewpoints
   (forecourt, arch, courtyard, crown, aerial) · T auto tour (arch → courtyard → over the crown → around). Entering fly keeps the
@@ -43,6 +53,10 @@ COMPARE_ROUNDS=4 ./run_all.sh
    with a negative test (blocked door must make the check fail) → `circulation_report.md`.
 6. gltf-transform – Meshopt + GPU instancing → `web/building_opt.glb` (< 25 MiB).
 7. `walk/walk_test.py` – headless Chrome walk through the web preview (WASD keys, penetration rays, stuck detection, doors).
+   v13 adds three checks:
+   - an auto-door coverage check (every door in `spaces.json` maps to two animated leaves);
+   - a scripted pass through 13 doors of every type, which logs open-on-approach, the gap at crossing and close-after-leaving;
+   - a fly-mode door check.
    `walk/fly_test.py` – headless fly-mode test (pose hand-over, no gravity/collision, over the crown, through the courtyard, speed, presets, tour, drop to walk).
 8. `src/final_render.py` – Cycles mood render (AgX, volumetric arch beams, pink/cyan rims, glowing plaza).
 
@@ -57,6 +71,6 @@ Requirements / 依赖: Blender 5.x, Python 3 (numpy, scipy, Pillow, matplotlib, 
 - `check/` – circulation checks / 流线检查
 - `compare/` – silhouette compare + tuning loop / 剪影对比与调参
 - `walk/` – headless walk + fly tests / 漫游、飞行测试
-- `docs/` – renders, change notes, walk + fly results (`docs/fly/` screenshots) / 渲染图、变更说明、漫游与飞行结果
+- `docs/` – renders, change notes, walk + fly results (`docs/fly/` screenshots, `docs/doors/` auto-door screenshots) / 渲染图、变更说明、漫游与飞行结果
 
 Deploy mirrors [cyber-louvre](https://github.com/xuzhiming/cyber-louvre): push `main` → GitHub Actions → Cloudflare Pages.

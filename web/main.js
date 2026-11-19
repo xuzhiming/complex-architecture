@@ -1,5 +1,5 @@
 // Building preview: orbit view + first-person walk (WASD + pointer-lock mouse look) + free fly (6-DoF, no collision, tour),
-// capsule collision against a three-mesh-bvh BVH, automatic sliding doors, virtual lift cars.
+// capsule collision against a three-mesh-bvh BVH, automatic sliding doors on every door (v13: proximity + hold + lift gating), virtual lift cars.
 // Blender (x,y,z) -> glTF/three (x, z, -y).
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -40,7 +40,10 @@ const keys = {};
 let mode = 'orbit', collider = null, bvh = null, SPACES = null;
 const doors = [], lifts = [];
 let liftState = null;          // {lift, carY, target}
-const SPEED = 4.0, GRAV = -20, OPEN_DIST = 3.5;
+const SPEED = 4.0, GRAV = -20;
+// auto doors (v13): every DoorLeaf_<id>_A/_B pair in the glb is a split double sliding glass door
+const DOOR = { trigger: 2.8, flyTrigger: 3.0, openRate: 2.2, closeRate: 1.4, hold: 0.7, cell: 8 };
+const doorById = new Map(), doorGrid = new Map(), activeDoors = new Set();
 
 function feetY() { return player.pos.y - FEET; }
 function setFeet(v3) { player.pos.set(v3.x, v3.y + FEET, v3.z); player.vel.set(0, 0, 0); }
@@ -84,23 +87,47 @@ function leafRoot(o) { while (o) { if (/^DoorLeaf_/.test(o.name)) return o; o = 
   window.__colliderTris = io / 3;
 }
 
-// door leaves
+// ---------------- auto doors (v13) ----------------
+// Leaves are exported with extras: door_id, door_type, leaf (A|B), slide (open offset), slide_axis, width, height,
+// center, normal, lift_id/level. Leaf meshes are baked in world space, so the closed position is the node position.
+const gkey = (i, j) => i + ',' + j;
+const easeIO = t => t * t * (3 - 2 * t);
 gltf.scene.traverse(o => {
   if (!/^DoorLeaf_/.test(o.name) || leafRoot(o.parent)) return;
-  const s = o.userData.slide || [1, 0, 0];
-  const box = new THREE.Box3().setFromObject(o); const c = box.getCenter(new THREE.Vector3());
-  doors.push({ obj: o, id: o.userData.door_id || o.name.slice(9), closed: o.position.clone(), centre: c,
-               slideW: new THREE.Vector3(s[0], s[2], -s[1]), t: 0 });
+  const u = o.userData, id = u.door_id || o.name.replace(/^DoorLeaf_/, '').replace(/_[AB]$/, '');
+  let d = doorById.get(id);
+  if (!d) {
+    const c = u.center || [0, 0, 0], n = u.normal || [0, 1, 0];
+    d = { id, type: u.door_type || 'door', leaves: [], t: 0, s: 0, hold: 0, want: false, opened: 0, closedAfter: 0,
+          w: u.width || 1.8, h: u.height || 2.4, floorY: c[2], centre: b2t(c[0], c[1], c[2] + 1.2), base: b2t(c[0], c[1], c[2]),
+          n3: new THREE.Vector3(n[0], 0, -n[1]).normalize(), lift: u.lift_id || null, level: u.level ?? c[2], mats: [] };
+    d.tg3 = new THREE.Vector3(-d.n3.z, 0, d.n3.x);
+    doorById.set(id, d); doors.push(d);
+  }
+  const sl = u.slide || [1, 0, 0], slideW = new THREE.Vector3(sl[0], sl[2], -sl[1]);
+  const inv = new THREE.Matrix4().copy(o.parent.matrixWorld).invert();
+  const box = new THREE.Box3().setFromObject(o);
+  // per-door material clones so the rim glow can follow the door state
+  // (only the clay frame glows: a faint cool rim strip while the door is active; the recessed glazing stays dark)
+  o.traverse(m => { if (m.isMesh && !/Recess/.test(m.material.name)) { m.material = m.material.clone(); m.material.emissive = new THREE.Color(0x8ccaff); m.material.emissiveIntensity = 0; d.mats.push(m.material); } });
+  d.leaves.push({ obj: o, side: u.leaf || 'A', closed: o.position.clone(), slideW, slideL: slideW.clone().applyMatrix3(new THREE.Matrix3().setFromMatrix4(inv)),
+                  c0: box.getCenter(new THREE.Vector3()), hw: slideW.length() / 2, ht: 0.06 });
 });
-// slide vector is in world space; convert to the leaf's parent space
-for (const d of doors) {
-  const m = new THREE.Matrix4().copy(d.obj.parent.matrixWorld).invert();
-  d.slideL = d.slideW.clone().applyMatrix3(new THREE.Matrix3().setFromMatrix4(m));
+for (const d of doors) {        // spatial hash: door -> 8 m cell
+  const k = gkey(Math.floor(d.base.x / DOOR.cell), Math.floor(d.base.z / DOOR.cell));
+  if (!doorGrid.has(k)) doorGrid.set(k, []); doorGrid.get(k).push(d);
+}
+function doorsAround(p, out = []) {
+  out.length = 0; const ci = Math.floor(p.x / DOOR.cell), cj = Math.floor(p.z / DOOR.cell);
+  for (let i = ci - 1; i <= ci + 1; i++) for (let j = cj - 1; j <= cj + 1; j++) { const a = doorGrid.get(gkey(i, j)); if (a) for (const d of a) out.push(d); }
+  return out;
 }
 if (SPACES) for (const L of SPACES.lifts) {
   const [x0, y0, x1, y1] = L.shaft;
-  lifts.push({ id: L.id, x0, x1, z0: -y1, z1: -y0, levels: L.levels });   // three x/z bounds
+  lifts.push({ id: L.id, x0, x1, z0: -y1, z1: -y0, levels: L.levels, car: L.levels[0], target: L.levels[0], doors: [] });   // three x/z bounds
 }
+const liftById = new Map(lifts.map(L => [L.id, L]));
+for (const d of doors) if (d.lift && liftById.has(d.lift)) liftById.get(d.lift).doors.push(d);
 document.getElementById('load').remove();
 
 // ---------------- helpers ----------------
@@ -139,10 +166,12 @@ function step(dt) {
   if (L) {
     if (!liftState || liftState.lift !== L) {
       let lv = L.levels[0]; for (const z of L.levels) if (z <= feetY() + 0.4) lv = z;
-      liftState = { lift: L, carY: lv, target: lv };
+      L.car = L.target = lv; liftState = { lift: L, carY: lv, target: lv };
     }
+    L.target = liftState.target;
     const d = liftState.target - liftState.carY;
-    liftState.carY += Math.sign(d) * Math.min(Math.abs(d), 3.0 * dt);
+    if (!liftDoorsBusy(L)) liftState.carY += Math.sign(d) * Math.min(Math.abs(d), 3.0 * dt);   // car leaves only once its doors are shut
+    L.car = liftState.carY;
     if (feetY() < liftState.carY + 0.02 || Math.abs(d) > 1e-4) { player.pos.y = liftState.carY + FEET; player.vel.y = 0; player.onGround = true; }
   } else liftState = null;
   // collision
@@ -161,12 +190,75 @@ function step(dt) {
   const off = Math.max(0, delta.length() - 1e-5); delta.normalize().multiplyScalar(off); player.pos.add(delta);
   if (!player.onGround) { delta.normalize(); player.vel.addScaledVector(delta, -delta.dot(player.vel)); } else player.vel.set(0, 0, 0);
   if (player.pos.y < -20) setFeet(b2t(0, -60, 0));
-  // doors
-  for (const d of doors) {
-    const dx = player.pos.x - d.centre.x, dz = player.pos.z - d.centre.z, dy = feetY() - (d.centre.y - 1.2);
-    const near = Math.hypot(dx, dz) < OPEN_DIST && Math.abs(dy) < 2.5;
-    d.t = THREE.MathUtils.clamp(d.t + (near ? 1 : -1) * dt * 2.2, 0, 1);
-    d.obj.position.copy(d.closed).addScaledVector(d.slideL, THREE.MathUtils.smoothstep(d.t, 0, 1));
+  // door leaves are solid in their *current* position (closed = blocked, open = slid into the wall pockets)
+  collideLeaves();
+}
+
+// ---------------- auto-door update (per frame, spatial-hash candidates only; no raycasts) ----------------
+const _cand = [], _near = [];
+function liftDoorsBusy(L) { for (const d of L.doors) if (d.t > 0.01 && Math.abs(d.level - L.car) < 0.05) return true; return false; }
+function updateDoors(dt, probe, isFly) {
+  const cand = probe ? doorsAround(probe, _cand) : _cand.splice(0);
+  for (const d of activeDoors) if (!cand.includes(d)) cand.push(d);
+  const now = performance.now() / 1000;
+  // hall call: only the nearest lift door in range calls a car (a bank of three lifts does not all come at once)
+  let callDoor = null, callD = 1e9;
+  if (probe) for (const d of cand) if (d.lift) { const dd = probe.distanceTo(d.centre); if (dd < callD) { callD = dd; callDoor = d; } }
+  for (const d of cand) {
+    let near = false;
+    if (probe) {
+      const hz = Math.hypot(probe.x - d.base.x, probe.z - d.base.z);
+      if (isFly) near = probe.distanceTo(d.centre) < DOOR.flyTrigger;
+      else { const fy = probe.y - FEET; near = hz < DOOR.trigger && fy > d.floorY - 1.0 && fy < d.floorY + 1.6; }
+    }
+    let want = near;
+    if (d.lift) {                                       // lift doors: open only while the car stands at this floor
+      const L = liftById.get(d.lift);
+      const here = L && Math.abs(L.car - d.level) < 0.02 && Math.abs(L.target - d.level) < 0.02;
+      near = near && d === callDoor;
+      if (near && L && !here && Math.abs(L.car - L.target) < 1e-3 && !(liftState && liftState.lift === L)) L.target = d.level;   // call the car
+      want = near && here;
+      if (!here) d.hold = 0;
+    }
+    if (want && !d.want) d.trigAt = now;
+    if (want) d.hold = DOOR.hold; else d.hold = Math.max(0, d.hold - dt);
+    const open = want || d.hold > 0;
+    const t0 = d.t;
+    d.t = THREE.MathUtils.clamp(d.t + (open ? DOOR.openRate : -DOOR.closeRate) * dt, 0, 1);
+    if (d.t >= 0.999 && t0 < 0.999) { d.opened = now; d.openDur = now - (d.trigAt ?? now); }
+    if (d.t <= 0 && t0 > 0) d.closedAfter = now;
+    d.want = open; d.s = easeIO(d.t);
+    for (const lf of d.leaves) lf.obj.position.copy(lf.closed).addScaledVector(lf.slideL, d.s);
+    const glow = open ? 0.06 + 0.16 * d.s : 0.22 * d.s;
+    for (const m of d.mats) m.emissiveIntensity = glow;
+    if (d.t > 0 || d.hold > 0) activeDoors.add(d); else activeDoors.delete(d);
+  }
+  // idle lift cars travel to their call level (3 m/s) once their doors are shut
+  for (const L of lifts) {
+    if (liftState && liftState.lift === L) continue;
+    const dd = L.target - L.car;
+    if (Math.abs(dd) > 1e-4 && !liftDoorsBusy(L)) L.car += Math.sign(dd) * Math.min(Math.abs(dd), 3.0 * dt);
+  }
+}
+const _lp = new THREE.Vector3();
+function collideLeaves() {
+  const fy = feetY(), top = fy + FEET + R;
+  for (const d of doorsAround(player.pos, _near)) {
+    if (d.s > 0.999) continue;
+    if (fy > d.floorY + d.h - 0.05 || top < d.floorY + 0.02) continue;
+    for (const lf of d.leaves) {
+      _lp.copy(lf.c0).addScaledVector(lf.slideW, d.s);           // current leaf centre (world)
+      const rx = player.pos.x - _lp.x, rz = player.pos.z - _lp.z;
+      const u = rx * d.tg3.x + rz * d.tg3.z, v = rx * d.n3.x + rz * d.n3.z;
+      const cu = THREE.MathUtils.clamp(u, -lf.hw, lf.hw), cv = THREE.MathUtils.clamp(v, -lf.ht, lf.ht);
+      const du = u - cu, dv = v - cv, dist = Math.hypot(du, dv);
+      if (dist >= R) continue;
+      let pu, pv;
+      if (dist > 1e-6) { pu = du / dist * (R - dist); pv = dv / dist * (R - dist); }
+      else { pu = 0; pv = (v >= 0 ? 1 : -1) * (R + lf.ht - Math.abs(v)); }   // centre inside the leaf: push out through the face
+      player.pos.x += d.tg3.x * pu + d.n3.x * pv; player.pos.z += d.tg3.z * pu + d.n3.z * pv;
+      window.__leafBlocks = (window.__leafBlocks || 0) + 1;
+    }
   }
 }
 
@@ -332,8 +424,8 @@ function hudText() {
       `speed ${fly.base.toFixed(1)} m/s${(keys.ShiftLeft || keys.ShiftRight) ? ' ×3' : ''} · now ${fly.vel.length().toFixed(1)} m/s · x ${p.x.toFixed(1)}  y ${(-p.z).toFixed(1)}  z ${p.y.toFixed(1)} m · no collision 无碰撞`;
   }
   return mode === 'walk'
-    ? `WALK  ·  WASD move · mouse look (click) · Shift run · Tab orbit · F fly 飞行<br>${liftState ? `in lift ${liftState.lift.id} · R up / F down · level ${liftState.target}` : ''}<br>x ${b.x}  y ${b.y}  floor z ${b.z} m`
-    : `ORBIT  ·  drag rotate · wheel zoom · right-drag pan · Tab / button = walk mode · F fly 飞行<br>collider triangles: ${window.__colliderTris}`;
+    ? `WALK  ·  WASD move · mouse look (click) · Shift run · Tab orbit · F fly 飞行<br>${liftState ? `in lift ${liftState.lift.id} · R up / F down · level ${liftState.target}` : ''}<br>x ${b.x}  y ${b.y}  floor z ${b.z} m · 自动门 auto doors ${doors.length} (active ${activeDoors.size})`
+    : `ORBIT  ·  drag rotate · wheel zoom · right-drag pan · Tab / button = walk mode · F fly 飞行<br>collider triangles: ${window.__colliderTris} · 自动门 auto doors: ${doors.length}`;
 }
 
 let last = performance.now(), renderEvery = TEST ? 0 : 1;
@@ -342,6 +434,7 @@ function loop(now) {
   if (mode === 'walk') { const n = Math.ceil(dt / 0.01); for (let i = 0; i < n; i++) step(dt / n); syncCamera(); }
   else if (mode === 'fly') { if (tour.on) tourStep(dt); else flyStep(dt); flyCamera(); document.getElementById('bTour').classList.toggle('on', tour.on); }
   else orbit.update();
+  updateDoors(dt, mode === 'walk' ? player.pos : (mode === 'fly' ? camera.position : null), mode === 'fly');
   hud.innerHTML = hudText();
   if (renderEvery) renderer.render(scene, camera);
   requestAnimationFrame(loop);
@@ -357,8 +450,20 @@ window.__walk = {
   setYaw(y) { player.yaw = y; }, setPitch(p) { player.pitch = p; },
   state() { return { x: player.pos.x, y: -player.pos.z, z: feetY(), yaw: player.yaw, onGround: player.onGround,
                      lift: liftState ? { id: liftState.lift.id, car: liftState.carY, target: liftState.target } : null }; },
-  doorsNear(r = 4) { return doors.filter(d => Math.hypot(player.pos.x - d.centre.x, player.pos.z - d.centre.z) < r && Math.abs(feetY() - (d.centre.y - 1.2)) < 2.5).map(d => ({ id: d.id, open: d.t })); },
+  doorsNear(r = 4) { return doors.filter(d => Math.hypot(player.pos.x - d.base.x, player.pos.z - d.base.z) < r && Math.abs(feetY() - d.floorY) < 2.5).map(d => ({ id: d.id, open: d.t, type: d.type })); },
   doorCount() { return doors.length; },
+  // v13 auto-door hooks
+  doorList() { return doors.map(d => ({ id: d.id, type: d.type, leaves: d.leaves.map(l => l.obj.name), sides: d.leaves.map(l => l.side),
+                                        slide: d.leaves.map(l => l.slideW.length()), lift: d.lift, level: d.level, w: d.w, h: d.h,
+                                        animated: d.leaves.every(l => l.obj.isObject3D && !l.obj.isInstancedMesh && !!l.obj.parent) })); },
+  door(id) { const d = doorById.get(id); if (!d) return null;
+             return { id, t: d.t, s: d.s, hold: d.hold, want: d.want, opened: d.opened, closedAfter: d.closedAfter, active: activeDoors.has(d),
+                      openDur: d.openDur ?? null, gap: d.s * (d.w - 0.06) + 0.01, target: d.lift ? liftById.get(d.lift).target : null,
+                      leafOffset: d.leaves.map(l => l.obj.position.distanceTo(l.closed)), x: d.base.x, y: -d.base.z, z: d.floorY,
+                      nx: d.n3.x, ny: -d.n3.z, lift: d.lift, car: d.lift ? liftById.get(d.lift).car : null }; },
+  activeDoors() { return [...activeDoors].map(d => d.id); },
+  leafBlocks() { return window.__leafBlocks || 0; },
+  lift(id) { const L = liftById.get(id); return L ? { id, car: L.car, target: L.target, levels: L.levels } : null; },
   // segment test in Blender coords: returns hit distance or null
   raySegment(a, b) { const A = b2t(...a), B = b2t(...b); const d = B.clone().sub(A); const L = d.length(); if (L < 1e-6) return null;
                      const h = castFirst(A, d, L); return h ? h.distance : null; },

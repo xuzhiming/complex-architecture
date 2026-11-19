@@ -17,6 +17,10 @@ for f in ["walk_result.json", "trajectory.png"]: cp(f"walk/{f}", f"docs/walk/{f}
 for f in glob.glob(os.path.join(R, "docs", "fly", "*")): os.remove(f)
 for f in ["fly_result.json", "fly_03_over_crown.png", "fly_05_in_courtyard.png"]:
     if os.path.exists(os.path.join(H, "walk", f)): cp(f"walk/{f}", f"docs/fly/{f}")
+# v13 auto doors: door-opening screenshots
+for f in glob.glob(os.path.join(R, "docs", "doors", "*")): os.remove(f)
+for f in ["door_opening_door.png", "door_opening_ext_door.png", "door_opening_lift_door.png", "door_open_fly.png"]:
+    if os.path.exists(os.path.join(H, "walk", f)): cp(f"walk/{f}", f"docs/doors/{f}")
 # static site
 for f in ["index.html", "main.js", "spaces.json", "building_opt.glb", "README.md"]: cp(f"web/{f}")
 shutil.rmtree(os.path.join(R, "web", "vendor"), ignore_errors=True)
@@ -27,7 +31,7 @@ for f in ["renders/four_views.png", "renders/perspective_hero.png", "renders/per
           "renders/top.png", "final_render.png", "final_vs_ref.png", "compare/final/overlay_sheet.png", "compare/final/side_by_side.png", "renders/arch_view_before_after.png"]:
     if os.path.exists(os.path.join(H, f)): cp(f, "docs/" + os.path.basename(f))
 cp("gh_readme.md", "README.md")
-for f in ["CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md", "CHANGES_v9.md", "CHANGES_v10.md", "CHANGES_v11.md", "CHANGES_v12.md"]:
+for f in ["CHANGES_v5.md", "CHANGES_v6.md", "CHANGES_v7.md", "CHANGES_v8.md", "CHANGES_v9.md", "CHANGES_v10.md", "CHANGES_v11.md", "CHANGES_v12.md", "CHANGES_v13.md"]:
     if os.path.exists(os.path.join(H, f)): cp(f, "docs/" + f)
 big = [f for f in glob.glob(os.path.join(R, "**", "*"), recursive=True) if os.path.isfile(f) and os.path.getsize(f) > 25*1024*1024 and "/.git/" not in f]
 print("synced; files > 25 MiB:", big, "| glb MB:", round(os.path.getsize(os.path.join(R, "web", "building_opt.glb"))/1e6, 2))

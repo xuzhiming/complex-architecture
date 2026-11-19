@@ -666,8 +666,8 @@ def add_door(a, b, c, nrm, w, h, z, kind="door", check_wall=True, leaf=True):
     tng = (-nrm[1], nrm[0])
     DOORS.append({"id": did, "a": a, "b": b, "type": kind, "center": [c[0], c[1], z], "normal": list(nrm), "tangent": list(tng),
                   "w": w, "h": h, "check_wall": check_wall})
-    if leaf and kind in ("door", "ext_door"):
-        DOOR_LEAVES.append((did, c, nrm, w, h, z))
+    if leaf and kind in ("door", "ext_door", "lift_door"):     # v13: every real door gets auto-door leaves
+        DOOR_LEAVES.append((did, c, nrm, w, h, z, kind, b if kind == "lift_door" else None))
     return did
 
 def wall_line(p0, p1, z0, z1, t, openings=(), batch=None):
@@ -754,7 +754,7 @@ def lift_module(lid, x0, y0, levels, names):
     wall_line((x0, y0), (x0 + S, y0), levels[0], zt, 0.25, [(S/2, dw, z, dh) for z in levels])
     dids = []
     for z, nm in zip(levels, names):
-        dids.append(add_door(nm, lid, (x0 + S/2, y0), (0.0, -1.0), dw, dh, z, kind="lift_door", leaf=False))
+        dids.append(add_door(nm, lid, (x0 + S/2, y0), (0.0, -1.0), dw, dh, z, kind="lift_door"))
     LIFTS.append({"id": lid, "floors": names, "levels": levels, "doors": dids, "shaft": [x0, y0, x0 + S, y0 + S]})
     return (x0, y0, x0 + S, y0 + S)
 
@@ -909,11 +909,40 @@ if FULL:
     ROLE = "shell"
     WALLB.flush("InteriorWalls", "wall")
     STAIRB.flush("Stairs", "stair")
-    # door leaves (auto doors)
-    ROLE = "door_leaf"
-    for (did, c, nrm, w, h, z) in DOOR_LEAVES:
-        o = box(f"DoorLeaf_{did}", (DR["leaf_t"], w - 0.06, h - 0.05), (c[0], c[1], z + (h - 0.05)/2 + 0.02), rot=math.atan2(nrm[1], nrm[0]))
-        o["door_id"] = did; o["slide"] = [-nrm[1]*w, nrm[0]*w, 0.0]
+    # door leaves (v13: every door = split double sliding glass leaf, auto door in the web preview)
+    # Leaf geometry is baked in world space (object origin = world origin) so every leaf mesh is unique:
+    # gltf-transform's dedup+instancing can then never merge leaves into anonymous GPU instances (v12 lost 38/42).
+    def door_leaf(name, c, tng, nrm, u0, u1, z0, z1, t):
+        fr, rl = 0.06, 0.09
+        parts = [((u0, u0 + fr), (-t/2, t/2), (z0, z1), 0), ((u1 - fr, u1), (-t/2, t/2), (z0, z1), 0),
+                 ((u0 + fr, u1 - fr), (-t/2, t/2), (z0, z0 + rl), 0), ((u0 + fr, u1 - fr), (-t/2, t/2), (z1 - rl, z1), 0),
+                 ((u0 + fr, u1 - fr), (-t*0.2, t*0.2), (z0 + rl, z1 - rl), 1)]
+        V, F, M = [], [], []
+        for (ua, va, za, mi) in parts:
+            k = len(V)
+            for (uu, vv, zz) in [(ua[a], va[b], za[d]) for d in (0, 1) for b in (0, 1) for a in (0, 1)]:
+                V.append((c[0] + tng[0]*uu + nrm[0]*vv, c[1] + tng[1]*uu + nrm[1]*vv, zz))
+            for f in ((0, 2, 3, 1), (4, 5, 7, 6), (0, 1, 5, 4), (2, 6, 7, 3), (0, 4, 6, 2), (1, 3, 7, 5)):
+                F.append(tuple(k + q for q in f)); M.append(mi)
+        me = bpy.data.meshes.new(name); me.from_pydata(V, [], F); me.update()
+        bm = bmesh.new(); bm.from_mesh(me); bmesh.ops.recalc_face_normals(bm, faces=bm.faces); bm.to_mesh(me); bm.free()
+        me.materials.append(CLAY); me.materials.append(GLAZE)
+        for p, mi in zip(me.polygons, M): p.material_index = mi
+        ob = bpy.data.objects.new(name, me); scene.collection.objects.link(ob)
+        for cl in ob.users_collection: cl.objects.unlink(ob)
+        COL.objects.link(ob); ob["role"] = "door_leaf"
+        return ob
+    lt = DR["leaf_t"]
+    for (did, c, nrm, w, h, z, kind, lift) in DOOR_LEAVES:
+        tng = (-nrm[1], nrm[0]); half = (w - 0.06)/2; z0, z1 = z + 0.02, z + h - 0.03
+        for side, (u0, u1) in (("A", (-half - 0.005, -0.005)), ("B", (0.005, half + 0.005))):
+            o = door_leaf(f"DoorLeaf_{did}_{side}", c, tng, nrm, u0, u1, z0, z1, lt)
+            sg = -1.0 if side == "A" else 1.0
+            o["door_id"] = did; o["door_type"] = kind; o["leaf"] = side; o["mode"] = "slide"
+            o["slide"] = [sg*tng[0]*half, sg*tng[1]*half, 0.0]          # open offset (Blender coords)
+            o["slide_axis"] = [tng[0], tng[1], 0.0]; o["width"] = w; o["height"] = h
+            o["center"] = [c[0], c[1], z]; o["normal"] = [nrm[0], nrm[1], 0.0]
+            if lift: o["lift_id"] = lift; o["level"] = z
     ROLE = "shell"
     # ---- glowing plaza rings (forecourt + courtyard) ----
     ROLE = "plaza_glow"
