@@ -1,0 +1,65 @@
+{
+ "PASS": true,
+ "checks": {
+  "enter_from_orbit_keeps_pose": true,
+  "no_gravity": true,
+  "W_along_view_dir_cos": 1.0,
+  "W_dist_m": 17.96,
+  "shift_boost_ratio": 3.03,
+  "climbed_over_crown": {
+   "z": 82.0,
+   "crown_z": 65.6,
+   "dist_to_tower_axis": 20.4
+  },
+  "climb_ok": true,
+  "Q_descends": true,
+  "through_courtyard": {
+   "from_y": -70.5,
+   "to_y": 78.0,
+   "z_drift": 0,
+   "x_drift": 0,
+   "solid_crossed_after_courtyard": true
+  },
+  "through_ok": true,
+  "speed_wheel_up": true,
+  "speed_minus": true,
+  "speeds": [
+   14,
+   16.1,
+   10.3
+  ],
+  "hud_shows_speed": true,
+  "fly_bar_buttons": [
+   "1 前广场 Forecourt",
+   "2 拱门 Arch",
+   "3 庭院 Courtyard",
+   "4 冠顶 Crown",
+   "5 鸟瞰 Aerial",
+   "T 巡航 Tour"
+  ],
+  "preset_crown_z": 92,
+  "tour_moves": true,
+  "key_stops_tour": true,
+  "F_back_to_orbit": true,
+  "walk_drop": {
+   "mode": "walk",
+   "x": 4.0,
+   "y": 5.0,
+   "z": -0.0,
+   "onGround": true
+  },
+  "walk_drop_ok": true
+ },
+ "errors": [],
+ "screenshots": [
+  "/workspace/gothic_model/walk/fly_01_enter_from_orbit.png",
+  "/workspace/gothic_model/walk/fly_02_climbing_to_crown.png",
+  "/workspace/gothic_model/walk/fly_03_over_crown.png",
+  "/workspace/gothic_model/walk/fly_04_approach_arch.png",
+  "/workspace/gothic_model/walk/fly_05_in_courtyard.png",
+  "/workspace/gothic_model/walk/fly_06_courtyard_look_up.png",
+  "/workspace/gothic_model/walk/fly_07_tour_tunnel.png",
+  "/workspace/gothic_model/walk/fly_08_tour_over_crown.png",
+  "/workspace/gothic_model/walk/fly_09_dropped_to_walk.png"
+ ]
+}

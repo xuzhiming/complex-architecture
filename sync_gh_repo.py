@@ -11,8 +11,12 @@ for f in glob.glob(os.path.join(R, "src", "*.py")): os.remove(f)
 for f in ["geom.py", "detail.py", "crescent_geom.py", "render_sil.py", "render_clay.py", "final_render.py"]: cp(f"src/{f}")
 for f in glob.glob(os.path.join(H, "compare", "*.py")): cp(os.path.relpath(f, H))
 for f in glob.glob(os.path.join(H, "check", "*.py")): cp(os.path.relpath(f, H))
-cp("walk/walk_test.py")
+cp("walk/walk_test.py"); cp("walk/fly_test.py")
 for f in ["walk_result.json", "trajectory.png"]: cp(f"walk/{f}", f"docs/walk/{f}")
+# fly mode: test result + two screenshots
+for f in glob.glob(os.path.join(R, "docs", "fly", "*")): os.remove(f)
+for f in ["fly_result.json", "fly_03_over_crown.png", "fly_05_in_courtyard.png"]:
+    if os.path.exists(os.path.join(H, "walk", f)): cp(f"walk/{f}", f"docs/fly/{f}")
 # static site
 for f in ["index.html", "main.js", "spaces.json", "building_opt.glb", "README.md"]: cp(f"web/{f}")
 shutil.rmtree(os.path.join(R, "web", "vendor"), ignore_errors=True)

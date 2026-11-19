@@ -1,4 +1,4 @@
-// Building preview: orbit view + first-person walk (WASD + pointer-lock mouse look),
+// Building preview: orbit view + first-person walk (WASD + pointer-lock mouse look) + free fly (6-DoF, no collision, tour),
 // capsule collision against a three-mesh-bvh BVH, automatic sliding doors, virtual lift cars.
 // Blender (x,y,z) -> glTF/three (x, z, -y).
 import * as THREE from 'three';
@@ -173,20 +173,41 @@ function step(dt) {
 // ---------------- modes / input ----------------
 const hud = document.getElementById('hud'), cross = document.getElementById('cross');
 function setMode(m) {
-  mode = m; document.getElementById('bOrbit').classList.toggle('on', m === 'orbit'); document.getElementById('bWalk').classList.toggle('on', m === 'walk');
-  orbit.enabled = m === 'orbit'; headlamp.intensity = m === 'walk' ? 25 : 0; cross.style.display = m === 'walk' ? 'block' : 'none';
+  const prev = mode;
+  if (m === 'fly' && prev !== 'fly') enterFly();
+  if (m === 'walk' && prev === 'fly') dropToFloor();
+  if (m === 'orbit' && prev === 'fly') { const d = new THREE.Vector3(); camera.getWorldDirection(d); orbit.target.copy(camera.position).addScaledVector(d, 60); }
+  if (m !== 'fly') tour.on = false;
+  mode = m;
+  for (const [id, mm] of [['bOrbit', 'orbit'], ['bWalk', 'walk'], ['bFly', 'fly']]) document.getElementById(id).classList.toggle('on', m === mm);
+  document.getElementById('flyBar').style.display = m === 'fly' ? 'flex' : 'none';
+  document.getElementById('touchFly').style.display = (m === 'fly' && TOUCH) ? 'block' : 'none';
+  orbit.enabled = m === 'orbit'; headlamp.intensity = m === 'walk' ? 25 : (m === 'fly' ? 12 : 0); cross.style.display = m !== 'orbit' ? 'block' : 'none';
   if (m === 'walk' && player.pos.lengthSq() === 0) { setFeet(b2t(0, -62, 0)); player.yaw = 0; }
+  if (m === 'orbit' && document.pointerLockElement) document.exitPointerLock?.();
 }
 document.getElementById('bOrbit').onclick = () => { document.exitPointerLock?.(); setMode('orbit'); };
 document.getElementById('bWalk').onclick = () => setMode('walk');
-renderer.domElement.addEventListener('click', () => { if (mode === 'walk' && !TEST) renderer.domElement.requestPointerLock?.(); });
+document.getElementById('bFly').onclick = () => setMode('fly');
+renderer.domElement.addEventListener('click', () => { if ((mode === 'walk' || mode === 'fly') && !TEST && !TOUCH) renderer.domElement.requestPointerLock?.(); });
 document.addEventListener('mousemove', e => {
-  if (mode !== 'walk' || document.pointerLockElement !== renderer.domElement) return;
-  player.yaw -= e.movementX * 0.0022; player.pitch = THREE.MathUtils.clamp(player.pitch - e.movementY * 0.0022, -1.4, 1.4);
+  if (document.pointerLockElement !== renderer.domElement) return;
+  if (mode === 'walk') { player.yaw -= e.movementX * 0.0022; player.pitch = THREE.MathUtils.clamp(player.pitch - e.movementY * 0.0022, -1.4, 1.4); }
+  else if (mode === 'fly') { fly.yaw -= e.movementX * 0.0022; fly.pitch = THREE.MathUtils.clamp(fly.pitch - e.movementY * 0.0022, -1.55, 1.55); tour.on = false; }
 });
 addEventListener('keydown', e => {
   keys[e.code] = true;
   if (e.code === 'Tab') { e.preventDefault(); setMode(mode === 'walk' ? 'orbit' : 'walk'); }
+  // F toggles fly (inside a lift car F keeps its old meaning: lift down)
+  if (e.code === 'KeyF' && !e.repeat && !(mode === 'walk' && liftState)) { setMode(mode === 'fly' ? (flyFrom === 'walk' ? 'walk' : 'orbit') : 'fly'); return; }
+  if (mode === 'fly') {
+    if (e.code === 'Space' || e.code.startsWith('Control')) e.preventDefault();
+    if (e.code === 'Equal' || e.code === 'NumpadAdd') fly.base = Math.min(200, fly.base * 1.25);
+    if (e.code === 'Minus' || e.code === 'NumpadSubtract') fly.base = Math.max(1, fly.base / 1.25);
+    if (e.code === 'KeyT' && !e.repeat) toggleTour();
+    if (/^Digit[1-5]$/.test(e.code)) goPreset(+e.code.slice(5) - 1);
+    if (/^Key[WASDQEC]$/.test(e.code) || e.code === 'Space') tour.on = false;
+  }
   if (liftState && (e.code === 'KeyR' || e.code === 'KeyF')) {
     const lv = liftState.lift.levels; let i = lv.indexOf(liftState.target);
     i = THREE.MathUtils.clamp(i + (e.code === 'KeyR' ? 1 : -1), 0, lv.length - 1); liftState.target = lv[i];
@@ -195,6 +216,108 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => { keys[e.code] = false; });
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 
+// ---------------- fly mode: free 6-DoF camera, no gravity, no collision ----------------
+const TOUCH = matchMedia('(pointer: coarse)').matches || Q.has('touch');
+const fly = { pos: new THREE.Vector3(), vel: new THREE.Vector3(), yaw: 0, pitch: 0, base: 12 };
+let flyFrom = 'orbit';
+const fv = new THREE.Vector3(), fr = new THREE.Vector3(), fwish = new THREE.Vector3(), UP = new THREE.Vector3(0, 1, 0), fE = new THREE.Euler();
+const touchMove = { f: 0, s: 0, u: 0 };
+function enterFly() {
+  flyFrom = mode;
+  if (mode === 'walk') syncCamera(); else orbit.update();
+  fly.pos.copy(camera.position); fly.vel.set(0, 0, 0);
+  const e = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ'); fly.yaw = e.y; fly.pitch = e.x;
+}
+function flyStep(dt) {
+  fv.set(0, 0, -1).applyEuler(fE.set(fly.pitch, fly.yaw, 0, 'YXZ'));     // view direction (incl. pitch)
+  fr.set(Math.cos(fly.yaw), 0, -Math.sin(fly.yaw));                         // right (horizontal)
+  fwish.set(0, 0, 0);
+  if (keys.KeyW) fwish.add(fv); if (keys.KeyS) fwish.sub(fv); if (keys.KeyD) fwish.add(fr); if (keys.KeyA) fwish.sub(fr);
+  if (keys.Space || keys.KeyE) fwish.add(UP); if (keys.KeyQ || keys.KeyC) fwish.sub(UP);
+  fwish.addScaledVector(fv, touchMove.f).addScaledVector(fr, touchMove.s).addScaledVector(UP, touchMove.u);
+  if (fwish.lengthSq() > 1) fwish.normalize();
+  const sp = fly.base * ((keys.ShiftLeft || keys.ShiftRight) ? 3 : 1);
+  // smooth acceleration / damping: the velocity eases toward the wished velocity (time constant 0.18 s)
+  fly.vel.lerp(fwish.multiplyScalar(sp), 1 - Math.exp(-dt / 0.18));
+  fly.pos.addScaledVector(fly.vel, dt);
+}
+function flyCamera() { camera.position.copy(fly.pos); camera.rotation.set(fly.pitch, fly.yaw, 0, 'YXZ'); }
+// fly -> walk: drop straight down onto the first walkable floor with head room (same BVH raycast as the walk code);
+// if none is found (e.g. over open ground outside), fall back to the forecourt spawn.
+function dropToFloor() {
+  let h = castFirst(fly.pos.clone(), new THREE.Vector3(0, -1, 0), 500);
+  for (let i = 0; i < 6 && h; i++) {
+    const n = h.face ? h.face.normal : null;
+    const up = castFirst(h.point.clone().add(new THREE.Vector3(0, 0.05, 0)), new THREE.Vector3(0, 1, 0), 2.0);
+    if (!up && (!n || Math.abs(n.y) > 0.7)) { setFeet(h.point.clone().add(new THREE.Vector3(0, 0.05, 0))); player.yaw = fly.yaw; player.pitch = 0; player.onGround = false; return true; }
+    h = castFirst(h.point.clone().add(new THREE.Vector3(0, -0.05, 0)), new THREE.Vector3(0, -1, 0), 500);
+  }
+  setFeet(b2t(0, -62, 0)); player.yaw = 0; player.pitch = 0; return false;
+}
+// presets & tour (Blender coordinates)
+const T_C = SPACES ? SPACES.spaces.courtyard.probe : [0, 2, 0];
+const _pd = SPACES && SPACES.doors.find(d => [d.a, d.b].includes('forecourt') && [d.a, d.b].includes('portal_tunnel'));
+const PORTAL = _pd ? _pd.center : [0, -45.5, 0];
+const TOWER = [13.5, 40, 65.6];
+const PRESETS = [
+  ['前广场 Forecourt', [0, PORTAL[1] - 65, 9], [0, PORTAL[1], 10]],
+  ['拱门 Arch', [0, PORTAL[1] - 7, 5], [0, T_C[1], 6]],
+  ['庭院 Courtyard', [T_C[0] - 14, T_C[1] - 10, 6], [TOWER[0], TOWER[1], 45]],
+  ['冠顶 Crown', [TOWER[0] + 55, TOWER[1] - 62, 92], [TOWER[0] - 8, TOWER[1] - 2, 66]],
+  ['鸟瞰 Aerial', [-150, -175, 115], [0, 0, 25]]];
+function lookFrom(p, t) {
+  const a = b2t(...p), b = b2t(...t); fly.pos.copy(a); fly.vel.set(0, 0, 0);
+  const d = b.sub(a).normalize(); fly.yaw = Math.atan2(-d.x, -d.z); fly.pitch = Math.asin(THREE.MathUtils.clamp(d.y, -1, 1));
+}
+function goPreset(i) { if (mode !== 'fly') setMode('fly'); tour.on = false; lookFrom(...PRESETS[i].slice(1)); }
+// auto tour: closed Catmull-Rom loop: aerial -> forecourt -> through the arch and tunnel -> courtyard -> up past the tower -> over the crown -> around
+const TOUR_PTS = [[-150, -175, 70], [-40, PORTAL[1] - 70, 25], [0, PORTAL[1] - 25, 6], [0, PORTAL[1] - 2, 5], [0, PORTAL[1] + 20, 5],
+  [T_C[0], T_C[1] - 12, 7], [T_C[0] + 6, T_C[1] + 6, 20], [TOWER[0] - 35, TOWER[1] - 28, 62], [TOWER[0] - 14, TOWER[1] - 12, 104],
+  [TOWER[0] + 35, TOWER[1] + 4, 100], [TOWER[0] + 70, TOWER[1] - 20, 75], [130, -60, 70], [60, -170, 60]];
+const tourCurve = new THREE.CatmullRomCurve3(TOUR_PTS.map(p => b2t(...p)), true, 'centripetal');
+const tour = { on: false, u: 0, dur: 75 };
+const TOUR_LOOK = b2t(TOWER[0], TOWER[1], 55);
+function toggleTour() { if (mode !== 'fly') setMode('fly'); tour.on = !tour.on; }
+function tourPose(u, k) {
+  const p = tourCurve.getPointAt(u), q = tourCurve.getPointAt((u + 0.012) % 1);
+  fly.pos.copy(p); fly.vel.set(0, 0, 0);
+  // look ahead along the path; when high up, swing the view toward the crown so the tour frames the building
+  const ahead = p.clone().addScaledVector(q.sub(p).normalize(), 30);
+  const w = THREE.MathUtils.smoothstep(p.y, 25, 60) * 0.85, look = ahead.lerp(TOUR_LOOK, w);
+  const d = look.sub(p).normalize(); const yaw = Math.atan2(-d.x, -d.z), pitch = Math.asin(THREE.MathUtils.clamp(d.y, -1, 1));
+  let dy = yaw - fly.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
+  fly.yaw += dy * k; fly.pitch += (pitch - fly.pitch) * k;
+}
+function tourStep(dt) { tour.u = (tour.u + dt / tour.dur) % 1; tourPose(tour.u, 1 - Math.exp(-dt / 0.5)); }
+// fly UI: preset buttons + tour
+{
+  const fb = document.getElementById('flyBar');
+  PRESETS.forEach((p, i) => { const b = document.createElement('button'); b.textContent = `${i + 1} ${p[0]}`; b.onclick = () => goPreset(i); fb.appendChild(b); });
+  const tb = document.createElement('button'); tb.id = 'bTour'; tb.textContent = 'T 巡航 Tour'; tb.onclick = toggleTour; fb.appendChild(tb);
+}
+renderer.domElement.addEventListener('wheel', e => {
+  if (mode !== 'fly') return; e.preventDefault(); fly.base = THREE.MathUtils.clamp(fly.base * (e.deltaY < 0 ? 1.15 : 1 / 1.15), 1, 200);
+}, { passive: false });
+// touch: one finger drags to look, two fingers drag to move (up/down = forward/back, left/right = strafe); the round buttons rise/sink
+{
+  let last1 = null, last2 = null;
+  const el = renderer.domElement;
+  el.addEventListener('touchstart', e => { if (mode !== 'fly') return; e.preventDefault(); tour.on = false;
+    if (e.touches.length === 1) { last1 = [e.touches[0].clientX, e.touches[0].clientY]; last2 = null; }
+    else { last2 = [(e.touches[0].clientX + e.touches[1].clientX) / 2, (e.touches[0].clientY + e.touches[1].clientY) / 2]; last1 = null; } }, { passive: false });
+  el.addEventListener('touchmove', e => { if (mode !== 'fly') return; e.preventDefault();
+    if (e.touches.length === 1 && last1) { const x = e.touches[0].clientX, y = e.touches[0].clientY;
+      fly.yaw += (x - last1[0]) * 0.005; fly.pitch = THREE.MathUtils.clamp(fly.pitch + (y - last1[1]) * 0.005, -1.55, 1.55); last1 = [x, y]; }
+    else if (e.touches.length >= 2 && last2) { const x = (e.touches[0].clientX + e.touches[1].clientX) / 2, y = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      touchMove.f = THREE.MathUtils.clamp(-(y - last2[1]) / 60, -1, 1); touchMove.s = THREE.MathUtils.clamp((x - last2[0]) / 60, -1, 1); } }, { passive: false });
+  el.addEventListener('touchend', e => { if (e.touches.length < 2) { touchMove.f = touchMove.s = 0; last2 = null; }
+    last1 = e.touches.length === 1 ? [e.touches[0].clientX, e.touches[0].clientY] : null; });
+  const hold = (id, v) => { const b = document.getElementById(id);
+    b.addEventListener('pointerdown', e => { e.preventDefault(); touchMove.u = v; });
+    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, () => { touchMove.u = 0; }); };
+  hold('tUp', 1); hold('tDown', -1);
+}
+
 function syncCamera() {
   camera.position.set(player.pos.x, player.pos.y + EYE, player.pos.z);
   camera.rotation.set(player.pitch, player.yaw, 0, 'YXZ');
@@ -202,15 +325,22 @@ function syncCamera() {
 function hudText() {
   const f = feetY();
   const b = { x: player.pos.x.toFixed(1), y: (-player.pos.z).toFixed(1), z: f.toFixed(2) };
+  if (mode === 'fly') {
+    const p = camera.position;
+    return `飞行 FLY  ·  ${TOUCH ? '单指拖动环视 · 双指拖动前进/平移 · ▲▼ 升降' : '点击锁定鼠标环视 (Esc 释放) · WASD 沿视线移动 · Space/E 上升 · Q/C 下降 · Shift 加速'}<br>` +
+      `滚轮 / + − 调速 · 1–5 预设视点 · T 巡航${tour.on ? ' (进行中 on)' : ''} · F 退出 exit<br>` +
+      `speed ${fly.base.toFixed(1)} m/s${(keys.ShiftLeft || keys.ShiftRight) ? ' ×3' : ''} · now ${fly.vel.length().toFixed(1)} m/s · x ${p.x.toFixed(1)}  y ${(-p.z).toFixed(1)}  z ${p.y.toFixed(1)} m · no collision 无碰撞`;
+  }
   return mode === 'walk'
-    ? `WALK  ·  WASD move · mouse look (click) · Shift run · Tab orbit<br>${liftState ? `in lift ${liftState.lift.id} · R up / F down · level ${liftState.target}` : ''}<br>x ${b.x}  y ${b.y}  floor z ${b.z} m`
-    : `ORBIT  ·  drag rotate · wheel zoom · right-drag pan · Tab / button = walk mode<br>collider triangles: ${window.__colliderTris}`;
+    ? `WALK  ·  WASD move · mouse look (click) · Shift run · Tab orbit · F fly 飞行<br>${liftState ? `in lift ${liftState.lift.id} · R up / F down · level ${liftState.target}` : ''}<br>x ${b.x}  y ${b.y}  floor z ${b.z} m`
+    : `ORBIT  ·  drag rotate · wheel zoom · right-drag pan · Tab / button = walk mode · F fly 飞行<br>collider triangles: ${window.__colliderTris}`;
 }
 
 let last = performance.now(), renderEvery = TEST ? 0 : 1;
 function loop(now) {
   const dt = Math.min((now - last) / 1000, 0.1); last = now;
   if (mode === 'walk') { const n = Math.ceil(dt / 0.01); for (let i = 0; i < n; i++) step(dt / n); syncCamera(); }
+  else if (mode === 'fly') { if (tour.on) tourStep(dt); else flyStep(dt); flyCamera(); document.getElementById('bTour').classList.toggle('on', tour.on); }
   else orbit.update();
   hud.innerHTML = hudText();
   if (renderEvery) renderer.render(scene, camera);
@@ -221,7 +351,8 @@ requestAnimationFrame(loop);
 // ---------------- test hooks (used by walk_test.py) ----------------
 window.__walk = {
   ready: true,
-  setMode, render() { syncCamera(); renderer.render(scene, camera); },
+  setMode, render() { if (mode === 'walk') syncCamera(); else if (mode === 'fly') flyCamera(); renderer.render(scene, camera); },
+  mode() { return mode; },
   teleport(x, y, z, yaw = 0) { setMode('walk'); setFeet(b2t(x, y, z)); player.yaw = yaw; player.onGround = false; },
   setYaw(y) { player.yaw = y; }, setPitch(p) { player.pitch = p; },
   state() { return { x: player.pos.x, y: -player.pos.z, z: feetY(), yaw: player.yaw, onGround: player.onGround,
@@ -232,4 +363,19 @@ window.__walk = {
   raySegment(a, b) { const A = b2t(...a), B = b2t(...b); const d = B.clone().sub(A); const L = d.length(); if (L < 1e-6) return null;
                      const h = castFirst(A, d, L); return h ? h.distance : null; },
   liftTo(level) { if (liftState) { liftState.target = level; return true; } return false; },
+};
+
+// ---------------- fly test hooks (used by walk/fly_test.py); Blender coords ----------------
+window.__fly = {
+  enter() { setMode('fly'); return this.state(); },
+  setPose(x, y, z, yaw = 0, pitch = 0) { setMode('fly'); tour.on = false; fly.pos.copy(b2t(x, y, z)); fly.vel.set(0, 0, 0); fly.yaw = yaw; fly.pitch = pitch; flyCamera(); },
+  lookFrom(p, t) { setMode('fly'); tour.on = false; lookFrom(p, t); flyCamera(); },
+  preset(i) { goPreset(i); flyCamera(); return PRESETS[i][0]; },
+  tour(on = true, u = null) { setMode('fly'); if (u !== null) tour.u = u; tour.on = on; },
+  tourAt(u) { setMode('fly'); tour.on = false; tour.u = u; tourPose(u, 1); flyCamera(); },
+  speed(v) { if (v) fly.base = v; return fly.base; },
+  camPose() { const e = new THREE.Euler().setFromQuaternion(camera.quaternion, 'YXZ'); return { x: camera.position.x, y: -camera.position.z, z: camera.position.y, yaw: e.y, pitch: e.x }; },
+  state() { return { mode, x: fly.pos.x, y: -fly.pos.z, z: fly.pos.y, yaw: fly.yaw, pitch: fly.pitch, speed: fly.base, v: fly.vel.length(), tour: tour.on }; },
+  orbitPose(px, py, pz, tx, ty, tz) { setMode('orbit'); camera.position.copy(b2t(px, py, pz)); orbit.target.copy(b2t(tx, ty, tz)); orbit.update(); },
+  hud() { return document.getElementById('hud').innerText; },
 };

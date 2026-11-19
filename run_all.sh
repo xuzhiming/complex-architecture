@@ -40,12 +40,14 @@ $GT optimize building.glb web/building_opt.glb --compress meshopt --texture-comp
     --join-named false --simplify false --flatten false --instance true --instance-min 5 2>&1 | tail -1
 cp spaces.json web/spaces.json
 
-step "7/8 web walk test (headless Chrome)"
+step "7/8 web walk + fly tests (headless Chrome)"
 python3 -m http.server $PORT --directory web > logs/http.log 2>&1 & SRV=$!
 trap 'kill $SRV 2>/dev/null || true' EXIT
 sleep 1
 python3 walk/walk_test.py --url http://localhost:$PORT/index.html | tee logs/walk.log
 grep -q "WALK PASS" logs/walk.log || { echo "walk test failed"; exit 1; }
+python3 walk/fly_test.py --url http://localhost:$PORT/index.html | tee logs/fly.log
+grep -q "FLY PASS" logs/fly.log || { echo "fly test failed"; exit 1; }
 
 step "8/8 final mood render"
 [ -n "${SKIP_FINAL:-}" ] || $BL -b building.blend -P src/final_render.py > logs/final.log 2>&1

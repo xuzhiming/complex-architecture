@@ -2,14 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Building preview - orbit / walk</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<link rel="icon" href="data:,">
+<title>Building preview - orbit / walk / fly</title>
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:#20222a;font-family:system-ui,sans-serif}
   #hud{position:absolute;left:12px;top:10px;color:#eee;font-size:13px;line-height:1.45;background:rgba(0,0,0,.45);padding:8px 12px;border-radius:6px;max-width:420px;pointer-events:none}
   #bar{position:absolute;right:12px;top:10px;display:flex;gap:6px}
   #bar button{background:#3a3f52;color:#fff;border:0;border-radius:5px;padding:6px 10px;cursor:pointer}
   #bar button.on{background:#6b7cff}
-  #cross{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#fff;opacity:.7;display:none}
+  #cross{pointer-events:none;position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#fff;opacity:.7;display:none}
+  #flyBar{position:absolute;right:12px;top:46px;display:none;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:70vw}
+  #flyBar button{background:#3a3f52;color:#fff;border:0;border-radius:5px;padding:5px 9px;cursor:pointer;font-size:12px}
+  #flyBar button.on{background:#6b7cff}
+  #touchFly{position:absolute;right:16px;bottom:24px;display:none}
+  #touchFly button{display:block;width:56px;height:56px;margin-top:10px;border-radius:50%;border:0;background:rgba(58,63,82,.8);color:#fff;font-size:22px;touch-action:none}
   #load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#ddd;font-size:18px}
 </style>
 <script type="importmap">
@@ -23,7 +30,9 @@
 <body>
 <div id="load">loading model...</div>
 <div id="hud"></div>
-<div id="bar"><button id="bOrbit" class="on">Orbit</button><button id="bWalk">Walk</button></div>
+<div id="bar"><button id="bOrbit" class="on" title="Orbit">环绕 Orbit</button><button id="bWalk" title="Walk (Tab)">漫游 Walk</button><button id="bFly" title="Fly (F)">飞行 Fly</button></div>
+<div id="flyBar"></div>
+<div id="touchFly"><button id="tUp">▲</button><button id="tDown">▼</button></div>
 <div id="cross"></div>
 <script type="module" src="./main.js"></script>
 </body>
