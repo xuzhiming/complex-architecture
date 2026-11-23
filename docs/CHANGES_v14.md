@@ -1,5 +1,9 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Render frame cost
+
+The dusk look kept twenty point lights in the one forward shader, so every surface paid for the plaza and the lobby. Those ten lamps are now computed only inside the ground and hall materials. Four point lights remain for the arch, the court, the podium and the crown, and the headlamp is out of the shader until walk or fly. Render's pixel ratio is capped at 1. Clay stays at 2. The reflection, the bollards, bloom and the door system are unchanged.
+
 ## Grey-blue dusk
 
 Render is no longer a night scene with a colour assigned to each part. A generated reflection (soft cyan, rose and amber washes, no buildings) tints the metal. One cool key from the upper left and a weaker warm fill from the right give the saucers, floor plates and the arch a light side and a dark side. The visible sky stays a quiet gradient so it does not compete with the building. Saucers are a cooler silver, bridges and the deck a warmer grey, the podium a mid stone, the arch mouth darker than the face. Amber stays on the windows. The forecourt path lights and the lobby ceiling are unchanged. Exposure is 0.9. Clay does not receive the reflection.

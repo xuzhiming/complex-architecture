@@ -17,7 +17,11 @@ const MODEL = Q.get('model') || './building_opt.glb';
 const b2t = (x, y, z) => new THREE.Vector3(x, z, -y);
 
 const renderer = new THREE.WebGLRenderer({ antialias: !TEST, preserveDrawingBuffer: true });
-renderer.setPixelRatio(TEST ? 1 : Math.min(devicePixelRatio, 2));
+const RENDER_DPR_CAP = 1, CLAY_DPR_CAP = 2;
+function pixelRatioFor(st) {
+  if (TEST) return 1;
+  return Math.min(window.devicePixelRatio || 1, st === 'render' ? RENDER_DPR_CAP : CLAY_DPR_CAP);
+}
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -229,14 +233,56 @@ gltf.scene.traverse(o => {
   const role = partRole(o);
   const src = o.userData.matRender;
   o.userData.matRender = Array.isArray(src) ? src.map(m => paintMaterial(m, role)) : paintMaterial(src, role);
-  if (o.name === 'GroundSlab') {
-    const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
-    mats.forEach(applyPlazaGround);
-  }
+  const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
+  if (o.name === 'GroundSlab') mats.forEach(applyPlazaGround);
 });
 // GroundSlab is one mesh under the lobby and the forecourt. The lobby keeps the dark matte floor.
 // In front of the arch (three.js +Z, Blender −Y) the paving becomes a warmer stone so the path lights
 // have something to illuminate. Clay uses a different material and does not get this shader.
+function poolGLSL(lights) {
+  return lights.map(L => {
+    const c = new THREE.Color(L.hex);
+    const p = L.pos;
+    return `{
+      vec3 Lp = (viewMatrix * vec4(${p.x.toFixed(4)}, ${p.y.toFixed(4)}, ${p.z.toFixed(4)}, 1.0)).xyz + vViewPosition;
+      float distL = length(Lp);
+      float att = 1.0 / max(distL * distL, 0.01);
+      float kc = clamp(1.0 - pow(distL / ${L.dist.toFixed(2)}, 4.0), 0.0, 1.0);
+      att *= kc * kc;
+      pool += vec3(${c.r.toFixed(5)}, ${c.g.toFixed(5)}, ${c.b.toFixed(5)}) * ${L.intensity.toFixed(3)} * att * clamp(dot(normalize(Lp), normal), 0.0, 1.0);
+    }`;
+  }).join('\n');
+}
+function injectPools(shader, lights) {
+  if (!lights.length) return;
+  shader.fragmentShader = shader.fragmentShader.replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
+    {
+      vec3 pool = vec3(0.0);
+      ${poolGLSL(lights)}
+      reflectedLight.directDiffuse += diffuseColor.rgb * pool;
+    }`);
+}
+const HALL_POOLS = [
+  { hex: 0xfff3e2, intensity: 5.5, dist: 16, pos: b2t(13.5, 32.0, 2.6) },
+  { hex: 0xffe7c8, intensity: 3.5, dist: 12, pos: b2t(11.2, 29.2, 2.5) },
+  { hex: 0xd4e0ff, intensity: 2.2, dist: 11, pos: b2t(15.8, 33.5, 2.5) },
+];
+const PATH_POOLS = [
+  { hex: 0xfff1dc, intensity: 34, dist: 26, pos: b2t(-22, -66, 2.5) },
+  { hex: 0xfff1dc, intensity: 34, dist: 26, pos: b2t(22, -66, 2.5) },
+  { hex: 0xffe4c2, intensity: 30, dist: 24, pos: b2t(-12, -50, 2.4) },
+  { hex: 0xffe4c2, intensity: 30, dist: 24, pos: b2t(12, -50, 2.4) },
+  { hex: 0xfff6ea, intensity: 64, dist: 40, pos: b2t(0, -63, 4.8) },
+  { hex: 0xfff0e0, intensity: 42, dist: 32, pos: b2t(0, -51, 4.0) },
+  { hex: 0xc5d4ff, intensity: 16, dist: 26, pos: b2t(28, -60, 2.6) },
+];
+function applyLocalPools(m, lights, key) {
+  if (!m || !m.isMaterial) return;
+  const prev = m.onBeforeCompile;
+  m.onBeforeCompile = (shader, r) => { if (prev) prev(shader, r); injectPools(shader, lights); };
+  const old = m.customProgramCacheKey && m.customProgramCacheKey.bind(m);
+  m.customProgramCacheKey = () => (old ? old() : m.uuid) + '|' + key;
+}
 function applyPlazaGround(m) {
   if (!m || !m.isMaterial) return;
   const stone = LOOK.plazaground.flat;
@@ -254,9 +300,17 @@ function applyPlazaGround(m) {
           vec3 stone = vec3(${stone[0]}, ${stone[1]}, ${stone[2]});
           diffuseColor.rgb = mix(diffuseColor.rgb, stone, fore * nearB * side);
         }`);
+    injectPools(shader, PATH_POOLS.concat(HALL_POOLS));
   };
-  m.customProgramCacheKey = () => 'plaza-ground';
+  m.customProgramCacheKey = () => 'plaza-ground-pools';
 }
+gltf.scene.traverse(o => {
+  if (!o.isMesh || !o.userData.matRender) return;
+  const role = partRole(o);
+  if (role !== 'hallceil' && role !== 'hallwall' && role !== 'halldoor') return;
+  const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
+  mats.forEach(m => applyLocalPools(m, HALL_POOLS, 'hall-pools'));
+});
 // emissive pastel plaza rings in front of the arch (render look only)
 const plazaFx = new THREE.Group(); scene.add(plazaFx);
 {
@@ -281,36 +335,13 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
     depthWrite: false, transparent: true, opacity: op, fog: false })); s.scale.set(size, size, 1); s.position.copy(pos); plazaFx.add(s); return s; };
   sprite(0xfff2e4, 10, b2t(0, fy + 8, 6), 0.16);
   sprite(0xf2f0ff, 22, b2t(13.5, 40, 76), 0.06);
+  // Only lights that have to shade the whole model stay as PointLights. The path and the
+  // lobby are computed inside those materials, so the other 600 meshes do not pay for them.
   const glow = (hex, inten, dist, pos) => { const L = new THREE.PointLight(hex, inten, dist, 2); L.position.copy(pos); plazaFx.add(L); };
   glow(0xfff3e6, 52, 46, b2t(0, fy + 6, 6));          // milky arch
   glow(0xe8e6f4, 18, 56, b2t(13.5, 40, 78));          // pale crown
-  glow(0xffe6d2, 40, 34, b2t(0, 2, 5));               // warm court, low
-  glow(0xfff0e4, 26, 40, b2t(0, 2, 16));              // mid court
-  glow(0xc9d6e6, 16, 46, b2t(0, 12, 30));             // cool air higher in the court
-  glow(0xffd8c0, 24, 56, b2t(0, -58, 9));             // podium, warm and quiet
-  glow(0xffc6d0, 8, 36, b2t(-58, 16, 26));            // a rose hint, not a wash
-  glow(0xb7d6e8, 9, 40, b2t(62, 6, 24));              // a cyan hint
-  glow(0xffe6d4, 12, 30, b2t(13.5, 40, 48));          // warm air between the saucers
-  // T_L0 lobby. Lights hang in the volume under TowerSlab1 (ceiling ~4.25 m), not on the floor.
-  // Diffuse wall/floor materials carry the light; these three stay dim so they do not bloom into discs.
-  glow(0xfff3e2, 5.5, 16, b2t(13.5, 32.0, 2.6));
-  glow(0xffe7c8, 3.5, 12, b2t(11.2, 29.2, 2.5));
-  glow(0xd4e0ff, 2.2, 11, b2t(15.8, 33.5, 2.5));
-  // Forecourt path. Seven lights, not a field of lamps. Edge pools sit beside the walk;
-  // the two centre lights are up at 4 m so the spine is a wash, not a disc on the paving.
-  // Bollards are the only fixtures. They are not in the collider.
-  const pool = (hex, inten, dist, x, y, z) => {
-    const L = new THREE.PointLight(hex, inten, dist, 2);
-    L.position.copy(b2t(x, y, z)); plazaFx.add(L);
-  };
-  // GroundSlab ends near Blender y = -72, so the lamps sit on that paving, beside the walk.
-  pool(0xfff1dc, 34, 26, -22, -66, 2.5);
-  pool(0xfff1dc, 34, 26, 22, -66, 2.5);
-  pool(0xffe4c2, 30, 24, -12, -50, 2.4);
-  pool(0xffe4c2, 30, 24, 12, -50, 2.4);
-  pool(0xfff6ea, 64, 40, 0, -63, 4.8);          // milky spine of the approach
-  pool(0xfff0e0, 42, 32, 0, -51, 4.0);          // continues the path to the arch
-  pool(0xc5d4ff, 16, 26, 28, -60, 2.6);         // one cool edge
+  glow(0xffe6d2, 40, 34, b2t(0, 2, 5));               // warm court
+  glow(0xffd8c0, 24, 56, b2t(0, -58, 9));             // podium
   const bollard = (x, y, col) => {
     const mesh = new THREE.Mesh(
       new THREE.CylinderGeometry(0.11, 0.16, 0.72, 8),
@@ -322,6 +353,17 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
   bollard(28, -60, 0xc5d4ff);
 }
 function headlampFor(m) { return (m === 'walk' ? 25 : (m === 'fly' ? 12 : 0)) * (style === 'render' ? 0.18 : 1); }
+function syncHeadlamp() {
+  headlamp.intensity = headlampFor(mode);
+  headlamp.visible = headlamp.intensity > 0;
+}
+function applyPixelRatio() {
+  const pr = pixelRatioFor(style);
+  renderer.setPixelRatio(pr);
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setPixelRatio(pr);
+  composer.setSize(innerWidth, innerHeight);
+}
 function applyStyle(s) {
   style = s;
   const R = s === 'render';
@@ -330,7 +372,8 @@ function applyStyle(s) {
   scene.environment = R ? RENDER_ENV : null; scene.environmentIntensity = R ? 1.25 : 1;
   clayLights.visible = !R; renderLights.visible = R; plazaFx.visible = R;
   renderer.toneMappingExposure = R ? 0.9 : 1.0;
-  headlamp.intensity = headlampFor(mode);
+  syncHeadlamp();
+  applyPixelRatio();
   const b = document.getElementById('bStyle'); if (b) b.textContent = R ? '风格 Style: 渲染 Render' : '风格 Style: 白模 Clay';
 }
 
@@ -525,7 +568,7 @@ function setMode(m) {
   for (const [id, mm] of [['bOrbit', 'orbit'], ['bWalk', 'walk'], ['bFly', 'fly']]) document.getElementById(id).classList.toggle('on', m === mm);
   document.getElementById('flyBar').style.display = m === 'fly' ? 'flex' : 'none';
   document.getElementById('touchFly').style.display = (m === 'fly' && TOUCH) ? 'block' : 'none';
-  orbit.enabled = m === 'orbit'; headlamp.intensity = headlampFor(m); cross.style.display = m !== 'orbit' ? 'block' : 'none';
+  orbit.enabled = m === 'orbit'; syncHeadlamp(); cross.style.display = m !== 'orbit' ? 'block' : 'none';
   if (m === 'walk' && player.pos.lengthSq() === 0) { setFeet(b2t(0, -62, 0)); player.yaw = 0; }
   if (m === 'orbit' && document.pointerLockElement) document.exitPointerLock?.();
 }
@@ -558,8 +601,7 @@ addEventListener('keydown', e => {
   }
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
-addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
-  composer.setSize(innerWidth, innerHeight); bloom.resolution.set(innerWidth / 2, innerHeight / 2); });
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); applyPixelRatio(); });
 
 // ---------------- fly mode: free 6-DoF camera, no gravity, no collision ----------------
 const TOUCH = matchMedia('(pointer: coarse)').matches || Q.has('touch');
@@ -737,4 +779,24 @@ window.__fly = {
   state() { return { mode, x: fly.pos.x, y: -fly.pos.z, z: fly.pos.y, yaw: fly.yaw, pitch: fly.pitch, speed: fly.base, v: fly.vel.length(), tour: tour.on }; },
   orbitPose(px, py, pz, tx, ty, tz) { setMode('orbit'); camera.position.copy(b2t(px, py, pz)); orbit.target.copy(b2t(tx, ty, tz)); orbit.update(); },
   hud() { return document.getElementById('hud').innerText; },
+};
+function visiblePointLights() {
+  let n = 0;
+  scene.traverse(o => {
+    if (!o.isPointLight) return;
+    for (let p = o; p; p = p.parent) if (p.visible === false) return;
+    n++;
+  });
+  return n;
+}
+window.__perf = {
+  snapshot() {
+    let bollards = 0;
+    scene.traverse(o => { if (o.name === 'PlazaBollard') bollards++; });
+    return {
+      renderCap: RENDER_DPR_CAP, clayCap: CLAY_DPR_CAP, style,
+      pointLights: visiblePointLights(), bollards,
+      env: !!scene.environment, pixelRatio: renderer.getPixelRatio(),
+    };
+  },
 };
