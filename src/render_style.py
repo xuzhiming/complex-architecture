@@ -54,7 +54,7 @@ MAT["podium"] = principled("St_Podium", PAL["navy"], 0.5, 0.35, 0.4)
 MAT["ground"] = principled("St_Ground", (0.008, 0.009, 0.02), 0.2, 0.1, 1.0)
 def saucer_mat():
     """dark glossy/metallic underside; top surface catches bright iridescent pink/cyan/white light"""
-    m = principled("St_Saucer", (0.03, 0.03, 0.07), 0.9, 0.15, 1.0, 420); N, L = nodes(m); b = N["Principled BSDF"]
+    m = principled("St_Saucer", (0.24, 0.28, 0.42), 0.34, 0.46, 0.4, 420); N, L = nodes(m); b = N["Principled BSDF"]
     geo = N.new("ShaderNodeNewGeometry"); sp = N.new("ShaderNodeSeparateXYZ"); L.new(geo.outputs["Normal"], sp.inputs[0])
     top = N.new("ShaderNodeMapRange"); top.inputs["From Min"].default_value = 0.2; top.inputs["From Max"].default_value = 0.9
     top.inputs["To Max"].default_value = CY["saucer_top_glow"]; L.new(sp.outputs["Z"], top.inputs["Value"])
@@ -234,6 +234,7 @@ light("StCourtCool", 'POINT', (CC[0], CC[1] + 6, 30), CY["court_cool_w"], (0.42,
 light("StPodiumWarm", 'POINT', (0, FRONT_Y - 12, 9), CY["podium_warm_w"], (1.0, 0.64, 0.35), 8)
 light("StCrownHalo", 'POINT', (TX, TY, TZ + 12), 4e4, (0.78, 0.65, 1.0), 12)
 light("StMoon", 'SUN', (0, 0, 100), 0.25, (0.55, 0.6, 1.0), rot=(math.radians(40), 0, math.radians(200)))
+light("StRoofFill", 'AREA', (0, 20, 150), CY["roof_fill_w"], (0.78, 0.84, 1.0), 90, (0, 0, 0))
 light("StRimPink", 'AREA', (-90, 30, 80), 3e3, (1.0, 0.35, 0.8), 50, (math.radians(60), 0, math.radians(-120)))
 light("StRimCyan", 'AREA', (100, 20, 70), 3e3, (0.25, 0.8, 1.0), 50, (math.radians(60), 0, math.radians(120)))
 light("StUnderFill", 'AREA', (0, FRONT_Y - 40, 10), 1.2e3, (0.5, 0.45, 1.0), 70, (math.radians(-80), 0, 0))

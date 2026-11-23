@@ -1,5 +1,9 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Roof tops
+
+The saucer and bridge tops stayed black after the colour pass. They are a near-black metal in the glb, and with no environment they reflect nothing, so the big upper surfaces read as holes. Render exposure and bloom were left alone. Those meshes now use a flat blue-slate (bridges a warmer slate), metal about 0.34 and roughness about 0.46, plus a faint cool emissive (strength 0.05, not a light panel). Two soft directional fills, one cool from above and one warm, give the curved tops a gradient. The crescent is not retinted. `style.web.saucer` matches that slate, and `src/render_style.py` uses the same base so the next Cycles run does not return to a black disc. That run was not done.
+
 ## Richer Render light (after the dimming pass)
 
 The dimmed preview read as one blue-violet wash, and the courtyard plus the podium fell into black. This pass does not raise the global exposure (it stays 0.9) and does not grade a screenshot. `web/main.js` paints each loaded part once — crescent, crown, windows, glass, rim, saucer, floor band, deck, podium, arch, tower, shell — to an absolute emissive colour and strength that matches `params.json` `style.web`. That replaces the previous strength remap (3 → 0.70 and so on). It does not multiply those factors again.

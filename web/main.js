@@ -42,7 +42,10 @@ renderLights.add(new THREE.AmbientLight(0x241838, 0.16));
 { const d = new THREE.DirectionalLight(0xb7c6ff, 0.4); d.position.set(-80, 160, 90); renderLights.add(d);
   const pink = new THREE.DirectionalLight(0xff4ec8, 0.72); pink.position.set(-150, 80, -20); renderLights.add(pink);
   const cyan = new THREE.DirectionalLight(0x3ec8ff, 0.86); cyan.position.set(160, 64, 16); renderLights.add(cyan);
-  const gold = new THREE.DirectionalLight(0xffb15a, 0.32); gold.position.set(10, 30, -150); renderLights.add(gold); }
+  const gold = new THREE.DirectionalLight(0xffb15a, 0.32); gold.position.set(10, 30, -150); renderLights.add(gold);
+  // soft overhead fill so saucer and bridge tops are not black mirrors; kept dim so the crescent stays the highlight
+  const roofSky = new THREE.DirectionalLight(0xd5e2ff, 0.42); roofSky.position.set(-36, 260, 24); renderLights.add(roofSky);
+  const roofWarm = new THREE.DirectionalLight(0xffc9a2, 0.16); roofWarm.position.set(70, 200, -90); renderLights.add(roofWarm); }
 let style = (Q.get('style') || 'render') === 'clay' ? 'clay' : 'render';
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.05, 3000);
@@ -130,7 +133,12 @@ const LOOK = {
   windows: { emit: 0xffb45c, estr: 1.1 },
   glass: { emit: 0xffc48a, estr: 0.22 },
   rim: { emit: 0xff86d6, estr: 0.72 },
-  saucer: { emit: 0x9ad4ff, estr: 0.34, color: [1.05, 1.15, 1.62] },
+  // Roofs: the baked saucer is a near-black metal, so the top reads as a hole. These are absolute
+  // slate colours (maps cleared), not another multiply. Emissive stays a faint tint, not a light panel.
+  saucer: { flat: [0.24, 0.28, 0.42], metal: 0.34, rough: 0.46, emit: 0xa9c4ea, estr: 0.05 },
+  roof: { flat: [0.22, 0.2, 0.36], metal: 0.36, rough: 0.5, emit: 0xc2b0e4, estr: 0.04 },
+  bridge: { flat: [0.32, 0.24, 0.28], metal: 0.32, rough: 0.48, emit: 0xe4c6a8, estr: 0.05 },
+  roofrib: { flat: [0.13, 0.15, 0.24], metal: 0.48, rough: 0.4 },
   ring: { emit: 0x7ee7ff, estr: 0.48, color: [1.05, 1.15, 1.55] },
   deck: { emit: 0xffe0a4, estr: 0.82 },
   podium: { emit: 0xffb888, estr: 0.07, color: [1.75, 1.4, 1.6] },
@@ -147,8 +155,13 @@ function partRole(o) {
   if (/Crown|Dome|Lantern/i.test(n)) return 'crown';
   if (/Window/i.test(n)) return 'windows';
   if (/Deck/i.test(n)) return 'deck';
-  if (/CanopyRim/i.test(n)) return 'rim';
-  if (/canopy/i.test(n)) return 'saucer';
+  const self = o.name || '';
+  if (/CanopyRim/i.test(self)) return 'rim';
+  if (/canopy_rib/i.test(self)) return 'roofrib';
+  if (/canopy/i.test(self)) return 'saucer';
+  if (/_roof$/i.test(self)) return 'roof';
+  if (/^Bridge\d+$/.test(self)) return 'bridge';
+  if (/^Bridge\d+_(rail|posts|rib)/.test(self)) return 'roofrib';
   if (/band|Belt|Slab|_floor|Floor/i.test(n)) return 'ring';
   if (/Arch/i.test(n)) return 'arch';
   if (/Podium/i.test(n)) return 'podium';
@@ -164,9 +177,15 @@ function paintMaterial(src, role) {
   const m = src.clone();
   const spec = LOOK[role];
   if (spec) {
-    if (spec.color) m.color.setRGB(spec.color[0], spec.color[1], spec.color[2]);
-    if (spec.emit !== undefined) { m.emissive.setHex(spec.emit); m.emissiveIntensity = spec.estr; }
-    else if ((src.emissiveIntensity ?? 1) >= 1.05) m.emissiveIntensity = 0.4;
+    if (spec.flat) {
+      m.map = null; m.color.setRGB(spec.flat[0], spec.flat[1], spec.flat[2]);
+      if (spec.metal !== undefined) { m.metalnessMap = null; m.metalness = spec.metal; }
+      if (spec.rough !== undefined) { m.roughnessMap = null; m.roughness = spec.rough; }
+    } else if (spec.color) m.color.setRGB(spec.color[0], spec.color[1], spec.color[2]);
+    if (spec.emit !== undefined) {
+      if (spec.flat) m.emissiveMap = null;
+      m.emissive.setHex(spec.emit); m.emissiveIntensity = spec.estr;
+    } else if ((src.emissiveIntensity ?? 1) >= 1.05) m.emissiveIntensity = 0.4;
   }
   paintCache.set(key, m);
   return m;
