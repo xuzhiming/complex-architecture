@@ -51,7 +51,19 @@ MAT = {}
 MAT["shell"] = fresnel_iri(principled("St_Shell", PAL["indigo"], 0.8, 0.22, 0.8, 380), 0.55)
 MAT["facade"] = fresnel_iri(principled("St_Facade", (0.05, 0.05, 0.12), 0.7, 0.3, 0.5, 300), 0.3)
 MAT["podium"] = principled("St_Podium", PAL["navy"], 0.5, 0.35, 0.4)
-MAT["ground"] = principled("St_Ground", (0.008, 0.009, 0.02), 0.2, 0.1, 1.0)
+def ground_mat():
+    # One slab under the lobby and the forecourt. South of the arch (Y < -42) is the plaza stone.
+    m = principled("St_Ground", (0.09, 0.085, 0.09), 0.02, 0.94, 0.0)
+    N, L = nodes(m); b = N["Principled BSDF"]
+    geo = N.new("ShaderNodeNewGeometry"); sep = N.new("ShaderNodeSeparateXYZ"); L.new(geo.outputs["Position"], sep.inputs[0])
+    mp = N.new("ShaderNodeMapRange")
+    mp.inputs["From Min"].default_value = -78.0; mp.inputs["From Max"].default_value = -40.0
+    mp.inputs["To Min"].default_value = 0.0; mp.inputs["To Max"].default_value = 1.0
+    L.new(sep.outputs["Y"], mp.inputs["Value"])
+    ramp = ramp_node(N, [(0.0, (0.16, 0.14, 0.125)), (0.35, (0.16, 0.14, 0.125)), (0.7, (0.09, 0.085, 0.09)), (1.0, (0.09, 0.085, 0.09))])
+    L.new(mp.outputs["Result"], ramp.inputs["Fac"]); L.new(ramp.outputs["Color"], b.inputs["Base Color"])
+    return m
+MAT["ground"] = ground_mat()
 def saucer_mat():
     """dark glossy/metallic underside; top surface catches bright iridescent pink/cyan/white light"""
     m = principled("St_Saucer", (0.24, 0.28, 0.42), 0.34, 0.46, 0.4, 420); N, L = nodes(m); b = N["Principled BSDF"]
@@ -232,6 +244,12 @@ for k, (ax, az_) in enumerate([(-44, 20), (-30, 32), (-15, 42), (0, 48), (15, 42
 light("StCourtGlow", 'POINT', (CC[0], CC[1], 12), CY["court_fill_w"], (1.0, 0.72, 0.45), 6)
 light("StCourtCool", 'POINT', (CC[0], CC[1] + 6, 30), CY["court_cool_w"], (0.42, 0.66, 1.0), 8)
 light("StPodiumWarm", 'POINT', (0, FRONT_Y - 12, 9), CY["podium_warm_w"], (1.0, 0.64, 0.35), 8)
+# Forecourt path. Low lamps on the paving (the slab ends near y = -72), warm down the walk, one cool edge.
+for i, (x, y, z) in enumerate([(-22, -66, 2.5), (22, -66, 2.5), (-12, -50, 2.4), (12, -50, 2.4)]):
+    light(f"StPlazaEdge{i}", 'POINT', (x, y, z), CY["plaza_edge_w"], (1.0, 0.9, 0.72), 1.4)
+light("StPlazaPath", 'POINT', (0, -63, 4.4), CY["plaza_path_w"], (1.0, 0.94, 0.84), 2.2)
+light("StPlazaPathNear", 'POINT', (0, -51, 3.8), CY["plaza_path_near_w"], (1.0, 0.9, 0.76), 1.8)
+light("StPlazaCool", 'POINT', (28, -60, 2.6), CY["plaza_cool_w"], (0.75, 0.82, 1.0), 1.2)
 light("StCrownHalo", 'POINT', (TX, TY, TZ + 12), 4e4, (0.78, 0.65, 1.0), 12)
 light("StMoon", 'SUN', (0, 0, 100), 0.25, (0.55, 0.6, 1.0), rot=(math.radians(40), 0, math.radians(200)))
 light("StRoofFill", 'AREA', (0, 20, 150), CY["roof_fill_w"], (0.78, 0.84, 1.0), 90, (0, 0, 0))

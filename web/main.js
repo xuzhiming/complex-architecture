@@ -144,6 +144,8 @@ const LOOK = {
   hallwall: { flat: [0.46, 0.42, 0.44], metal: 0.04, rough: 0.88, side: 2 },
   halldoor: { flat: [0.5, 0.46, 0.44], metal: 0.06, rough: 0.78 },
   hallfloor: { flat: [0.09, 0.085, 0.09], metal: 0.02, rough: 0.96 },
+  // Forecourt paving only. The lobby floor stays on hallfloor; this stone is mixed in by world position.
+  plazaground: { flat: [0.16, 0.14, 0.125], metal: 0.02, rough: 0.94 },
   ring: { emit: 0x7ee7ff, estr: 0.48, color: [1.05, 1.15, 1.55] },
   deck: { emit: 0xffe0a4, estr: 0.82 },
   podium: { emit: 0xffb888, estr: 0.07, color: [1.75, 1.4, 1.6] },
@@ -206,7 +208,34 @@ gltf.scene.traverse(o => {
   const role = partRole(o);
   const src = o.userData.matRender;
   o.userData.matRender = Array.isArray(src) ? src.map(m => paintMaterial(m, role)) : paintMaterial(src, role);
+  if (o.name === 'GroundSlab') {
+    const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
+    mats.forEach(applyPlazaGround);
+  }
 });
+// GroundSlab is one mesh under the lobby and the forecourt. The lobby keeps the dark matte floor.
+// In front of the arch (three.js +Z, Blender −Y) the paving becomes a warmer stone so the path lights
+// have something to illuminate. Clay uses a different material and does not get this shader.
+function applyPlazaGround(m) {
+  if (!m || !m.isMaterial) return;
+  const stone = LOOK.plazaground.flat;
+  m.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vPlazaWorld;')
+      .replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\nvPlazaWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vPlazaWorld;')
+      .replace('#include <color_fragment>', `#include <color_fragment>
+        {
+          float fore = smoothstep(40.0, 52.0, vPlazaWorld.z);
+          float nearB = 1.0 - smoothstep(112.0, 148.0, vPlazaWorld.z);
+          float side = 1.0 - smoothstep(62.0, 96.0, abs(vPlazaWorld.x));
+          vec3 stone = vec3(${stone[0]}, ${stone[1]}, ${stone[2]});
+          diffuseColor.rgb = mix(diffuseColor.rgb, stone, fore * nearB * side);
+        }`);
+  };
+  m.customProgramCacheKey = () => 'plaza-ground';
+}
 // emissive pastel plaza rings in front of the arch (render look only)
 const plazaFx = new THREE.Group(); scene.add(plazaFx);
 {
@@ -246,6 +275,30 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
   glow(0xfff3e2, 5.5, 16, b2t(13.5, 32.0, 2.6));
   glow(0xffe7c8, 3.5, 12, b2t(11.2, 29.2, 2.5));
   glow(0xd4e0ff, 2.2, 11, b2t(15.8, 33.5, 2.5));
+  // Forecourt path. Seven lights, not a field of lamps. Edge pools sit beside the walk;
+  // the two centre lights are up at 4 m so the spine is a wash, not a disc on the paving.
+  // Bollards are the only fixtures. They are not in the collider.
+  const pool = (hex, inten, dist, x, y, z) => {
+    const L = new THREE.PointLight(hex, inten, dist, 2);
+    L.position.copy(b2t(x, y, z)); plazaFx.add(L);
+  };
+  // GroundSlab ends near Blender y = -72, so the lamps sit on that paving, beside the walk.
+  pool(0xfff1dc, 34, 26, -22, -66, 2.5);
+  pool(0xfff1dc, 34, 26, 22, -66, 2.5);
+  pool(0xffe4c2, 30, 24, -12, -50, 2.4);
+  pool(0xffe4c2, 30, 24, 12, -50, 2.4);
+  pool(0xfff3e4, 78, 36, 0, -63, 4.4);          // warm spine of the approach
+  pool(0xffe8cc, 52, 30, 0, -51, 3.8);          // continues the path to the arch
+  pool(0xc5d4ff, 16, 26, 28, -60, 2.6);         // one cool edge
+  const bollard = (x, y, col) => {
+    const mesh = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.11, 0.16, 0.72, 8),
+      new THREE.MeshStandardMaterial({ color: 0x2c261e, roughness: 0.62, metalness: 0.05, emissive: col, emissiveIntensity: 1.8 }));
+    mesh.position.copy(b2t(x, y, 0.36)); mesh.name = 'PlazaBollard'; plazaFx.add(mesh);
+  };
+  bollard(-22, -66, 0xffe6c4); bollard(22, -66, 0xffe6c4);
+  bollard(-12, -50, 0xffe0b8); bollard(12, -50, 0xffe0b8);
+  bollard(28, -60, 0xc5d4ff);
 }
 function headlampFor(m) { return (m === 'walk' ? 25 : (m === 'fly' ? 12 : 0)) * (style === 'render' ? 0.18 : 1); }
 function applyStyle(s) {

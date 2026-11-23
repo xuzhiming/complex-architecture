@@ -1,5 +1,11 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Forecourt path lights
+
+The coloured rings on the forecourt were emissive lines. They did not light the paving, and `GroundSlab` is one mesh painted as the dark lobby floor, so the approach read as a black disc. Render now mixes a warmer matte stone onto that slab only in front of the arch (three.js +Z, about Blender Y < −42). The lobby floor is the same mesh and stays on the dark `hallfloor` values.
+
+Seven point lights cover the walk: four low warm pools at the path edges, two higher warm washes down the centre (4.4 m and 3.8 m, so they are not stuck to the ground), and one cool pool on the east edge. Five short bollards mark the edge lights. They live in the render-only group, so they are hidden in Clay and they are not part of the collision mesh. The rings, exposure 0.9 and the bloom settings are unchanged. `style.web.plaza_ground` and `style.cycles` `plaza_*_w` match this, and `src/render_style.py` uses the same stone split and lamp positions. Cycles was not re-rendered.
+
 ## Tower lobby `T_L0`
 
 `T_L0` is the only space tagged `kind: "lobby"`. It is the ground floor of the tower (centre about 13.5, 40), reached from the gallery through `T_link` and door `D63`. A ray straight up from eye height hits `TowerSlab1` at about 4.25 m, so the room has a ceiling. That slab was single-sided, so from inside the camera looked through it at the night sky and at the crown sprites. Render now draws that existing slab from both sides. No geometry was added.

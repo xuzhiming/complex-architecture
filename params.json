@@ -1027,6 +1027,15 @@
     "metal": 0.3,
     "rough": 0.25
    },
+   "plaza_ground": {
+    "color": [
+     0.16,
+     0.14,
+     0.125
+    ],
+    "metal": 0.02,
+    "rough": 0.94
+   },
    "door_frame": {
     "color": [
      0.35,
@@ -1144,10 +1153,14 @@
    "court_cool_w": 7000.0,
    "podium_warm_w": 6500.0,
    "roof_fill_w": 1800.0,
-  "hall_warm_w": 40.0,
+   "hall_warm_w": 40.0,
   "hall_entry_w": 22.0,
   "hall_lift_w": 18.0,
-  "hall_cool_w": 12.0
+  "hall_cool_w": 12.0,
+  "plaza_edge_w": 1600.0,
+  "plaza_path_w": 2800.0,
+  "plaza_path_near_w": 1800.0,
+  "plaza_cool_w": 700.0
   }
  }
 }
