@@ -156,27 +156,26 @@ gltf.scene.traverse(o => {
 const LOOK = {
   crescent: { emit: 0xfff0e6, estr: 0.2 },
   crown: { emit: 0xf4f2ff, estr: 0.22 },
-  windows: { emit: 0xffb068, estr: 0.7 },
-  glass: { emit: 0xffd8c2, estr: 0.06 },
-  rim: { emit: 0xffc8d6, estr: 0.26 },
-  // Metal picks up the reflection: cool silver on the saucers, a warmer grey on the bridges.
-  saucer: { flat: [0.42, 0.46, 0.54], metal: 0.84, rough: 0.2, emit: 0xb7d8ee, estr: 0.012 },
-  roof: { flat: [0.52, 0.46, 0.5], metal: 0.64, rough: 0.32, emit: 0xf0c8d4, estr: 0.014 },
-  bridge: { flat: [0.58, 0.5, 0.46], metal: 0.58, rough: 0.34, emit: 0xffd8c0, estr: 0.016 },
-  roofrib: { flat: [0.16, 0.18, 0.22], metal: 0.72, rough: 0.3 },
-  // T_L0. Cool plaster, not a tinted toy wall. The ceiling is drawn from both sides.
-  hallceil: { flat: [0.62, 0.63, 0.66], metal: 0.02, rough: 0.9, side: 2 },
-  hallwall: { flat: [0.56, 0.55, 0.54], metal: 0.03, rough: 0.88, side: 2 },
-  halldoor: { flat: [0.5, 0.49, 0.48], metal: 0.05, rough: 0.8 },
-  hallfloor: { flat: [0.1, 0.096, 0.09], metal: 0.02, rough: 0.96 },
-  // Forecourt paving only. The lobby floor stays on hallfloor; this stone is mixed in by world position.
-  plazaground: { flat: [0.22, 0.2, 0.18], metal: 0.02, rough: 0.92 },
-  ring: { emit: 0xc9dff0, estr: 0.1, color: [0.72, 0.78, 0.88] },
-  deck: { flat: [0.4, 0.38, 0.42], metal: 0.72, rough: 0.28, emit: 0xffe0c8, estr: 0.06 },
-  podium: { flat: [0.36, 0.33, 0.32], metal: 0.46, rough: 0.46, emit: 0xffd4bc, estr: 0.012 },
-  arch: { flat: [0.16, 0.13, 0.12], metal: 0.2, rough: 0.62, emit: 0xfff0e2, estr: 0.045 },
-  tower: { flat: [0.4, 0.42, 0.5], metal: 0.62, rough: 0.34, emit: 0xc5dff2, estr: 0.01 },
-  shell: { flat: [0.26, 0.27, 0.3], metal: 0.5, rough: 0.44, emit: 0xe4ddd6, estr: 0.008 },
+  windows: { emit: 0xffc48a, estr: 0.36 },
+  glass: { emit: 0xc8b8aa, estr: 0.03 },
+  rim: { emit: 0xffc8d6, estr: 0.22 },
+  // Cool silver discs. The lip is sharpened in the shader so the arc is not one colour.
+  saucer: { flat: [0.46, 0.5, 0.58], metal: 0.82, rough: 0.28, emit: 0xb7d8ee, estr: 0.01 },
+  roof: { flat: [0.5, 0.46, 0.48], metal: 0.6, rough: 0.38, emit: 0xf0c8d4, estr: 0.012 },
+  bridge: { flat: [0.56, 0.46, 0.4], metal: 0.48, rough: 0.46, emit: 0xffd8c0, estr: 0.014 },
+  roofrib: { flat: [0.18, 0.2, 0.24], metal: 0.7, rough: 0.32 },
+  // Warm matte plaster. The ceiling edge is darkened in the shader; the middle stays light.
+  hallceil: { flat: [0.7, 0.66, 0.62], metal: 0.02, rough: 0.9, side: 2 },
+  hallwall: { flat: [0.62, 0.56, 0.5], metal: 0.03, rough: 0.86, side: 2 },
+  halldoor: { flat: [0.5, 0.44, 0.38], metal: 0.06, rough: 0.74 },
+  hallfloor: { flat: [0.12, 0.1, 0.09], metal: 0.02, rough: 0.94 },
+  plazaground: { flat: [0.3, 0.26, 0.22], metal: 0.04, rough: 0.9 },
+  ring: { emit: 0xc9dff0, estr: 0.08, color: [0.7, 0.76, 0.86] },
+  deck: { flat: [0.48, 0.4, 0.34], metal: 0.55, rough: 0.4, emit: 0xffe0c8, estr: 0.05 },
+  podium: { flat: [0.42, 0.36, 0.31], metal: 0.08, rough: 0.84, emit: 0xffd4bc, estr: 0.008 },
+  arch: { flat: [0.3, 0.24, 0.21], metal: 0.06, rough: 0.8, emit: 0xfff0e2, estr: 0.03 },
+  tower: { flat: [0.4, 0.43, 0.5], metal: 0.62, rough: 0.36, emit: 0xc5dff2, estr: 0.008 },
+  shell: { flat: [0.36, 0.32, 0.29], metal: 0.1, rough: 0.78, emit: 0xe8ddd4, estr: 0.006 },
 };
 function partRole(o) {
   const ns = [];
@@ -228,6 +227,61 @@ function paintMaterial(src, role) {
   paintCache.set(key, m);
   return m;
 }
+// Cheap form shading: downward faces and the wall foot get darker, saucer lips get sharper.
+// A handful of arithmetic instructions. No extra lights and no shadow map.
+function applyFinish(m, kind) {
+  if (!m || !m.isMaterial || m.userData.finish) return;
+  m.userData.finish = kind;
+  const skirt = kind === 'podium' || kind === 'arch' || kind === 'shell' || kind === 'hallwall';
+  const prev = m.onBeforeCompile;
+  m.onBeforeCompile = (shader, rdr) => {
+    if (prev) prev(shader, rdr);
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vFinishN;\nvarying vec3 vFinishP;')
+      .replace('#include <worldpos_vertex>', `#include <worldpos_vertex>
+        {
+          vec4 finishW = vec4(transformed, 1.0);
+          vec3 finishN = normal;
+          #ifdef USE_BATCHING
+            finishW = batchingMatrix * finishW;
+            finishN = mat3(batchingMatrix) * finishN;
+          #endif
+          #ifdef USE_INSTANCING
+            finishW = instanceMatrix * finishW;
+            finishN = mat3(instanceMatrix) * finishN;
+          #endif
+          finishW = modelMatrix * finishW;
+          vFinishP = finishW.xyz;
+          vFinishN = normalize(mat3(modelMatrix) * finishN);
+        }`);
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vFinishN;\nvarying vec3 vFinishP;\nfloat gLip;\n')
+      .replace('#include <color_fragment>', `#include <color_fragment>
+        {
+          vec3 wn = normalize(vFinishN);
+          #if defined( DOUBLE_SIDED )
+            wn *= gl_FrontFacing ? 1.0 : -1.0;
+          #endif
+          float soffit = ${kind === 'hallceil' ? '0.0' : 'smoothstep(0.22, 0.82, clamp(-wn.y, 0.0, 1.0))'};
+          diffuseColor.rgb *= mix(1.0, 0.58, soffit);
+          ${skirt ? `float skirt = 1.0 - smoothstep(0.04, 2.1, vFinishP.y);
+          diffuseColor.rgb *= mix(1.0, 0.64, skirt);` : ''}
+          gLip = ${(kind === 'saucer' || kind === 'roof') ? 'smoothstep(0.28, 0.9, 1.0 - abs(wn.y))' : '0.0'};
+          ${kind === 'saucer' || kind === 'roof' ? `diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(0.9, 0.96, 1.08) + vec3(0.03, 0.04, 0.06), gLip);` : ''}
+          ${kind === 'hallceil' ? `float rimD = smoothstep(4.5, 13.0, length(vFinishP.xz - vec2(11.2, -31.5)));
+          diffuseColor.rgb *= mix(1.0, 0.62, rimD);` : ''}
+        }`)
+      .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, roughnessFactor * 0.42, gLip);')
+      .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+        ${kind === 'windows' ? `{
+          float cell = floor(vFinishP.x * 0.31) + floor(vFinishP.z * 0.31) * 17.0;
+          float spark = fract(sin(cell * 12.9898) * 43758.5453);
+          totalEmissiveRadiance *= mix(0.32, 1.08, spark);
+        }` : ''}`);
+  };
+  const old = m.customProgramCacheKey && m.customProgramCacheKey.bind(m);
+  m.customProgramCacheKey = () => (old ? old() : '') + '|finish-' + kind;
+}
 gltf.scene.traverse(o => {
   if (!o.isMesh || !o.userData.matRender || partRole(o) === 'door') return;
   const role = partRole(o);
@@ -235,6 +289,8 @@ gltf.scene.traverse(o => {
   o.userData.matRender = Array.isArray(src) ? src.map(m => paintMaterial(m, role)) : paintMaterial(src, role);
   const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
   if (o.name === 'GroundSlab') mats.forEach(applyPlazaGround);
+  const finishKind = { podium: 'podium', arch: 'arch', shell: 'shell', saucer: 'saucer', roof: 'roof', bridge: 'bridge', roofrib: 'saucer', hallceil: 'hallceil', hallwall: 'hallwall', windows: 'windows', tower: 'tower', deck: 'bridge' }[role];
+  if (finishKind) mats.forEach(mm => applyFinish(mm, finishKind));
 });
 // GroundSlab is one mesh under the lobby and the forecourt. The lobby keeps the dark matte floor.
 // In front of the arch (three.js +Z, Blender −Y) the paving becomes a warmer stone so the path lights
@@ -797,6 +853,22 @@ window.__perf = {
       renderCap: RENDER_DPR_CAP, clayCap: CLAY_DPR_CAP, style,
       pointLights: visiblePointLights(), bollards,
       env: !!scene.environment, pixelRatio: renderer.getPixelRatio(),
+      programs: renderer.info.programs.length,
+      calls: renderer.info.render.calls, triangles: renderer.info.render.triangles,
+      finish: {
+        stoneMetal: LOOK.podium.metal, saucerMetal: LOOK.saucer.metal,
+        bridgeR: LOOK.bridge.flat[0], saucerR: LOOK.saucer.flat[0],
+        windowEstr: LOOK.windows.estr, contact: true,
+      },
     };
+  },
+  // One full draw with the info counters left intact, so the scene pass is not hidden by the last bloom quad.
+  frame() {
+    renderer.info.autoReset = false;
+    renderer.info.reset();
+    draw();
+    const r = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, programs: renderer.info.programs.length, pointLights: visiblePointLights() };
+    renderer.info.autoReset = true;
+    return r;
   },
 };
