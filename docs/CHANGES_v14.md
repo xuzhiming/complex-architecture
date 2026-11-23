@@ -1,5 +1,19 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Render brightness (web preview)
+
+The first web preview clipped. The crescent, the deck edge and the arch core went white, and bloom plus fog hid the floor plates. Clay was not the problem. The bright look came from several Render-only sources stacked together:
+
+- glTF emissive strengths of 3 (rim / plaza / deck strip), 2.5 (windows), 2.2 (crescent) and 1.2 (crown);
+- an arch point light at intensity 260 and a crown point light at 500;
+- plaza rings drawn with `toneMapped: false` at high lightness;
+- UnrealBloomPass strength 0.55 / radius 0.45 / threshold 0.8;
+- FogExp2 density 0.0032 and Render exposure 0.95.
+
+`web/main.js` now uses a tighter bloom (0.18 / 0.22 / 0.98), exposure 0.88, fog density 0.0017, and much weaker arch and crown lights (52 and 58). Fill and the pink/cyan rims are lower but still on, so the facade is not a black cutout. On load, only the old baked strengths above are rewritten to 0.70 / 0.85 / 0.65 / 0.40. Strengths that are already in that range are left alone, so a later export does not get darkened twice. Clay still uses the two white materials, the daylight rig and exposure 1. The style button, the V key and `?style=clay` are unchanged.
+
+`params.json` `style.web` emissive strengths match those targets. `style.cycles` (exposure, haze, glare, rim, windows, arch, plaza, crescent, deck strip) and the matching energies in `src/render_style.py` were lowered in the same direction. Those Cycles frames were not re-rendered.
+
 The user supplied an abstract concept image as the target look. It stays local in `ref/` and is not in the repo. The user
 also asked that the renders and the web preview contain **no people** and no background city or megastructure.
 

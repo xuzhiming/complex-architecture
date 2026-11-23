@@ -30,17 +30,17 @@ clayLights.add(new THREE.HemisphereLight(0xffffff, 0x80786c, 1.6));
 const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-120, 200, 160); clayLights.add(sun);
 clayLights.add(new THREE.AmbientLight(0xffffff, 0.35));
 const CLAY_BG = new THREE.Color(0xc9ced8), CLAY_FOG = new THREE.Fog(0xc9ced8, 250, 700);
-const RENDER_FOG = new THREE.FogExp2(0x1b1840, 0.0032);
+const RENDER_FOG = new THREE.FogExp2(0x1b1840, 0.0017);   // was 0.0032: enough haze to hold the night, not enough to hide the facade
 const RENDER_BG = (() => {             // dark navy -> indigo -> violet haze near the horizon (abstract, no city)
   const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d');
   const gr = g.createLinearGradient(0, 0, 0, 256);
   gr.addColorStop(0, '#04040d'); gr.addColorStop(0.4, '#13113a'); gr.addColorStop(0.6, '#2a2562'); gr.addColorStop(0.75, '#191543'); gr.addColorStop(1, '#06051a');
   g.fillStyle = gr; g.fillRect(0, 0, 4, 256); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
-renderLights.add(new THREE.HemisphereLight(0x7d7fe0, 0x0b0a1e, 0.9));
-renderLights.add(new THREE.AmbientLight(0x3a3570, 0.5));
-{ const d = new THREE.DirectionalLight(0xb9b0ff, 0.8); d.position.set(-60, 180, 120); renderLights.add(d);
-  const pink = new THREE.DirectionalLight(0xff5ac8, 1.4); pink.position.set(-160, 70, -40); renderLights.add(pink);
-  const cyan = new THREE.DirectionalLight(0x40d0ff, 1.4); cyan.position.set(170, 60, -20); renderLights.add(cyan); }
+renderLights.add(new THREE.HemisphereLight(0x7d7fe0, 0x0b0a1e, 0.64));
+renderLights.add(new THREE.AmbientLight(0x3a3570, 0.34));
+{ const d = new THREE.DirectionalLight(0xb9b0ff, 0.58); d.position.set(-60, 180, 120); renderLights.add(d);
+  const pink = new THREE.DirectionalLight(0xff5ac8, 0.72); pink.position.set(-160, 70, -40); renderLights.add(pink);
+  const cyan = new THREE.DirectionalLight(0x40d0ff, 0.72); cyan.position.set(170, 60, -20); renderLights.add(cyan); }
 let style = (Q.get('style') || 'render') === 'clay' ? 'clay' : 'render';
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.05, 3000);
@@ -48,7 +48,7 @@ const headlamp = new THREE.PointLight(0xfff4e0, 0, 30, 1.5); camera.add(headlamp
 camera.position.copy(b2t(-120, -170, 80));
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), 0.55, 0.45, 0.8);   // strength, radius, threshold
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), 0.18, 0.22, 0.98);   // strength, radius, threshold — tight halo, not a white veil
 composer.addPass(bloom); composer.addPass(new OutputPass());
 function draw() { if (style === 'render') composer.render(); else renderer.render(scene, camera); }
 const orbit = new OrbitControls(camera, renderer.domElement);
@@ -118,6 +118,24 @@ gltf.scene.traverse(o => {
   o.userData.matRender = o.material;
   o.userData.matClay = (isGlassMat(o.material) || roleOf(o) === 'glass' || roleOf(o) === 'window_light') ? CLAY_G : CLAY_M;
 });
+// Current glb still has the bright KHR emissive strengths (3 rim/plaza/deck, 2.5 windows, 2.2 crescent, 1.2 crown).
+// Map those exact values onto params.json style.web so this file matches the next export. Lower strengths are left alone,
+// which keeps a rebuilt glb from being darkened a second time. Clay materials are separate and are not touched.
+function retargetEmit(m) {
+  if (!m || !m.isMaterial) return;
+  const e = m.emissiveIntensity ?? 1;
+  let target = null;
+  if (e >= 2.9) target = 0.70;
+  else if (e >= 2.4) target = 0.85;
+  else if (e >= 2.0) target = 0.65;
+  else if (e >= 1.05) target = 0.40;
+  if (target !== null) m.emissiveIntensity = target;
+}
+gltf.scene.traverse(o => {
+  if (!o.isMesh || !o.userData.matRender) return;
+  const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
+  for (const m of mats) retargetEmit(m);
+});
 // emissive pastel plaza rings in front of the arch (render look only)
 const plazaFx = new THREE.Group(); scene.add(plazaFx);
 {
@@ -128,10 +146,10 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
     const col = new Float32Array(g.attributes.position.count * 3), P3 = g.attributes.position, cc = new THREE.Color();
     for (let i = 0; i < P3.count; i++) {      // cyan -> pink -> yellow around the ring
       const a = (Math.atan2(P3.getZ(i), P3.getX(i)) / (2 * Math.PI) + 0.5 + k * 0.17) % 1;
-      cc.setHSL(a < 0.33 ? 0.52 : a < 0.66 ? 0.9 : 0.13, 0.9, 0.68); col.set([cc.r, cc.g, cc.b], i * 3);
+      cc.setHSL(a < 0.33 ? 0.52 : a < 0.66 ? 0.9 : 0.13, 0.82, 0.38); col.set([cc.r, cc.g, cc.b], i * 3);
     }
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false, fog: false }));
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: true, fog: false }));
     m.position.copy(c); m.scale.x = 1.31; plazaFx.add(m);
   }
   // soft additive glows: warm starburst in the arch, pastel halo around the crown
@@ -140,10 +158,10 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
     g.fillStyle = gr; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; })();
   const sprite = (col, size, pos, op) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, blending: THREE.AdditiveBlending,
     depthWrite: false, transparent: true, opacity: op, fog: false })); s.scale.set(size, size, 1); s.position.copy(pos); plazaFx.add(s); return s; };
-  sprite(0xffe2b8, 18, b2t(0, fy + 8, 5), 0.8);
-  sprite(0xe6d4ff, 60, b2t(13.5, 40, 76), 0.22); sprite(0xffb8e0, 34, b2t(6, 40, 82), 0.16);
-  const arch = new THREE.PointLight(0xffd9a8, 260, 70, 1.6); arch.position.copy(b2t(0, fy + 6, 4)); plazaFx.add(arch);
-  const crown = new THREE.PointLight(0xe8d8ff, 500, 120, 1.5); crown.position.copy(b2t(13.5, 40, 78)); plazaFx.add(crown);
+  sprite(0xffe2b8, 11, b2t(0, fy + 8, 5), 0.28);
+  sprite(0xe6d4ff, 36, b2t(13.5, 40, 76), 0.1); sprite(0xffb8e0, 22, b2t(6, 40, 82), 0.07);
+  const arch = new THREE.PointLight(0xffd9a8, 52, 50, 2); arch.position.copy(b2t(0, fy + 6, 4)); plazaFx.add(arch);
+  const crown = new THREE.PointLight(0xe8d8ff, 58, 80, 2); crown.position.copy(b2t(13.5, 40, 78)); plazaFx.add(crown);
 }
 function headlampFor(m) { return (m === 'walk' ? 25 : (m === 'fly' ? 12 : 0)) * (style === 'render' ? 0.18 : 1); }
 function applyStyle(s) {
@@ -152,7 +170,7 @@ function applyStyle(s) {
   gltf.scene.traverse(o => { if (o.isMesh && o.userData.matRender) o.material = R ? o.userData.matRender : o.userData.matClay; });
   scene.background = R ? RENDER_BG : CLAY_BG; scene.fog = R ? RENDER_FOG : CLAY_FOG;
   clayLights.visible = !R; renderLights.visible = R; plazaFx.visible = R;
-  renderer.toneMappingExposure = R ? 0.95 : 1.0;
+  renderer.toneMappingExposure = R ? 0.88 : 1.0;
   headlamp.intensity = headlampFor(mode);
   const b = document.getElementById('bStyle'); if (b) b.textContent = R ? '风格 Style: 渲染 Render' : '风格 Style: 白模 Clay';
 }

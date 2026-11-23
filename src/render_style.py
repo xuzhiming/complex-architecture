@@ -81,12 +81,12 @@ def saucer_rim_mat():
 MAT["saucer_rim"] = saucer_rim_mat()
 MAT["ring"] = fresnel_iri(principled("St_Ring", (0.32, 0.32, 0.5), 1.0, 0.08, 1.0, 450), 1.6, 0.35,
                           stops=[(0.0, PAL["lavender"]), (0.5, PAL["white"]), (1.0, PAL["pink"])])
-MAT["crown"] = fresnel_iri(principled("St_Crown", (0.75, 0.7, 0.95), 0.4, 0.15, 1.0, 350, PAL["lavender"], 2.0), 3.0, 0.4)
+MAT["crown"] = fresnel_iri(principled("St_Crown", (0.75, 0.7, 0.95), 0.4, 0.15, 1.0, 350, PAL["lavender"], 0.7), 3.0, 0.4)
 def crescent_mat():
     m = principled("St_Crescent", (0.92, 0.88, 1.0), 0.3, 0.15, 1.0); N, L = nodes(m); b = N["Principled BSDF"]
     tc = N.new("ShaderNodeTexCoord"); sp = N.new("ShaderNodeSeparateXYZ"); L.new(tc.outputs["Generated"], sp.inputs[0])
     r = ramp_node(N, [(0.0, PAL["pink"]), (0.45, PAL["white"]), (1.0, PAL["lavender"])])
-    L.new(sp.outputs["X"], r.inputs["Fac"]); L.new(r.outputs["Color"], b.inputs["Emission Color"]); b.inputs["Emission Strength"].default_value = 7.0
+    L.new(sp.outputs["X"], r.inputs["Fac"]); L.new(r.outputs["Color"], b.inputs["Emission Color"]); b.inputs["Emission Strength"].default_value = CY["crescent_strength"]
     return m
 MAT["crescent"] = crescent_mat()
 def rim_mat():
@@ -147,11 +147,11 @@ def glass_mat():
                       (0.84, PAL["teal"]), (0.92, PAL["pink"]), (1.0, PAL["cyan"])], 'CONSTANT')
     L.new(bw.outputs[0], r.inputs["Fac"])
     inv = N.new("ShaderNodeMath"); inv.operation = 'SUBTRACT'; inv.inputs[0].default_value = 1.0; L.new(br.outputs["Fac"], inv.inputs[1])
-    mk = N.new("ShaderNodeMath"); mk.operation = 'MULTIPLY'; mk.inputs[1].default_value = 6.0; L.new(inv.outputs[0], mk.inputs[0])
+    mk = N.new("ShaderNodeMath"); mk.operation = 'MULTIPLY'; mk.inputs[1].default_value = 2.4; L.new(inv.outputs[0], mk.inputs[0])
     L.new(r.outputs["Color"], b.inputs["Emission Color"]); L.new(mk.outputs[0], b.inputs["Emission Strength"])
     return m
 MAT["glass"] = glass_mat()
-STRIP = emit("St_DeckStrip", (0.85, 0.88, 1.0), 6.0)
+STRIP = emit("St_DeckStrip", (0.85, 0.88, 1.0), CY["deck_strip_strength"])
 MAT["deck"] = MAT["podium"]
 
 # ---------------- assignment by rules (params.json style.rules) ----------------
@@ -225,16 +225,16 @@ for k, o in enumerate([o for o in scene.objects if o.name.startswith("CanopyRim"
 bpy.ops.mesh.primitive_circle_add(radius=6.0, fill_type='NGON', location=(0, FRONT_Y + 16, 6.0), rotation=(math.radians(90), 0, 0))
 bpy.context.active_object.data.materials.append(emit("St_Burst", (1.0, 0.9, 0.72), 6.0))
 light("StArchCore", 'POINT', (0, FRONT_Y + 8, 3.0), CY["arch_core_w"], (1.0, 0.88, 0.7), 2.0)
-light("StBurstSpot", 'SPOT', (0, FRONT_Y + 12, 6), 6e3, (1.0, 0.9, 0.78), 1.0, (math.radians(95), 0, math.radians(180)), math.radians(120))
+light("StBurstSpot", 'SPOT', (0, FRONT_Y + 12, 6), 2e3, (1.0, 0.9, 0.78), 1.0, (math.radians(95), 0, math.radians(180)), math.radians(120))
 for k, (ax, az_) in enumerate([(-44, 20), (-30, 32), (-15, 42), (0, 48), (15, 42), (30, 32), (44, 20)]):
-    light(f"StArchBeam{k}", 'SPOT', (0, FRONT_Y - 2.0, 1.5), 6e5, (1.0, 0.88, 0.7), 0.3,
+    light(f"StArchBeam{k}", 'SPOT', (0, FRONT_Y - 2.0, 1.5), 1.6e5, (1.0, 0.88, 0.7), 0.3,
           (math.radians(90 + az_), 0, math.radians(180 + ax)), math.radians(5), 0.1)
-light("StCourtGlow", 'POINT', (CC[0], CC[1], 7), 2.5e4, (1.0, 0.82, 0.7), 5)
-light("StCrownHalo", 'POINT', (TX, TY, TZ + 12), 1.5e5, (0.95, 0.85, 1.0), 12)
+light("StCourtGlow", 'POINT', (CC[0], CC[1], 7), 8e3, (1.0, 0.82, 0.7), 5)
+light("StCrownHalo", 'POINT', (TX, TY, TZ + 12), 4e4, (0.95, 0.85, 1.0), 12)
 light("StMoon", 'SUN', (0, 0, 100), 0.25, (0.55, 0.6, 1.0), rot=(math.radians(40), 0, math.radians(200)))
-light("StRimPink", 'AREA', (-90, 30, 80), 8e3, (1.0, 0.35, 0.8), 50, (math.radians(60), 0, math.radians(-120)))
-light("StRimCyan", 'AREA', (100, 20, 70), 8e3, (0.25, 0.8, 1.0), 50, (math.radians(60), 0, math.radians(120)))
-light("StUnderFill", 'AREA', (0, FRONT_Y - 40, 10), 2.5e3, (0.5, 0.45, 1.0), 70, (math.radians(-80), 0, 0))
+light("StRimPink", 'AREA', (-90, 30, 80), 3e3, (1.0, 0.35, 0.8), 50, (math.radians(60), 0, math.radians(-120)))
+light("StRimCyan", 'AREA', (100, 20, 70), 3e3, (0.25, 0.8, 1.0), 50, (math.radians(60), 0, math.radians(120)))
+light("StUnderFill", 'AREA', (0, FRONT_Y - 40, 10), 1.2e3, (0.5, 0.45, 1.0), 70, (math.radians(-80), 0, 0))
 # luminous pastel halo around the upper tower / crown: emissive volume sphere with a soft radial falloff
 def halo(name, loc, R, strength, col):
     bpy.ops.mesh.primitive_uv_sphere_add(radius=R, location=loc, segments=48, ring_count=24); s = bpy.context.active_object; s.name = name

@@ -35,9 +35,10 @@ python3 -m http.server 8765 --directory web   # http://localhost:8765/
   10 courtyard→gallery arcade openings.
 - **Style 风格 (V or the 风格 Style button):** two looks, **渲染 Render** (the default) and **白模 Clay**, the v13 white model.
   Render uses the model's own colours, metal/roughness and glow (exported in the glb) on a dark blue-violet gradient
-  background with fog and bloom. It adds glowing pastel rings on the forecourt plaza, a warm glow in the arch and a pastel
-  halo around the crown. Clay swaps in two plain white materials and the old daylight. Walk, fly and the automatic doors
-  work the same in both looks. Use `?style=clay` to open in Clay.
+  background with fog and a tight bloom. Emissive strengths, the arch and crown lights and the fog are kept low enough
+  that the crescent, floors and facade stay readable. It adds pastel rings on the forecourt plaza, a warm glow in the arch
+  and a pastel halo around the crown. Clay swaps in two plain white materials and the old daylight, and is not dimmed with
+  Render. Walk, fly and the automatic doors work the same in both looks. Use `?style=clay` to open in Clay.
 - `building_opt.glb`: Meshopt-compressed, window surrounds as GPU instances (EXT_mesh_gpu_instancing). Door leaves are
   `DoorLeaf_<door id>_A|B` nodes whose extras are `door_id, door_type, leaf, slide, slide_axis, width, height, center, normal, lift_id, level`.
   Their meshes are baked in world space so they are never merged into instances.

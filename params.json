@@ -911,7 +911,7 @@
      0.3,
      0.7
     ],
-    "estr": 0.25
+    "estr": 0.12
    },
    "ring": {
     "color": [
@@ -926,7 +926,7 @@
      0.5,
      0.9
     ],
-    "estr": 0.25
+    "estr": 0.1
    },
    "crown": {
     "color": [
@@ -941,7 +941,7 @@
      0.8,
      1.0
     ],
-    "estr": 1.2
+    "estr": 0.4
    },
    "crescent": {
     "color": [
@@ -956,7 +956,7 @@
      0.85,
      0.98
     ],
-    "estr": 2.2
+    "estr": 0.65
    },
    "rim": {
     "color": [
@@ -971,7 +971,7 @@
      0.45,
      0.85
     ],
-    "estr": 3.0
+    "estr": 0.7
    },
    "plaza": {
     "color": [
@@ -986,7 +986,7 @@
      0.95,
      1.0
     ],
-    "estr": 3.0
+    "estr": 0.7
    },
    "windows": {
     "color": [
@@ -1001,7 +1001,7 @@
      0.68,
      0.32
     ],
-    "estr": 2.5
+    "estr": 0.85
    },
    "glass": {
     "color": [
@@ -1016,7 +1016,7 @@
      0.55,
      0.6
     ],
-    "estr": 0.25
+    "estr": 0.12
    },
    "ground": {
     "color": [
@@ -1040,7 +1040,7 @@
      0.55,
      1.0
     ],
-    "estr": 0.15
+    "estr": 0.08
    },
    "deck_strip": {
     "color": [
@@ -1055,7 +1055,7 @@
      0.88,
      1.0
     ],
-    "estr": 3.0
+    "estr": 0.7
    },
    "windows_sparse": {
     "color": [
@@ -1070,7 +1070,7 @@
      0.55,
      0.35
     ],
-    "estr": 0.6
+    "estr": 0.35
    },
    "saucer_rim": {
     "color": [
@@ -1085,29 +1085,31 @@
      0.55,
      1.0
     ],
-    "estr": 0.35
+    "estr": 0.16
    }
   },
   "cycles": {
    "samples": 96,
    "front_res": 2400,
    "view_res": 1800,
-   "haze_density": 0.00028,
-   "front_haze_density": 0.003,
-   "crown_halo_strength": 0.14,
-   "rim_strength": 12.0,
-   "window_strength": 9.0,
-   "arch_core_w": 12000.0,
-   "glare_threshold": 1.0,
-   "glare_strength": 0.5,
+   "haze_density": 0.00015,
+   "front_haze_density": 0.0012,
+   "crown_halo_strength": 0.06,
+   "rim_strength": 4.5,
+   "window_strength": 3.5,
+   "arch_core_w": 3200.0,
+   "glare_threshold": 1.35,
+   "glare_strength": 0.22,
    "grain": 0.035,
    "chroma_px": 1.6,
-   "world_strength": 0.2,
-   "exposure": 0.0,
+   "world_strength": 0.12,
+   "exposure": -0.15,
    "podium_lit_frac": 0.22,
-   "saucer_top_glow": 0.7,
-   "plaza_wash": 0.18,
-   "plaza_ring": 6.0
+   "saucer_top_glow": 0.32,
+   "plaza_wash": 0.08,
+   "plaza_ring": 1.8,
+   "crescent_strength": 2.2,
+   "deck_strip_strength": 2.0
   }
  }
 }
