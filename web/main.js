@@ -30,17 +30,22 @@ clayLights.add(new THREE.HemisphereLight(0xffffff, 0x80786c, 1.6));
 const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-120, 200, 160); clayLights.add(sun);
 clayLights.add(new THREE.AmbientLight(0xffffff, 0.35));
 const CLAY_BG = new THREE.Color(0xc9ced8), CLAY_FOG = new THREE.Fog(0xc9ced8, 250, 700);
-const RENDER_FOG = new THREE.FogExp2(0x1b1840, 0.0017);   // was 0.0032: enough haze to hold the night, not enough to hide the facade
-const RENDER_BG = (() => {             // dark navy -> indigo -> violet haze near the horizon (abstract, no city)
+const RENDER_FOG = new THREE.FogExp2(0x141028, 0.00145);
+const RENDER_BG = (() => {             // navy sky, violet near the horizon (abstract, no city)
   const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d');
   const gr = g.createLinearGradient(0, 0, 0, 256);
-  gr.addColorStop(0, '#04040d'); gr.addColorStop(0.4, '#13113a'); gr.addColorStop(0.6, '#2a2562'); gr.addColorStop(0.75, '#191543'); gr.addColorStop(1, '#06051a');
+  gr.addColorStop(0, '#07061a'); gr.addColorStop(0.42, '#12143a'); gr.addColorStop(0.62, '#2a2158'); gr.addColorStop(0.78, '#1a2048'); gr.addColorStop(1, '#0a0818');
   g.fillStyle = gr; g.fillRect(0, 0, 4, 256); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
-renderLights.add(new THREE.HemisphereLight(0x7d7fe0, 0x0b0a1e, 0.64));
-renderLights.add(new THREE.AmbientLight(0x3a3570, 0.34));
-{ const d = new THREE.DirectionalLight(0xb9b0ff, 0.58); d.position.set(-60, 180, 120); renderLights.add(d);
-  const pink = new THREE.DirectionalLight(0xff5ac8, 0.72); pink.position.set(-160, 70, -40); renderLights.add(pink);
-  const cyan = new THREE.DirectionalLight(0x40d0ff, 0.72); cyan.position.set(170, 60, -20); renderLights.add(cyan); }
+// Coloured rig, not a single violet wash: cool sky, warm ground bounce, cyan and rose from the sides, a low gold key on the podium.
+renderLights.add(new THREE.HemisphereLight(0x8aa4ff, 0x3a1848, 0.92));
+renderLights.add(new THREE.AmbientLight(0x241838, 0.16));
+{ const d = new THREE.DirectionalLight(0xb7c6ff, 0.4); d.position.set(-80, 160, 90); renderLights.add(d);
+  const pink = new THREE.DirectionalLight(0xff4ec8, 0.72); pink.position.set(-150, 80, -20); renderLights.add(pink);
+  const cyan = new THREE.DirectionalLight(0x3ec8ff, 0.86); cyan.position.set(160, 64, 16); renderLights.add(cyan);
+  const gold = new THREE.DirectionalLight(0xffb15a, 0.32); gold.position.set(10, 30, -150); renderLights.add(gold);
+  // soft overhead fill so saucer and bridge tops are not black mirrors; kept dim so the crescent stays the highlight
+  const roofSky = new THREE.DirectionalLight(0xd5e2ff, 0.42); roofSky.position.set(-36, 260, 24); renderLights.add(roofSky);
+  const roofWarm = new THREE.DirectionalLight(0xffc9a2, 0.16); roofWarm.position.set(70, 200, -90); renderLights.add(roofWarm); }
 let style = (Q.get('style') || 'render') === 'clay' ? 'clay' : 'render';
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.05, 3000);
@@ -48,7 +53,7 @@ const headlamp = new THREE.PointLight(0xfff4e0, 0, 30, 1.5); camera.add(headlamp
 camera.position.copy(b2t(-120, -170, 80));
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), 0.18, 0.22, 0.98);   // strength, radius, threshold — tight halo, not a white veil
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), 0.22, 0.26, 0.94);   // soft coloured halo; threshold stays high so peaks do not bloom into white fog
 composer.addPass(bloom); composer.addPass(new OutputPass());
 function draw() { if (style === 'render') composer.render(); else renderer.render(scene, camera); }
 const orbit = new OrbitControls(camera, renderer.domElement);
@@ -118,23 +123,89 @@ gltf.scene.traverse(o => {
   o.userData.matRender = o.material;
   o.userData.matClay = (isGlassMat(o.material) || roleOf(o) === 'glass' || roleOf(o) === 'window_light') ? CLAY_G : CLAY_M;
 });
-// Current glb still has the bright KHR emissive strengths (3 rim/plaza/deck, 2.5 windows, 2.2 crescent, 1.2 crown).
-// Map those exact values onto params.json style.web so this file matches the next export. Lower strengths are left alone,
-// which keeps a rebuilt glb from being darkened a second time. Clay materials are separate and are not touched.
-function retargetEmit(m) {
-  if (!m || !m.isMaterial) return;
-  const e = m.emissiveIntensity ?? 1;
-  let target = null;
-  if (e >= 2.9) target = 0.70;
-  else if (e >= 2.4) target = 0.85;
-  else if (e >= 2.0) target = 0.65;
-  else if (e >= 1.05) target = 0.40;
-  if (target !== null) m.emissiveIntensity = target;
+// One absolute paint per part. The shipped glb is still an atlas with the old hot strengths, so this
+// replaces those values instead of multiplying the previous 0.70/0.85/0.65/0.40 pass. Targets match
+// params.json style.web. A later export that already has these strengths is cloned and set to the same
+// numbers, not scaled again. Clay materials are a separate pair and are not painted.
+const LOOK = {
+  crescent: { emit: 0xffd4f3, estr: 0.95 },
+  crown: { emit: 0xe4d4ff, estr: 0.55 },
+  windows: { emit: 0xffb45c, estr: 1.1 },
+  glass: { emit: 0xffc48a, estr: 0.22 },
+  rim: { emit: 0xff86d6, estr: 0.72 },
+  // Roofs: the baked saucer is a near-black metal, so the top reads as a hole. These are absolute
+  // slate colours (maps cleared), not another multiply. Emissive stays a faint tint, not a light panel.
+  saucer: { flat: [0.24, 0.28, 0.42], metal: 0.34, rough: 0.46, emit: 0xa9c4ea, estr: 0.05 },
+  roof: { flat: [0.22, 0.2, 0.36], metal: 0.36, rough: 0.5, emit: 0xc2b0e4, estr: 0.04 },
+  bridge: { flat: [0.32, 0.24, 0.28], metal: 0.32, rough: 0.48, emit: 0xe4c6a8, estr: 0.05 },
+  roofrib: { flat: [0.13, 0.15, 0.24], metal: 0.48, rough: 0.4 },
+  // T_L0 surfaces. The ceiling slab exists but its underside was invisible, so the view opened onto the sky.
+  hallceil: { flat: [0.38, 0.36, 0.42], metal: 0.02, rough: 0.92, side: 2 },
+  hallwall: { flat: [0.46, 0.42, 0.44], metal: 0.04, rough: 0.88, side: 2 },
+  halldoor: { flat: [0.5, 0.46, 0.44], metal: 0.06, rough: 0.78 },
+  hallfloor: { flat: [0.09, 0.085, 0.09], metal: 0.02, rough: 0.96 },
+  ring: { emit: 0x7ee7ff, estr: 0.48, color: [1.05, 1.15, 1.55] },
+  deck: { emit: 0xffe0a4, estr: 0.82 },
+  podium: { emit: 0xffb888, estr: 0.07, color: [1.75, 1.4, 1.6] },
+  arch: { emit: 0xffc090, estr: 0.16, color: [1.55, 1.25, 1.4] },
+  tower: { color: [1.12, 1.2, 1.72] },
+  shell: { color: [1.18, 1.22, 1.58] },
+};
+function partRole(o) {
+  const ns = [];
+  for (let p = o; p; p = p.parent) if (p.name) ns.push(p.name);
+  const n = ns.join(' ');
+  const self = o.name || '';
+  if (/DoorLeaf/.test(n)) return /T_L0/.test(self) ? 'halldoor' : 'door';
+  if (self === 'TowerSlab1') return 'hallceil';
+  if (self === 'InteriorWalls' || self === 'Stairs' || self === 'TowerShell0') return 'hallwall';
+  if (self === 'GroundSlab') return 'hallfloor';
+  if (/Crescent/i.test(n)) return 'crescent';
+  if (/Crown|Dome|Lantern/i.test(n)) return 'crown';
+  if (/Window/i.test(n)) return 'windows';
+  if (/Deck/i.test(n)) return 'deck';
+  if (/CanopyRim/i.test(self)) return 'rim';
+  if (/canopy_rib/i.test(self)) return 'roofrib';
+  if (/canopy/i.test(self)) return 'saucer';
+  if (/_roof$/i.test(self)) return 'roof';
+  if (/^Bridge\d+$/.test(self)) return 'bridge';
+  if (/^Bridge\d+_(rail|posts|rib)/.test(self)) return 'roofrib';
+  if (/band|Belt|Slab|_floor|Floor/i.test(n)) return 'ring';
+  if (/Arch/i.test(n)) return 'arch';
+  if (/Podium/i.test(n)) return 'podium';
+  if (/Tower/i.test(n)) return 'tower';
+  if (/[Gg]lass|Recess/.test(n)) return 'glass';
+  return 'shell';
+}
+const paintCache = new Map();
+function paintMaterial(src, role) {
+  if (!src || !src.isMaterial) return src;
+  const key = src.uuid + '|' + role;
+  if (paintCache.has(key)) return paintCache.get(key);
+  const m = src.clone();
+  const spec = LOOK[role];
+  if (spec) {
+    if (spec.flat) {
+      m.map = null; m.color.setRGB(spec.flat[0], spec.flat[1], spec.flat[2]);
+      m.metalnessMap = null; m.roughnessMap = null; m.emissiveMap = null;
+      m.emissive.setRGB(0, 0, 0); m.emissiveIntensity = 0;
+    } else if (spec.color) m.color.setRGB(spec.color[0], spec.color[1], spec.color[2]);
+    if (spec.metal !== undefined) m.metalness = spec.metal;
+    if (spec.rough !== undefined) m.roughness = spec.rough;
+    if (spec.side !== undefined) m.side = spec.side;
+    if (spec.emit !== undefined) {
+      if (spec.flat) m.emissiveMap = null;
+      m.emissive.setHex(spec.emit); m.emissiveIntensity = spec.estr;
+    } else if (!spec.flat && (src.emissiveIntensity ?? 1) >= 1.05) m.emissiveIntensity = 0.4;
+  }
+  paintCache.set(key, m);
+  return m;
 }
 gltf.scene.traverse(o => {
-  if (!o.isMesh || !o.userData.matRender) return;
-  const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
-  for (const m of mats) retargetEmit(m);
+  if (!o.isMesh || !o.userData.matRender || partRole(o) === 'door') return;
+  const role = partRole(o);
+  const src = o.userData.matRender;
+  o.userData.matRender = Array.isArray(src) ? src.map(m => paintMaterial(m, role)) : paintMaterial(src, role);
 });
 // emissive pastel plaza rings in front of the arch (render look only)
 const plazaFx = new THREE.Group(); scene.add(plazaFx);
@@ -144,9 +215,9 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
   for (const [r0, r1, k] of [[7.8, 8.3, 0], [17.5, 18.6, 1], [24.7, 25.3, 2], [31.2, 31.7, 3]]) {
     const g = new THREE.RingGeometry(r0, r1, 160, 1); g.rotateX(-Math.PI / 2);
     const col = new Float32Array(g.attributes.position.count * 3), P3 = g.attributes.position, cc = new THREE.Color();
-    for (let i = 0; i < P3.count; i++) {      // cyan -> pink -> yellow around the ring
-      const a = (Math.atan2(P3.getZ(i), P3.getX(i)) / (2 * Math.PI) + 0.5 + k * 0.17) % 1;
-      cc.setHSL(a < 0.33 ? 0.52 : a < 0.66 ? 0.9 : 0.13, 0.82, 0.38); col.set([cc.r, cc.g, cc.b], i * 3);
+    for (let i = 0; i < P3.count; i++) {      // one hue per ring: gold, rose, violet, cyan
+      const a = (Math.atan2(P3.getZ(i), P3.getX(i)) / (2 * Math.PI) + 1) % 1;
+      cc.setHSL([0.1, 0.92, 0.78, 0.54][k] + (a - 0.5) * 0.03, 0.72, 0.46); col.set([cc.r, cc.g, cc.b], i * 3);
     }
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: true, fog: false }));
@@ -158,10 +229,23 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
     g.fillStyle = gr; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; })();
   const sprite = (col, size, pos, op) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, blending: THREE.AdditiveBlending,
     depthWrite: false, transparent: true, opacity: op, fog: false })); s.scale.set(size, size, 1); s.position.copy(pos); plazaFx.add(s); return s; };
-  sprite(0xffe2b8, 11, b2t(0, fy + 8, 5), 0.28);
-  sprite(0xe6d4ff, 36, b2t(13.5, 40, 76), 0.1); sprite(0xffb8e0, 22, b2t(6, 40, 82), 0.07);
-  const arch = new THREE.PointLight(0xffd9a8, 52, 50, 2); arch.position.copy(b2t(0, fy + 6, 4)); plazaFx.add(arch);
-  const crown = new THREE.PointLight(0xe8d8ff, 58, 80, 2); crown.position.copy(b2t(13.5, 40, 78)); plazaFx.add(crown);
+  sprite(0xffc080, 12, b2t(0, fy + 8, 6), 0.3);
+  sprite(0xe4d2ff, 34, b2t(13.5, 40, 76), 0.13); sprite(0xffb0e4, 16, b2t(4, 38, 72), 0.1);
+  const glow = (hex, inten, dist, pos) => { const L = new THREE.PointLight(hex, inten, dist, 2); L.position.copy(pos); plazaFx.add(L); };
+  glow(0xffb060, 64, 52, b2t(0, fy + 6, 6));          // warm arch
+  glow(0xc9a6ff, 44, 68, b2t(13.5, 40, 78));          // violet crown
+  glow(0xffc48a, 96, 36, b2t(0, 2, 5));               // low courtyard, so the arcade is not black
+  glow(0xffd0a0, 70, 42, b2t(0, 2, 16));              // mid courtyard
+  glow(0x6aa8ff, 58, 58, b2t(0, 12, 30));             // cool light higher in the court
+  glow(0xffb070, 70, 68, b2t(0, -58, 9));             // podium front
+  glow(0xff78c8, 32, 48, b2t(-58, 16, 26));           // west rose
+  glow(0x49d0ff, 36, 52, b2t(62, 6, 24));             // east cyan
+  glow(0xffd090, 26, 34, b2t(13.5, 40, 48));          // warm light between the saucers
+  // T_L0 lobby. Lights hang in the volume under TowerSlab1 (ceiling ~4.25 m), not on the floor.
+  // Diffuse wall/floor materials carry the light; these three stay dim so they do not bloom into discs.
+  glow(0xfff3e2, 5.5, 16, b2t(13.5, 32.0, 2.6));
+  glow(0xffe7c8, 3.5, 12, b2t(11.2, 29.2, 2.5));
+  glow(0xd4e0ff, 2.2, 11, b2t(15.8, 33.5, 2.5));
 }
 function headlampFor(m) { return (m === 'walk' ? 25 : (m === 'fly' ? 12 : 0)) * (style === 'render' ? 0.18 : 1); }
 function applyStyle(s) {
@@ -170,7 +254,7 @@ function applyStyle(s) {
   gltf.scene.traverse(o => { if (o.isMesh && o.userData.matRender) o.material = R ? o.userData.matRender : o.userData.matClay; });
   scene.background = R ? RENDER_BG : CLAY_BG; scene.fog = R ? RENDER_FOG : CLAY_FOG;
   clayLights.visible = !R; renderLights.visible = R; plazaFx.visible = R;
-  renderer.toneMappingExposure = R ? 0.88 : 1.0;
+  renderer.toneMappingExposure = R ? 0.9 : 1.0;
   headlamp.intensity = headlampFor(mode);
   const b = document.getElementById('bStyle'); if (b) b.textContent = R ? '风格 Style: 渲染 Render' : '风格 Style: 白模 Clay';
 }

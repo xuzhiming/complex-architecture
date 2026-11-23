@@ -1,5 +1,23 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Tower lobby `T_L0`
+
+`T_L0` is the only space tagged `kind: "lobby"`. It is the ground floor of the tower (centre about 13.5, 40), reached from the gallery through `T_link` and door `D63`. A ray straight up from eye height hits `TowerSlab1` at about 4.25 m, so the room has a ceiling. That slab was single-sided, so from inside the camera looked through it at the night sky and at the crown sprites. Render now draws that existing slab from both sides. No geometry was added.
+
+The walls, stairs, ground floor drum and the `T_L0` door leaves were a dark metal, so a point light only made a white speck. Those Render materials are now a matte warm gray (metal about 0.04, roughness about 0.9). Three dim lights hang in the volume under the slab: warm body, warmer toward the entrance, and a small cool accent. They are not stuck to the floor. Exposure and bloom are unchanged, and the forecourt frame stays within a few levels of the previous front view. `style.cycles` `hall_*_w` and `src/render_style.py` use the same interior points. Cycles was not re-rendered.
+
+## Roof tops
+
+The saucer and bridge tops stayed black after the colour pass. They are a near-black metal in the glb, and with no environment they reflect nothing, so the big upper surfaces read as holes. Render exposure and bloom were left alone. Those meshes now use a flat blue-slate (bridges a warmer slate), metal about 0.34 and roughness about 0.46, plus a faint cool emissive (strength 0.05, not a light panel). Two soft directional fills, one cool from above and one warm, give the curved tops a gradient. The crescent is not retinted. `style.web.saucer` matches that slate, and `src/render_style.py` uses the same base so the next Cycles run does not return to a black disc. That run was not done.
+
+## Richer Render light (after the dimming pass)
+
+The dimmed preview read as one blue-violet wash, and the courtyard plus the podium fell into black. This pass does not raise the global exposure (it stays 0.9) and does not grade a screenshot. `web/main.js` paints each loaded part once — crescent, crown, windows, glass, rim, saucer, floor band, deck, podium, arch, tower, shell — to an absolute emissive colour and strength that matches `params.json` `style.web`. That replaces the previous strength remap (3 → 0.70 and so on). It does not multiply those factors again.
+
+The split is warm against cool, not a rainbow: warm-gold windows and the arch, cyan edges on the saucers and floor bands, rose and violet on the crescent and crown. Extra point lights sit in the arch, on the podium face, low and high in the courtyard, and on the east and west sides. Bloom stays a short halo (0.22 / 0.26 / 0.94). Clay lights, the two white materials, and exposure 1 are untouched.
+
+`src/render_style.py` gained the same courtyard warm fill, courtyard cool fill, and podium warm light, and the window and deck-strip colours move toward gold. Those Cycles frames were not re-rendered.
+
 ## Render brightness (web preview)
 
 The first web preview clipped. The crescent, the deck edge and the arch core went white, and bloom plus fog hid the floor plates. Clay was not the problem. The bright look came from several Render-only sources stacked together:
