@@ -60,13 +60,13 @@ def ground_mat():
     mp.inputs["From Min"].default_value = -78.0; mp.inputs["From Max"].default_value = -40.0
     mp.inputs["To Min"].default_value = 0.0; mp.inputs["To Max"].default_value = 1.0
     L.new(sep.outputs["Y"], mp.inputs["Value"])
-    ramp = ramp_node(N, [(0.0, (0.16, 0.14, 0.125)), (0.35, (0.16, 0.14, 0.125)), (0.7, (0.09, 0.085, 0.09)), (1.0, (0.09, 0.085, 0.09))])
+    ramp = ramp_node(N, [(0.0, (0.22, 0.2, 0.18)), (0.35, (0.22, 0.2, 0.18)), (0.7, (0.09, 0.085, 0.09)), (1.0, (0.09, 0.085, 0.09))])
     L.new(mp.outputs["Result"], ramp.inputs["Fac"]); L.new(ramp.outputs["Color"], b.inputs["Base Color"])
     return m
 MAT["ground"] = ground_mat()
 def saucer_mat():
     """dark glossy/metallic underside; top surface catches bright iridescent pink/cyan/white light"""
-    m = principled("St_Saucer", (0.24, 0.28, 0.42), 0.34, 0.46, 0.4, 420); N, L = nodes(m); b = N["Principled BSDF"]
+    m = principled("St_Saucer", (0.42, 0.46, 0.54), 0.84, 0.2, 0.2, 280); N, L = nodes(m); b = N["Principled BSDF"]
     geo = N.new("ShaderNodeNewGeometry"); sp = N.new("ShaderNodeSeparateXYZ"); L.new(geo.outputs["Normal"], sp.inputs[0])
     top = N.new("ShaderNodeMapRange"); top.inputs["From Min"].default_value = 0.2; top.inputs["From Max"].default_value = 0.9
     top.inputs["To Max"].default_value = CY["saucer_top_glow"]; L.new(sp.outputs["Z"], top.inputs["Value"])
@@ -257,8 +257,8 @@ light("StRoofFill", 'AREA', (0, 20, 150), CY["roof_fill_w"], (0.78, 0.84, 1.0), 
 light("StHallBody", 'POINT', (TC[0], TC[1] - 8.0, 2.6), CY["hall_warm_w"], (1.0, 0.95, 0.88), 0.8)
 light("StHallEntry", 'POINT', (TC[0] - 2.3, TC[1] - 10.8, 2.5), CY["hall_entry_w"], (1.0, 0.91, 0.78), 0.6)
 light("StHallCool", 'POINT', (TC[0] + 2.3, TC[1] - 6.5, 2.5), CY["hall_cool_w"], (0.83, 0.88, 1.0), 0.5)
-light("StRimPink", 'AREA', (-90, 30, 80), 3e3, (1.0, 0.35, 0.8), 50, (math.radians(60), 0, math.radians(-120)))
-light("StRimCyan", 'AREA', (100, 20, 70), 3e3, (0.25, 0.8, 1.0), 50, (math.radians(60), 0, math.radians(120)))
+light("StRimPink", 'AREA', (-90, 30, 80), 700, (1.0, 0.78, 0.7), 50, (math.radians(60), 0, math.radians(-120)))
+light("StRimCyan", 'AREA', (100, 20, 70), 800, (0.72, 0.84, 0.92), 50, (math.radians(60), 0, math.radians(120)))
 light("StUnderFill", 'AREA', (0, FRONT_Y - 40, 10), 1.2e3, (0.5, 0.45, 1.0), 70, (math.radians(-80), 0, 0))
 # luminous pastel halo around the upper tower / crown: emissive volume sphere with a soft radial falloff
 def halo(name, loc, R, strength, col):
@@ -296,7 +296,7 @@ for k in range(5):
 world = bpy.data.worlds.new("StWorld"); scene.world = world; world.use_nodes = True
 N, L = world.node_tree.nodes, world.node_tree.links
 bg = N["Background"]; tc = N.new("ShaderNodeTexCoord"); sp = N.new("ShaderNodeSeparateXYZ"); L.new(tc.outputs["Generated"], sp.inputs[0])
-r = ramp_node(N, [(0.45, (0.10, 0.10, 0.30)), (0.56, (0.05, 0.045, 0.16)), (0.75, (0.008, 0.008, 0.03))])
+r = ramp_node(N, [(0.4, (0.62, 0.68, 0.74)), (0.58, (0.78, 0.76, 0.72)), (0.78, (0.5, 0.54, 0.6))])
 L.new(sp.outputs["Z"], r.inputs["Fac"]); L.new(r.outputs["Color"], bg.inputs["Color"]); bg.inputs["Strength"].default_value = CY["world_strength"]
 
 # ---------------- render settings + compositor (bloom + soft streaks) ----------------

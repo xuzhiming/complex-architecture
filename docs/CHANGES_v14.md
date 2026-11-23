@@ -1,5 +1,11 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Grey-blue dusk
+
+Render is no longer a night scene with a colour assigned to each part. A generated reflection (soft cyan, rose and amber washes, no buildings) tints the metal. One cool key from the upper left and a weaker warm fill from the right give the saucers, floor plates and the arch a light side and a dark side. The visible sky stays a quiet gradient so it does not compete with the building. Saucers are a cooler silver, bridges and the deck a warmer grey, the podium a mid stone, the arch mouth darker than the face. Amber stays on the windows. The forecourt path lights and the lobby ceiling are unchanged. Exposure is 0.9. Clay does not receive the reflection.
+
+`style.web` matches these colours. `src/render_style.py` uses the silver saucer, the paler world, and much weaker rose and cyan rims. Cycles was not re-rendered. The reference image stays out of the repo.
+
 ## Forecourt path lights
 
 The coloured rings on the forecourt were emissive lines. They did not light the paving, and `GroundSlab` is one mesh painted as the dark lobby floor, so the approach read as a black disc. Render now mixes a warmer matte stone onto that slab only in front of the arch (three.js +Z, about Blender Y < −42). The lobby floor is the same mesh and stays on the dark `hallfloor` values.

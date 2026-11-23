@@ -34,11 +34,12 @@ python3 -m http.server 8765 --directory web   # http://localhost:8765/
   have shut. The 14 open archways have no leaves: the arch portal, the tunnel→courtyard mouth, 2 tunnel side openings and
   10 courtyard→gallery arcade openings.
 - **Style 风格 (V or the 风格 Style button):** two looks, **渲染 Render** (the default) and **白模 Clay**, the v13 white model.
-  Render uses the model's colours plus a live paint: warm-gold windows and arch, cyan saucer edges and floor bands,
-  rose-violet crescent and crown, on a dark blue-violet sky. The forecourt paving in front of the arch is a matte stone
-  with seven low path lights and five short bollards, on top of the existing coloured rings. Exposure stays near 0.9 and
-  the bloom is a short halo. Clay swaps in two plain white materials and the old daylight, and is not recolored with
-  Render. Walk, fly and the automatic doors work the same in both looks. Use `?style=clay` to open in Clay.
+  Render is an overcast grey-blue dusk: graphite and silver on the mass, cool silver saucers, warmer grey bridges,
+  amber windows, and a milky warm arch and forecourt. Rose and cyan stay as a faint side light and the plaza rings.
+  A generated reflection tints the metal with cyan, rose and amber. The forecourt paving has seven low path lights
+  and five short bollards. Exposure is 0.9 and the bloom is a short halo.
+  Clay swaps in two plain white materials and the old daylight, and is not recolored with Render. Walk, fly and the
+  automatic doors work the same in both looks. Use `?style=clay` to open in Clay.
 - `building_opt.glb`: Meshopt-compressed, window surrounds as GPU instances (EXT_mesh_gpu_instancing). Door leaves are
   `DoorLeaf_<door id>_A|B` nodes whose extras are `door_id, door_type, leaf, slide, slide_axis, width, height, center, normal, lift_id, level`.
   Their meshes are baked in world space so they are never merged into instances.
