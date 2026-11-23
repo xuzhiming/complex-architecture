@@ -1,5 +1,11 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Tower lobby `T_L0`
+
+`T_L0` is the only space tagged `kind: "lobby"`. It is the ground floor of the tower (centre about 13.5, 40), reached from the gallery through the short passage `T_link` and door `D63`. The courtyard and the arch glow are outside that room; a warm streak through the door gap is that outside light, not hall lighting.
+
+Four short-range point lights sit inside the room, just above the floor, on the render-only group: a warm body, a warmer one toward the entrance, one on the lift wall, and a small cool accent to the east. Range is 7–11 m, so they do not reach the forecourt. Exposure and bloom are unchanged. `style.cycles` `hall_*_w` and the matching points in `src/render_style.py` follow the same placement. Those Cycles frames were not re-rendered.
+
 ## Roof tops
 
 The saucer and bridge tops stayed black after the colour pass. They are a near-black metal in the glb, and with no environment they reflect nothing, so the big upper surfaces read as holes. Render exposure and bloom were left alone. Those meshes now use a flat blue-slate (bridges a warmer slate), metal about 0.34 and roughness about 0.46, plus a faint cool emissive (strength 0.05, not a light panel). Two soft directional fills, one cool from above and one warm, give the curved tops a gradient. The crescent is not retinted. `style.web.saucer` matches that slate, and `src/render_style.py` uses the same base so the next Cycles run does not return to a black disc. That run was not done.

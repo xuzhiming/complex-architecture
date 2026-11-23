@@ -230,6 +230,12 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
   glow(0xff78c8, 32, 48, b2t(-58, 16, 26));           // west rose
   glow(0x49d0ff, 36, 52, b2t(62, 6, 24));             // east cyan
   glow(0xffd090, 26, 34, b2t(13.5, 40, 48));          // warm light between the saucers
+  // T_L0 is the only space with kind "lobby": the tower ground floor, entered from gallery via T_link / D63.
+  // Four short-range lights under the 4.5 m slab. They die before the forecourt, so the arch glow stays outside.
+  glow(0xfff1dc, 7, 10, b2t(12.0, 31.0, 0.85));       // warm wash on the floor and lower walls
+  glow(0xffe4bc, 5, 8, b2t(11.0, 28.5, 0.8));         // entrance side, toward D63
+  glow(0xfff4e4, 4.5, 7, b2t(14.0, 35.5, 0.85));      // lift doors from below, not a ceiling hotspot
+  glow(0xd0ddff, 2.8, 7, b2t(16.0, 31.5, 0.8));       // small cool accent, east of centre
 }
 function headlampFor(m) { return (m === 'walk' ? 25 : (m === 'fly' ? 12 : 0)) * (style === 'render' ? 0.18 : 1); }
 function applyStyle(s) {

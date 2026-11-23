@@ -1143,7 +1143,11 @@
    "court_fill_w": 9000.0,
    "court_cool_w": 7000.0,
    "podium_warm_w": 6500.0,
-   "roof_fill_w": 1800.0
+   "roof_fill_w": 1800.0,
+  "hall_warm_w": 40.0,
+  "hall_entry_w": 22.0,
+  "hall_lift_w": 18.0,
+  "hall_cool_w": 12.0
   }
  }
 }
