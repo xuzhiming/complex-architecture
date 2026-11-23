@@ -619,7 +619,7 @@
  ],
  "people": {
   "height": 1.75,
-  "count": 40
+  "count": 0
  },
  "masses": [
   {
@@ -703,6 +703,411 @@
    "post_pitch": 1.6,
    "rib": 0.38,
    "rib_drop": 3.2
+  }
+ },
+ "style": {
+  "palette": {
+   "navy": [
+    0.012,
+    0.014,
+    0.035
+   ],
+   "indigo": [
+    0.05,
+    0.045,
+    0.13
+   ],
+   "violet": [
+    0.16,
+    0.12,
+    0.36
+   ],
+   "pink": [
+    1.0,
+    0.25,
+    0.7
+   ],
+   "cyan": [
+    0.2,
+    0.85,
+    1.0
+   ],
+   "white": [
+    0.95,
+    0.93,
+    1.0
+   ],
+   "amber": [
+    1.0,
+    0.6,
+    0.25
+   ],
+   "teal": [
+    0.2,
+    0.9,
+    0.8
+   ],
+   "lavender": [
+    0.8,
+    0.7,
+    1.0
+   ],
+   "yellow": [
+    1.0,
+    0.85,
+    0.4
+   ]
+  },
+  "rules": [
+   [
+    "name",
+    "^WindowLights$",
+    "windows_sparse"
+   ],
+   [
+    "name",
+    "^CrescentCrown",
+    "crescent"
+   ],
+   [
+    "name",
+    "^CanopyRim",
+    "saucer_rim"
+   ],
+   [
+    "name",
+    "_canopy$",
+    "saucer"
+   ],
+   [
+    "name",
+    "^(TowerCrown|TowerDome|TowerLantern|TowerCrownUnder)",
+    "crown"
+   ],
+   [
+    "name",
+    "^(TowerSlab|TowerBand|TowerBelt|TowerStep|TowerParapet|TowerBalconies)|_band\\d|_floor\\d",
+    "ring"
+   ],
+   [
+    "name",
+    "^PodiumDeck",
+    "deck"
+   ],
+   [
+    "name",
+    "^(PodiumShell|PodiumSlab|TreeColumn|TreeRibs)",
+    "podium"
+   ],
+   [
+    "role",
+    "rim",
+    "rim"
+   ],
+   [
+    "role",
+    "plaza_glow",
+    "plaza"
+   ],
+   [
+    "role",
+    "window_light",
+    "windows"
+   ],
+   [
+    "role",
+    "glass",
+    "glass"
+   ],
+   [
+    "role",
+    "door_leaf",
+    "glass"
+   ],
+   [
+    "role",
+    "ground",
+    "ground"
+   ],
+   [
+    "role",
+    "facade",
+    "facade"
+   ],
+   [
+    "role",
+    "slab",
+    "podium"
+   ],
+   [
+    "role",
+    "wall",
+    "podium"
+   ],
+   [
+    "role",
+    "stair",
+    "podium"
+   ],
+   [
+    "role",
+    "*",
+    "shell"
+   ]
+  ],
+  "web": {
+   "shell": {
+    "color": [
+     0.07,
+     0.075,
+     0.16
+    ],
+    "metal": 0.7,
+    "rough": 0.28
+   },
+   "facade": {
+    "color": [
+     0.09,
+     0.09,
+     0.2
+    ],
+    "metal": 0.6,
+    "rough": 0.35
+   },
+   "podium": {
+    "color": [
+     0.04,
+     0.045,
+     0.1
+    ],
+    "metal": 0.5,
+    "rough": 0.4
+   },
+   "deck": {
+    "color": [
+     0.05,
+     0.05,
+     0.12
+    ],
+    "metal": 0.6,
+    "rough": 0.3,
+    "emit": [
+     0.75,
+     0.8,
+     1.0
+    ],
+    "estr": 0.0
+   },
+   "saucer": {
+    "color": [
+     0.06,
+     0.06,
+     0.14
+    ],
+    "metal": 0.85,
+    "rough": 0.18,
+    "emit": [
+     0.35,
+     0.3,
+     0.7
+    ],
+    "estr": 0.25
+   },
+   "ring": {
+    "color": [
+     0.22,
+     0.22,
+     0.36
+    ],
+    "metal": 0.9,
+    "rough": 0.15,
+    "emit": [
+     0.55,
+     0.5,
+     0.9
+    ],
+    "estr": 0.25
+   },
+   "crown": {
+    "color": [
+     0.8,
+     0.75,
+     0.95
+    ],
+    "metal": 0.3,
+    "rough": 0.2,
+    "emit": [
+     0.95,
+     0.8,
+     1.0
+    ],
+    "estr": 1.2
+   },
+   "crescent": {
+    "color": [
+     0.9,
+     0.85,
+     1.0
+    ],
+    "metal": 0.2,
+    "rough": 0.2,
+    "emit": [
+     1.0,
+     0.85,
+     0.98
+    ],
+    "estr": 2.2
+   },
+   "rim": {
+    "color": [
+     0.9,
+     0.6,
+     1.0
+    ],
+    "metal": 0.5,
+    "rough": 0.2,
+    "emit": [
+     1.0,
+     0.45,
+     0.85
+    ],
+    "estr": 3.0
+   },
+   "plaza": {
+    "color": [
+     0.6,
+     0.9,
+     1.0
+    ],
+    "metal": 0.0,
+    "rough": 0.5,
+    "emit": [
+     0.55,
+     0.95,
+     1.0
+    ],
+    "estr": 3.0
+   },
+   "windows": {
+    "color": [
+     1.0,
+     0.7,
+     0.35
+    ],
+    "metal": 0.0,
+    "rough": 0.5,
+    "emit": [
+     1.0,
+     0.68,
+     0.32
+    ],
+    "estr": 2.5
+   },
+   "glass": {
+    "color": [
+     0.05,
+     0.09,
+     0.16
+    ],
+    "metal": 0.6,
+    "rough": 0.08,
+    "emit": [
+     0.15,
+     0.55,
+     0.6
+    ],
+    "estr": 0.25
+   },
+   "ground": {
+    "color": [
+     0.02,
+     0.022,
+     0.05
+    ],
+    "metal": 0.3,
+    "rough": 0.25
+   },
+   "door_frame": {
+    "color": [
+     0.35,
+     0.35,
+     0.55
+    ],
+    "metal": 0.9,
+    "rough": 0.2,
+    "emit": [
+     0.6,
+     0.55,
+     1.0
+    ],
+    "estr": 0.15
+   },
+   "deck_strip": {
+    "color": [
+     0.85,
+     0.88,
+     1.0
+    ],
+    "metal": 0.0,
+    "rough": 0.4,
+    "emit": [
+     0.85,
+     0.88,
+     1.0
+    ],
+    "estr": 3.0
+   },
+   "windows_sparse": {
+    "color": [
+     0.3,
+     0.2,
+     0.2
+    ],
+    "metal": 0.0,
+    "rough": 0.5,
+    "emit": [
+     1.0,
+     0.55,
+     0.35
+    ],
+    "estr": 0.6
+   },
+   "saucer_rim": {
+    "color": [
+     0.05,
+     0.05,
+     0.12
+    ],
+    "metal": 0.9,
+    "rough": 0.15,
+    "emit": [
+     0.8,
+     0.55,
+     1.0
+    ],
+    "estr": 0.35
+   }
+  },
+  "cycles": {
+   "samples": 96,
+   "front_res": 2400,
+   "view_res": 1800,
+   "haze_density": 0.00028,
+   "front_haze_density": 0.003,
+   "crown_halo_strength": 0.14,
+   "rim_strength": 12.0,
+   "window_strength": 9.0,
+   "arch_core_w": 12000.0,
+   "glare_threshold": 1.0,
+   "glare_strength": 0.5,
+   "grain": 0.035,
+   "chroma_px": 1.6,
+   "world_strength": 0.2,
+   "exposure": 0.0,
+   "podium_lit_frac": 0.22,
+   "saucer_top_glow": 0.7,
+   "plaza_wash": 0.18,
+   "plaza_ring": 6.0
   }
  }
 }

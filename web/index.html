@@ -6,7 +6,7 @@
 <link rel="icon" href="data:,">
 <title>Building preview - orbit / walk / fly</title>
 <style>
-  html,body{margin:0;height:100%;overflow:hidden;background:#20222a;font-family:system-ui,sans-serif}
+  html,body{margin:0;height:100%;overflow:hidden;background:#0b0a1c;font-family:system-ui,sans-serif}
   #hud{position:absolute;left:12px;top:10px;color:#eee;font-size:13px;line-height:1.45;background:rgba(0,0,0,.45);padding:8px 12px;border-radius:6px;max-width:420px;pointer-events:none}
   #bar{position:absolute;right:12px;top:10px;display:flex;gap:6px}
   #bar button{background:#3a3f52;color:#fff;border:0;border-radius:5px;padding:6px 10px;cursor:pointer}
@@ -30,7 +30,7 @@
 <body>
 <div id="load">loading model...</div>
 <div id="hud"></div>
-<div id="bar"><button id="bOrbit" class="on" title="Orbit">环绕 Orbit</button><button id="bWalk" title="Walk (Tab)">漫游 Walk</button><button id="bFly" title="Fly (F)">飞行 Fly</button></div>
+<div id="bar"><button id="bOrbit" class="on" title="Orbit">环绕 Orbit</button><button id="bWalk" title="Walk (Tab)">漫游 Walk</button><button id="bFly" title="Fly (F)">飞行 Fly</button><button id="bStyle" title="Style (V): 渲染 Render / 白模 Clay">风格 Style: 渲染 Render</button></div>
 <div id="flyBar"></div>
 <div id="touchFly"><button id="tUp">▲</button><button id="tDown">▼</button></div>
 <div id="cross"></div>

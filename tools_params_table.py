@@ -21,7 +21,7 @@ def get(d, key):
     return {k: v for k, v in d.items() if k != 'name'} if isinstance(d, dict) else d
 def source(k):
     return 'measured from sheet' if any(k == s or k.startswith(s + '.') for s in MEAS) else 'inferred'
-R = rows(P)
+R = [r for r in rows(P) if not r[0].startswith('style.')]   # v14: render-look settings (style.*) are not geometry; see CHANGES_v14.md
 L = ['# Parameter table', '',
      'Every dimension used by `build.py` comes from `params.json` (metres; +Z up, front = -Y). '
      f"Scale: the sheets have no dimension lines, so the reference-pixel scale ({P['meta']['scale_m_per_ref_px']} m/px) was fixed from the tower storey pitch "

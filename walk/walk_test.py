@@ -224,7 +224,11 @@ async def main():
         fd = D[did("gallery", "E_link")]; c, n = fd["center"], fd["normal"]
         fly = {"door": fd["id"]}
         await pg.evaluate(f"window.__fly.setPose({c[0] - n[0]*8},{c[1] - n[1]*8},{c[2] + 1.6},{math.atan2(-n[0], n[1])},0)")
-        await pg.wait_for_timeout(1500); fly["far_t"] = (await door_state(fd["id"]))["t"]
+        await pg.wait_for_timeout(1500)
+        for _ in range(40):                   # the walk suite may have left this door (next to D40) open: let it settle first
+            if (await door_state(fd["id"]))["t"] == 0: break
+            await pg.wait_for_timeout(100)
+        await pg.wait_for_timeout(800); fly["far_t"] = (await door_state(fd["id"]))["t"]
         await pg.evaluate(f"window.__fly.setPose({c[0] - n[0]*2.2},{c[1] - n[1]*2.2},{c[2] + 1.6},{math.atan2(-n[0], n[1])},0)")
         await pg.wait_for_timeout(900); fly["near_t"] = (await door_state(fd["id"]))["t"]
         await pg.evaluate(f"window.__walk.render()"); fly["shot"] = os.path.join(OUT, "door_open_fly.png"); await pg.screenshot(path=fly["shot"])

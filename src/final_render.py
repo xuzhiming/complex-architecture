@@ -1,5 +1,5 @@
 # Mood render matching ref/mood_render.png: dark blue-violet haze, glossy dark + glass, iridescent rims,
-# warm light pouring out of the front arch onto a luminous plaza ring, coloured window lights, tiny people.
+# warm light pouring out of the front arch onto a luminous plaza ring, coloured window lights (v14: no people).
 #   blender -b building.blend -P src/final_render.py     env: SAMPLES (128) RES (1536) OUT
 import bpy, math, os, random, json
 from mathutils import Vector
@@ -150,7 +150,7 @@ pd = bpy.context.active_object; pd.name = "PlazaDisc"; pd.scale = (24.0*PS*PLAZA
 # --- tiny people (1.75 m) on the forecourt
 pm = [principled("MoodPerson", (0.02, 0.02, 0.03), rough=0.5)] + [emit(f"MoodPersonC{i}", c, 1.5) for i, c in enumerate([(1, 0.3, 0.4), (0.3, 0.7, 1), (1, 0.8, 0.5)])]
 H = P["people"]["height"]
-for i in range(P["people"]["count"]):
+for i in range(0):          # v14: no people (user request) - P["people"]["count"] is 0 as well
     a = random.uniform(0, 2*math.pi); rr = random.uniform(4, 24*PS)
     x, y = pc[0] + rr*math.cos(a)*1.3, pc[1] + rr*math.sin(a)*0.8 + 4
     bpy.ops.mesh.primitive_cylinder_add(radius=0.22, depth=H - 0.3, location=(x, y, (H - 0.3)/2), vertices=8)
