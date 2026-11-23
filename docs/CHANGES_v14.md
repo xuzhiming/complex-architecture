@@ -2,9 +2,9 @@
 
 ## Tower lobby `T_L0`
 
-`T_L0` is the only space tagged `kind: "lobby"`. It is the ground floor of the tower (centre about 13.5, 40), reached from the gallery through the short passage `T_link` and door `D63`. The courtyard and the arch glow are outside that room; a warm streak through the door gap is that outside light, not hall lighting.
+`T_L0` is the only space tagged `kind: "lobby"`. It is the ground floor of the tower (centre about 13.5, 40), reached from the gallery through `T_link` and door `D63`. A ray straight up from eye height hits `TowerSlab1` at about 4.25 m, so the room has a ceiling. That slab was single-sided, so from inside the camera looked through it at the night sky and at the crown sprites. Render now draws that existing slab from both sides. No geometry was added.
 
-Four short-range point lights sit inside the room, just above the floor, on the render-only group: a warm body, a warmer one toward the entrance, one on the lift wall, and a small cool accent to the east. Range is 7–11 m, so they do not reach the forecourt. Exposure and bloom are unchanged. `style.cycles` `hall_*_w` and the matching points in `src/render_style.py` follow the same placement. Those Cycles frames were not re-rendered.
+The walls, stairs, ground floor drum and the `T_L0` door leaves were a dark metal, so a point light only made a white speck. Those Render materials are now a matte warm gray (metal about 0.04, roughness about 0.9). Three dim lights hang in the volume under the slab: warm body, warmer toward the entrance, and a small cool accent. They are not stuck to the floor. Exposure and bloom are unchanged, and the forecourt frame stays within a few levels of the previous front view. `style.cycles` `hall_*_w` and `src/render_style.py` use the same interior points. Cycles was not re-rendered.
 
 ## Roof tops
 

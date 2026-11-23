@@ -139,6 +139,11 @@ const LOOK = {
   roof: { flat: [0.22, 0.2, 0.36], metal: 0.36, rough: 0.5, emit: 0xc2b0e4, estr: 0.04 },
   bridge: { flat: [0.32, 0.24, 0.28], metal: 0.32, rough: 0.48, emit: 0xe4c6a8, estr: 0.05 },
   roofrib: { flat: [0.13, 0.15, 0.24], metal: 0.48, rough: 0.4 },
+  // T_L0 surfaces. The ceiling slab exists but its underside was invisible, so the view opened onto the sky.
+  hallceil: { flat: [0.38, 0.36, 0.42], metal: 0.02, rough: 0.92, side: 2 },
+  hallwall: { flat: [0.46, 0.42, 0.44], metal: 0.04, rough: 0.88, side: 2 },
+  halldoor: { flat: [0.5, 0.46, 0.44], metal: 0.06, rough: 0.78 },
+  hallfloor: { flat: [0.09, 0.085, 0.09], metal: 0.02, rough: 0.96 },
   ring: { emit: 0x7ee7ff, estr: 0.48, color: [1.05, 1.15, 1.55] },
   deck: { emit: 0xffe0a4, estr: 0.82 },
   podium: { emit: 0xffb888, estr: 0.07, color: [1.75, 1.4, 1.6] },
@@ -150,12 +155,15 @@ function partRole(o) {
   const ns = [];
   for (let p = o; p; p = p.parent) if (p.name) ns.push(p.name);
   const n = ns.join(' ');
-  if (/DoorLeaf/.test(n)) return 'door';
+  const self = o.name || '';
+  if (/DoorLeaf/.test(n)) return /T_L0/.test(self) ? 'halldoor' : 'door';
+  if (self === 'TowerSlab1') return 'hallceil';
+  if (self === 'InteriorWalls' || self === 'Stairs' || self === 'TowerShell0') return 'hallwall';
+  if (self === 'GroundSlab') return 'hallfloor';
   if (/Crescent/i.test(n)) return 'crescent';
   if (/Crown|Dome|Lantern/i.test(n)) return 'crown';
   if (/Window/i.test(n)) return 'windows';
   if (/Deck/i.test(n)) return 'deck';
-  const self = o.name || '';
   if (/CanopyRim/i.test(self)) return 'rim';
   if (/canopy_rib/i.test(self)) return 'roofrib';
   if (/canopy/i.test(self)) return 'saucer';
@@ -179,13 +187,16 @@ function paintMaterial(src, role) {
   if (spec) {
     if (spec.flat) {
       m.map = null; m.color.setRGB(spec.flat[0], spec.flat[1], spec.flat[2]);
-      if (spec.metal !== undefined) { m.metalnessMap = null; m.metalness = spec.metal; }
-      if (spec.rough !== undefined) { m.roughnessMap = null; m.roughness = spec.rough; }
+      m.metalnessMap = null; m.roughnessMap = null; m.emissiveMap = null;
+      m.emissive.setRGB(0, 0, 0); m.emissiveIntensity = 0;
     } else if (spec.color) m.color.setRGB(spec.color[0], spec.color[1], spec.color[2]);
+    if (spec.metal !== undefined) m.metalness = spec.metal;
+    if (spec.rough !== undefined) m.roughness = spec.rough;
+    if (spec.side !== undefined) m.side = spec.side;
     if (spec.emit !== undefined) {
       if (spec.flat) m.emissiveMap = null;
       m.emissive.setHex(spec.emit); m.emissiveIntensity = spec.estr;
-    } else if ((src.emissiveIntensity ?? 1) >= 1.05) m.emissiveIntensity = 0.4;
+    } else if (!spec.flat && (src.emissiveIntensity ?? 1) >= 1.05) m.emissiveIntensity = 0.4;
   }
   paintCache.set(key, m);
   return m;
@@ -230,12 +241,11 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
   glow(0xff78c8, 32, 48, b2t(-58, 16, 26));           // west rose
   glow(0x49d0ff, 36, 52, b2t(62, 6, 24));             // east cyan
   glow(0xffd090, 26, 34, b2t(13.5, 40, 48));          // warm light between the saucers
-  // T_L0 is the only space with kind "lobby": the tower ground floor, entered from gallery via T_link / D63.
-  // Four short-range lights under the 4.5 m slab. They die before the forecourt, so the arch glow stays outside.
-  glow(0xfff1dc, 7, 10, b2t(12.0, 31.0, 0.85));       // warm wash on the floor and lower walls
-  glow(0xffe4bc, 5, 8, b2t(11.0, 28.5, 0.8));         // entrance side, toward D63
-  glow(0xfff4e4, 4.5, 7, b2t(14.0, 35.5, 0.85));      // lift doors from below, not a ceiling hotspot
-  glow(0xd0ddff, 2.8, 7, b2t(16.0, 31.5, 0.8));       // small cool accent, east of centre
+  // T_L0 lobby. Lights hang in the volume under TowerSlab1 (ceiling ~4.25 m), not on the floor.
+  // Diffuse wall/floor materials carry the light; these three stay dim so they do not bloom into discs.
+  glow(0xfff3e2, 5.5, 16, b2t(13.5, 32.0, 2.6));
+  glow(0xffe7c8, 3.5, 12, b2t(11.2, 29.2, 2.5));
+  glow(0xd4e0ff, 2.2, 11, b2t(15.8, 33.5, 2.5));
 }
 function headlampFor(m) { return (m === 'walk' ? 25 : (m === 'fly' ? 12 : 0)) * (style === 'render' ? 0.18 : 1); }
 function applyStyle(s) {
