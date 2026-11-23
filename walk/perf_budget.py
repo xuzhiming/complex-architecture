@@ -30,6 +30,12 @@ async def main():
             if info.get("bollards", 0) < 5: fails.append(f"bollards {info.get('bollards')}")
             if not info.get("env"): fails.append("env off")
             if info.get("style") != "render": fails.append(f"style {info.get('style')}")
+            fin = info.get("finish") or {}
+            if fin.get("stoneMetal", 1) > 0.16: fails.append(f"stoneMetal {fin.get('stoneMetal')}")
+            if fin.get("saucerMetal", 0) < 0.75: fails.append(f"saucerMetal {fin.get('saucerMetal')}")
+            if not (fin.get("bridgeR", 0) > fin.get("saucerR", 1)): fails.append("bridge not warmer than saucer")
+            if fin.get("windowEstr", 1) > 0.42: fails.append(f"windowEstr {fin.get('windowEstr')}")
+            if not fin.get("contact"): fails.append("contact darkening off")
         if errs: fails.append("errors " + " | ".join(errs[:4]))
         await br.close()
     print("PERF BUDGET", "PASS" if not fails else "FAIL", info, fails)
