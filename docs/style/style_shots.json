@@ -1,0 +1,15 @@
+{
+ "default_style": "render",
+ "shots": {
+  "render_front": "/workspace/gothic_model/walk/web_style_render_front.png",
+  "render_aerial": "/workspace/gothic_model/walk/web_style_render_aerial.png",
+  "clay_front": "/workspace/gothic_model/walk/web_style_clay_front.png",
+  "clay_aerial": "/workspace/gothic_model/walk/web_style_clay_aerial.png",
+  "render_walk": "/workspace/gothic_model/walk/web_style_render_walk.png"
+ },
+ "frame_ms_swiftshader": {
+  "render_bloom": 475.5,
+  "clay": 107.0
+ },
+ "errors": []
+}

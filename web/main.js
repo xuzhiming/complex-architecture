@@ -6,6 +6,10 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { MeshBVH } from 'three-mesh-bvh';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 const Q = new URLSearchParams(location.search);
 const TEST = Q.has('test');
@@ -20,15 +24,33 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xc9ced8);
-scene.fog = new THREE.Fog(0xc9ced8, 250, 700);
-scene.add(new THREE.HemisphereLight(0xffffff, 0x80786c, 1.6));
-const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-120, 200, 160); scene.add(sun);
-const amb = new THREE.AmbientLight(0xffffff, 0.35); scene.add(amb);
+// ---- v14 style: 渲染 Render (default; blue-violet night look + bloom) / 白模 Clay (v13 white model) ----
+const clayLights = new THREE.Group(), renderLights = new THREE.Group(); scene.add(clayLights, renderLights);
+clayLights.add(new THREE.HemisphereLight(0xffffff, 0x80786c, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-120, 200, 160); clayLights.add(sun);
+clayLights.add(new THREE.AmbientLight(0xffffff, 0.35));
+const CLAY_BG = new THREE.Color(0xc9ced8), CLAY_FOG = new THREE.Fog(0xc9ced8, 250, 700);
+const RENDER_FOG = new THREE.FogExp2(0x1b1840, 0.0017);   // was 0.0032: enough haze to hold the night, not enough to hide the facade
+const RENDER_BG = (() => {             // dark navy -> indigo -> violet haze near the horizon (abstract, no city)
+  const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d');
+  const gr = g.createLinearGradient(0, 0, 0, 256);
+  gr.addColorStop(0, '#04040d'); gr.addColorStop(0.4, '#13113a'); gr.addColorStop(0.6, '#2a2562'); gr.addColorStop(0.75, '#191543'); gr.addColorStop(1, '#06051a');
+  g.fillStyle = gr; g.fillRect(0, 0, 4, 256); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+renderLights.add(new THREE.HemisphereLight(0x7d7fe0, 0x0b0a1e, 0.64));
+renderLights.add(new THREE.AmbientLight(0x3a3570, 0.34));
+{ const d = new THREE.DirectionalLight(0xb9b0ff, 0.58); d.position.set(-60, 180, 120); renderLights.add(d);
+  const pink = new THREE.DirectionalLight(0xff5ac8, 0.72); pink.position.set(-160, 70, -40); renderLights.add(pink);
+  const cyan = new THREE.DirectionalLight(0x40d0ff, 0.72); cyan.position.set(170, 60, -20); renderLights.add(cyan); }
+let style = (Q.get('style') || 'render') === 'clay' ? 'clay' : 'render';
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.05, 3000);
 const headlamp = new THREE.PointLight(0xfff4e0, 0, 30, 1.5); camera.add(headlamp); scene.add(camera);
 camera.position.copy(b2t(-120, -170, 80));
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth / 2, innerHeight / 2), 0.18, 0.22, 0.98);   // strength, radius, threshold — tight halo, not a white veil
+composer.addPass(bloom); composer.addPass(new OutputPass());
+function draw() { if (style === 'render') composer.render(); else renderer.render(scene, camera); }
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.target.copy(b2t(0, 0, 25)); orbit.update();
 
@@ -87,6 +109,72 @@ function leafRoot(o) { while (o) { if (/^DoorLeaf_/.test(o.name)) return o; o = 
   window.__colliderTris = io / 3;
 }
 
+// ---------------- v14 style materials: glb carries the Render look; Clay swaps in two shared white materials ----------------
+const CLAY_M = new THREE.MeshStandardMaterial({ color: 0xc2c2bf, roughness: 0.85 });
+const CLAY_G = new THREE.MeshStandardMaterial({ color: 0x9a9ca1, roughness: 0.6 });
+const isGlassMat = m => /glass|Recess/i.test(m.name);
+gltf.scene.traverse(o => {
+  if (!o.isMesh) return;
+  o.userData.matRender = o.material;
+  o.userData.matClay = (isGlassMat(o.material) || roleOf(o) === 'glass' || roleOf(o) === 'window_light') ? CLAY_G : CLAY_M;
+});
+// Current glb still has the bright KHR emissive strengths (3 rim/plaza/deck, 2.5 windows, 2.2 crescent, 1.2 crown).
+// Map those exact values onto params.json style.web so this file matches the next export. Lower strengths are left alone,
+// which keeps a rebuilt glb from being darkened a second time. Clay materials are separate and are not touched.
+function retargetEmit(m) {
+  if (!m || !m.isMaterial) return;
+  const e = m.emissiveIntensity ?? 1;
+  let target = null;
+  if (e >= 2.9) target = 0.70;
+  else if (e >= 2.4) target = 0.85;
+  else if (e >= 2.0) target = 0.65;
+  else if (e >= 1.05) target = 0.40;
+  if (target !== null) m.emissiveIntensity = target;
+}
+gltf.scene.traverse(o => {
+  if (!o.isMesh || !o.userData.matRender) return;
+  const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
+  for (const m of mats) retargetEmit(m);
+});
+// emissive pastel plaza rings in front of the arch (render look only)
+const plazaFx = new THREE.Group(); scene.add(plazaFx);
+{
+  const fy = (SPACES && SPACES.doors.find(d => d.type === 'open')) ? SPACES.doors.find(d => d.type === 'open').center[1] : -45.5;
+  const c = b2t(0, fy - 20.8, 0.06);
+  for (const [r0, r1, k] of [[7.8, 8.3, 0], [17.5, 18.6, 1], [24.7, 25.3, 2], [31.2, 31.7, 3]]) {
+    const g = new THREE.RingGeometry(r0, r1, 160, 1); g.rotateX(-Math.PI / 2);
+    const col = new Float32Array(g.attributes.position.count * 3), P3 = g.attributes.position, cc = new THREE.Color();
+    for (let i = 0; i < P3.count; i++) {      // cyan -> pink -> yellow around the ring
+      const a = (Math.atan2(P3.getZ(i), P3.getX(i)) / (2 * Math.PI) + 0.5 + k * 0.17) % 1;
+      cc.setHSL(a < 0.33 ? 0.52 : a < 0.66 ? 0.9 : 0.13, 0.82, 0.38); col.set([cc.r, cc.g, cc.b], i * 3);
+    }
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: true, fog: false }));
+    m.position.copy(c); m.scale.x = 1.31; plazaFx.add(m);
+  }
+  // soft additive glows: warm starburst in the arch, pastel halo around the crown
+  const glowTex = (() => { const cv = document.createElement('canvas'); cv.width = cv.height = 128; const g = cv.getContext('2d');
+    const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(255,255,255,1)'); gr.addColorStop(0.25, 'rgba(255,255,255,.45)'); gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+  const sprite = (col, size, pos, op) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: col, blending: THREE.AdditiveBlending,
+    depthWrite: false, transparent: true, opacity: op, fog: false })); s.scale.set(size, size, 1); s.position.copy(pos); plazaFx.add(s); return s; };
+  sprite(0xffe2b8, 11, b2t(0, fy + 8, 5), 0.28);
+  sprite(0xe6d4ff, 36, b2t(13.5, 40, 76), 0.1); sprite(0xffb8e0, 22, b2t(6, 40, 82), 0.07);
+  const arch = new THREE.PointLight(0xffd9a8, 52, 50, 2); arch.position.copy(b2t(0, fy + 6, 4)); plazaFx.add(arch);
+  const crown = new THREE.PointLight(0xe8d8ff, 58, 80, 2); crown.position.copy(b2t(13.5, 40, 78)); plazaFx.add(crown);
+}
+function headlampFor(m) { return (m === 'walk' ? 25 : (m === 'fly' ? 12 : 0)) * (style === 'render' ? 0.18 : 1); }
+function applyStyle(s) {
+  style = s;
+  const R = s === 'render';
+  gltf.scene.traverse(o => { if (o.isMesh && o.userData.matRender) o.material = R ? o.userData.matRender : o.userData.matClay; });
+  scene.background = R ? RENDER_BG : CLAY_BG; scene.fog = R ? RENDER_FOG : CLAY_FOG;
+  clayLights.visible = !R; renderLights.visible = R; plazaFx.visible = R;
+  renderer.toneMappingExposure = R ? 0.88 : 1.0;
+  headlamp.intensity = headlampFor(mode);
+  const b = document.getElementById('bStyle'); if (b) b.textContent = R ? '风格 Style: 渲染 Render' : '风格 Style: 白模 Clay';
+}
+
 // ---------------- auto doors (v13) ----------------
 // Leaves are exported with extras: door_id, door_type, leaf (A|B), slide (open offset), slide_axis, width, height,
 // center, normal, lift_id/level. Leaf meshes are baked in world space, so the closed position is the node position.
@@ -109,7 +197,9 @@ gltf.scene.traverse(o => {
   const box = new THREE.Box3().setFromObject(o);
   // per-door material clones so the rim glow can follow the door state
   // (only the clay frame glows: a faint cool rim strip while the door is active; the recessed glazing stays dark)
-  o.traverse(m => { if (m.isMesh && !/Recess/.test(m.material.name)) { m.material = m.material.clone(); m.material.emissive = new THREE.Color(0x8ccaff); m.material.emissiveIntensity = 0; d.mats.push(m.material); } });
+  o.traverse(m => { if (m.isMesh && !isGlassMat(m.userData.matRender || m.material)) {
+    for (const k of ['matRender', 'matClay']) { const c = m.userData[k].clone(); c.emissive = new THREE.Color(0x8ccaff); c.emissiveIntensity = 0; m.userData[k] = c; d.mats.push(c); }
+    m.material = m.userData.matRender; } });
   d.leaves.push({ obj: o, side: u.leaf || 'A', closed: o.position.clone(), slideW, slideL: slideW.clone().applyMatrix3(new THREE.Matrix3().setFromMatrix4(inv)),
                   c0: box.getCenter(new THREE.Vector3()), hw: slideW.length() / 2, ht: 0.06 });
 });
@@ -129,6 +219,8 @@ if (SPACES) for (const L of SPACES.lifts) {
 const liftById = new Map(lifts.map(L => [L.id, L]));
 for (const d of doors) if (d.lift && liftById.has(d.lift)) liftById.get(d.lift).doors.push(d);
 document.getElementById('load').remove();
+applyStyle(style);
+document.getElementById('bStyle').onclick = () => applyStyle(style === 'render' ? 'clay' : 'render');
 
 // ---------------- helpers ----------------
 const ray = new THREE.Ray();
@@ -274,7 +366,7 @@ function setMode(m) {
   for (const [id, mm] of [['bOrbit', 'orbit'], ['bWalk', 'walk'], ['bFly', 'fly']]) document.getElementById(id).classList.toggle('on', m === mm);
   document.getElementById('flyBar').style.display = m === 'fly' ? 'flex' : 'none';
   document.getElementById('touchFly').style.display = (m === 'fly' && TOUCH) ? 'block' : 'none';
-  orbit.enabled = m === 'orbit'; headlamp.intensity = m === 'walk' ? 25 : (m === 'fly' ? 12 : 0); cross.style.display = m !== 'orbit' ? 'block' : 'none';
+  orbit.enabled = m === 'orbit'; headlamp.intensity = headlampFor(m); cross.style.display = m !== 'orbit' ? 'block' : 'none';
   if (m === 'walk' && player.pos.lengthSq() === 0) { setFeet(b2t(0, -62, 0)); player.yaw = 0; }
   if (m === 'orbit' && document.pointerLockElement) document.exitPointerLock?.();
 }
@@ -290,6 +382,7 @@ document.addEventListener('mousemove', e => {
 addEventListener('keydown', e => {
   keys[e.code] = true;
   if (e.code === 'Tab') { e.preventDefault(); setMode(mode === 'walk' ? 'orbit' : 'walk'); }
+  if (e.code === 'KeyV' && !e.repeat) applyStyle(style === 'render' ? 'clay' : 'render');   // 风格 Style toggle
   // F toggles fly (inside a lift car F keeps its old meaning: lift down)
   if (e.code === 'KeyF' && !e.repeat && !(mode === 'walk' && liftState)) { setMode(mode === 'fly' ? (flyFrom === 'walk' ? 'walk' : 'orbit') : 'fly'); return; }
   if (mode === 'fly') {
@@ -306,7 +399,8 @@ addEventListener('keydown', e => {
   }
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
-addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight); bloom.resolution.set(innerWidth / 2, innerHeight / 2); });
 
 // ---------------- fly mode: free 6-DoF camera, no gravity, no collision ----------------
 const TOUCH = matchMedia('(pointer: coarse)').matches || Q.has('touch');
@@ -425,7 +519,7 @@ function hudText() {
   }
   return mode === 'walk'
     ? `WALK  ·  WASD move · mouse look (click) · Shift run · Tab orbit · F fly 飞行<br>${liftState ? `in lift ${liftState.lift.id} · R up / F down · level ${liftState.target}` : ''}<br>x ${b.x}  y ${b.y}  floor z ${b.z} m · 自动门 auto doors ${doors.length} (active ${activeDoors.size})`
-    : `ORBIT  ·  drag rotate · wheel zoom · right-drag pan · Tab / button = walk mode · F fly 飞行<br>collider triangles: ${window.__colliderTris} · 自动门 auto doors: ${doors.length}`;
+    : `ORBIT  ·  drag rotate · wheel zoom · right-drag pan · Tab / button = walk mode · F fly 飞行 · V 风格 Render/Clay<br>collider triangles: ${window.__colliderTris} · 自动门 auto doors: ${doors.length}`;
 }
 
 let last = performance.now(), renderEvery = TEST ? 0 : 1;
@@ -436,7 +530,7 @@ function loop(now) {
   else orbit.update();
   updateDoors(dt, mode === 'walk' ? player.pos : (mode === 'fly' ? camera.position : null), mode === 'fly');
   hud.innerHTML = hudText();
-  if (renderEvery) renderer.render(scene, camera);
+  if (renderEvery) draw();
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
@@ -444,7 +538,8 @@ requestAnimationFrame(loop);
 // ---------------- test hooks (used by walk_test.py) ----------------
 window.__walk = {
   ready: true,
-  setMode, render() { if (mode === 'walk') syncCamera(); else if (mode === 'fly') flyCamera(); renderer.render(scene, camera); },
+  setMode, render() { if (mode === 'walk') syncCamera(); else if (mode === 'fly') flyCamera(); draw(); },
+  style(s) { if (s) applyStyle(s); return style; },
   mode() { return mode; },
   teleport(x, y, z, yaw = 0) { setMode('walk'); setFeet(b2t(x, y, z)); player.yaw = yaw; player.onGround = false; },
   setYaw(y) { player.yaw = y; }, setPitch(p) { player.pitch = p; },

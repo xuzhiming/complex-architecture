@@ -35,6 +35,29 @@ Controls / 操作 (buttons 环绕 Orbit / 漫游 Walk / 飞行 Fly, top right):
   current camera pose; switching to Walk drops you onto the floor below. Touch: one-finger drag looks, two-finger drag moves,
   ▲/▼ buttons rise/sink.
 
+**Style 风格 (V or the 风格 Style button):** two looks, **渲染 Render** (the default) and **白模 Clay**, the v13 white model.
+  Render uses the model's own colours, metal/roughness and glow (exported in the glb) on a dark blue-violet gradient
+  background with fog and bloom. It adds glowing pastel rings on the forecourt plaza, a warm glow in the arch and a pastel
+  halo around the crown. Clay swaps in two plain white materials and the old daylight. Walk, fly and the automatic doors
+  work the same in both looks. Use `?style=clay` to open in Clay.
+风格切换（V 键或「风格」按钮）：默认「渲染」，即蓝紫色夜景、发光边缘、泛光；可切换回「白模」。
+
+## Stylised render / 风格化渲染 (v14)
+![style front](docs/style/style_front.png)
+![style aerial](docs/style/style_aerial.png)
+![style courtyard](docs/style/style_courtyard.png)
+
+`src/render_style.py` is a Blender Cycles script. It assigns every material by rule from `params.json` → `style.rules`
+(matching an object-name pattern or a role), so nothing is set by hand.
+- **Materials:** dark glossy saucers with iridescent lips, stacked glossy tower rings, glass with tiny warm, amber and teal
+  window lights, a pale glowing crescent ribbon, and a dark podium with a light strip along the deck edge.
+- **Light and atmosphere:** a warm-white starburst through the arch, pastel plaza rings, a volumetric haze domain with
+  god rays, and a pastel halo around the crown.
+- **Compositor and finish:** Bloom and Streaks glare in the compositor, then `src/style_post.py` adds grain, chromatic
+  softness and a vignette.
+- **Backdrop:** an abstract gradient with a few faint light streaks; no city and no people.
+- **Web brightness:** the Render preview was too hot (emissive strengths up to 3, arch/crown point lights, a wide bloom and dense fog). Those were lowered together so the crescent, floor plates and facade read, while the blue-violet / cyan-pink palette stays. Clay lights, materials and exposure are unchanged. The Cycles stills above were not re-rendered; `style.cycles` was lowered so the next Blender run follows the same direction.
+
 ## Pipeline / 流程
 
 Every dimension lives in `params.json` (tagged measured / inferred in `params_table.md`); all geometry is generated from it.
@@ -51,17 +74,20 @@ COMPARE_ROUNDS=4 ./run_all.sh
 4. `src/render_clay.py` – true-ortho clay elevations, hero views, tower close-up.
 5. `check/circulation_check.py` – circulation graph BFS + door/wall raycasts + stair riser/tread/headroom + lift shafts,
    with a negative test (blocked door must make the check fail) → `circulation_report.md`.
-6. gltf-transform – Meshopt + GPU instancing → `web/building_opt.glb` (< 25 MiB).
+6. `tools/export_style_glb.py`, then gltf-transform – bake the Render materials into the glb, then Meshopt + GPU instancing → `web/building_opt.glb` (the v14 check rejects anything over 8 MB; Cloudflare Pages rejects a file over 25 MiB).
 7. `walk/walk_test.py` – headless Chrome walk through the web preview (WASD keys, penetration rays, stuck detection, doors).
    v13 adds three checks:
    - an auto-door coverage check (every door in `spaces.json` maps to two animated leaves);
    - a scripted pass through 13 doors of every type, which logs open-on-approach, the gap at crossing and close-after-leaving;
    - a fly-mode door check.
    `walk/fly_test.py` – headless fly-mode test (pose hand-over, no gravity/collision, over the crown, through the courtyard, speed, presets, tour, drop to walk).
-8. `src/final_render.py` – Cycles mood render (AgX, volumetric arch beams, pink/cyan rims, glowing plaza).
+8. `src/final_render.py` – Cycles mood render (AgX, volumetric arch beams, pink/cyan rims, glowing plaza; no people).
+9. `src/render_style.py` + `src/style_post.py` – v14 stylised renders → `renders/style_front|aerial|courtyard.png`.
+   Step 6 first bakes the Render look into the glb (`tools/export_style_glb.py`), and step 7 also runs
+   `walk/style_shots.py`, which checks the Render/Clay toggle with no console errors and the glb under 8 MB.
 
 管线：参考立面剪影 → 剪影对比与参数自动调优 → Blender 无头建模（外观+室内）→ 白模渲染 → 流线检查（含反向测试）→
-glTF 压缩导出 → 无头 Chrome 漫游测试 → 氛围渲染。每次修改脚本后整条管线重跑，保证不回退。
+风格材质烘焙与 glTF 压缩导出 → 无头 Chrome 漫游/飞行/自动门/风格切换测试 → 氛围渲染 → v14 风格化渲染。每次修改脚本后整条管线重跑，保证不回退。
 
 Requirements / 依赖: Blender 5.x, Python 3 (numpy, scipy, Pillow, matplotlib, playwright), Node + `@gltf-transform/cli`, Chrome.
 
