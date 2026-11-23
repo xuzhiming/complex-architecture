@@ -2,7 +2,7 @@
 
 ## Grey-blue dusk
 
-Render is no longer a night scene with a colour assigned to each part. The sky is an overcast grey-blue with a warm band at the horizon, and the fog is the same pale air, so the far saucers sit in mist. The mass is graphite and silver: podium, tower and shell are flat midtones instead of the near-black atlas, saucers are a cool silver, bridges a warmer grey. Amber stays on the windows. Rose and cyan are only a faint side light and the softened plaza rings. The arch and the centre of the forecourt are a milky warm, from the existing path lights, not from a higher exposure. Bloom is shorter (0.12 / 0.34 / 0.96) and exposure is 0.94. The lobby ceiling is still drawn from inside, in cool plaster rather than a pink wall. Clay is untouched.
+Render is no longer a night scene with a colour assigned to each part. A generated reflection (soft cyan, rose and amber washes, no buildings) tints the metal. One cool key from the upper left and a weaker warm fill from the right give the saucers, floor plates and the arch a light side and a dark side. The visible sky stays a quiet gradient so it does not compete with the building. Saucers are a cooler silver, bridges and the deck a warmer grey, the podium a mid stone, the arch mouth darker than the face. Amber stays on the windows. The forecourt path lights and the lobby ceiling are unchanged. Exposure is 0.9. Clay does not receive the reflection.
 
 `style.web` matches these colours. `src/render_style.py` uses the silver saucer, the paler world, and much weaker rose and cyan rims. Cycles was not re-rendered. The reference image stays out of the repo.
 

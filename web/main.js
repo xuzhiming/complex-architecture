@@ -30,21 +30,44 @@ clayLights.add(new THREE.HemisphereLight(0xffffff, 0x80786c, 1.6));
 const sun = new THREE.DirectionalLight(0xffffff, 2.2); sun.position.set(-120, 200, 160); clayLights.add(sun);
 clayLights.add(new THREE.AmbientLight(0xffffff, 0.35));
 const CLAY_BG = new THREE.Color(0xc9ced8), CLAY_FOG = new THREE.Fog(0xc9ced8, 250, 700);
-const RENDER_FOG = new THREE.FogExp2(0xb4bec8, 0.0007);
-const RENDER_BG = (() => {             // overcast grey-blue, warm mist at the horizon (abstract, no city)
+const RENDER_FOG = new THREE.FogExp2(0x8e9aab, 0.00042);
+const RENDER_BG = (() => {             // quiet overcast sky; the colour lives in the reflection, not the backdrop
   const c = document.createElement('canvas'); c.width = 4; c.height = 256; const g = c.getContext('2d');
   const gr = g.createLinearGradient(0, 0, 0, 256);
-  gr.addColorStop(0, '#8ea0b4'); gr.addColorStop(0.4, '#c3ccd4'); gr.addColorStop(0.62, '#ddd4c8'); gr.addColorStop(0.8, '#b4bdc8'); gr.addColorStop(1, '#8c96a4');
+  gr.addColorStop(0, '#3c4a5c'); gr.addColorStop(0.38, '#738496'); gr.addColorStop(0.58, '#d4c8ba'); gr.addColorStop(0.78, '#7e8b9a'); gr.addColorStop(1, '#4a5562');
   g.fillStyle = gr; g.fillRect(0, 0, 4, 256); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
-// Dusk rig: a cool silver sky, a warm ground bounce, and only a hint of rose and cyan at the sides.
-renderLights.add(new THREE.HemisphereLight(0xd7e4f0, 0x8d7566, 1.2));
-renderLights.add(new THREE.AmbientLight(0x9aa4b0, 0.24));
-{ const d = new THREE.DirectionalLight(0xeef3f8, 0.62); d.position.set(-80, 180, 70); renderLights.add(d);
-  const warm = new THREE.DirectionalLight(0xffe2c8, 0.3); warm.position.set(10, 36, -140); renderLights.add(warm);
-  const rose = new THREE.DirectionalLight(0xffb7a4, 0.12); rose.position.set(-150, 70, -20); renderLights.add(rose);
-  const cyan = new THREE.DirectionalLight(0xa9d4e6, 0.16); cyan.position.set(160, 64, 16); renderLights.add(cyan);
-  const roofSky = new THREE.DirectionalLight(0xf4f7fb, 0.58); roofSky.position.set(-36, 260, 24); renderLights.add(roofSky);
-  const roofWarm = new THREE.DirectionalLight(0xffd8c2, 0.2); roofWarm.position.set(70, 200, -90); renderLights.add(roofWarm); }
+// Reflection only. Large soft washes, no buildings and no picture of the reference.
+const RENDER_ENV = (() => {
+  const w = 1024, h = 512, c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  const sky = g.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, '#8eb4cc'); sky.addColorStop(0.2, '#c9d8e4'); sky.addColorStop(0.42, '#f3dcc8'); sky.addColorStop(0.58, '#e7b8c4'); sky.addColorStop(1, '#3a343c');
+  g.fillStyle = sky; g.fillRect(0, 0, w, h);
+  const upper = g.createLinearGradient(0, 0, w, 0);
+  upper.addColorStop(0, '#7ec8ea'); upper.addColorStop(0.32, '#f6e2d2'); upper.addColorStop(0.68, '#f0b8c6'); upper.addColorStop(1, '#8fd0ea');
+  g.globalAlpha = 0.72; g.fillStyle = upper; g.fillRect(0, 0, w, h * 0.46); g.globalAlpha = 1;
+  g.globalCompositeOperation = 'screen';
+  const blob = (x, y, r, col, a) => {
+    const rad = g.createRadialGradient(x, y, 0, x, y, r);
+    rad.addColorStop(0, col); rad.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalAlpha = a; g.fillStyle = rad; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+  };
+  blob(240, 120, 420, '#fff3e0', 0.85);
+  blob(820, 140, 460, '#9ad8ff', 0.72);
+  blob(140, 280, 380, '#ffb4c8', 0.5);
+  blob(520, 220, 320, '#ffcc90', 0.4);
+  g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  const t = new THREE.CanvasTexture(c); t.mapping = THREE.EquirectangularReflectionMapping; t.colorSpace = THREE.SRGBColorSpace;
+  const pm = new THREE.PMREMGenerator(renderer); const tex = pm.fromEquirectangular(t).texture; pm.dispose(); t.dispose(); return tex;
+})();
+// One cool key from the upper left, a warm fill from the right, and a low hemisphere so shaded faces stay dark.
+renderLights.add(new THREE.HemisphereLight(0xc9d7e6, 0x5c463c, 0.38));
+renderLights.add(new THREE.AmbientLight(0x808892, 0.05));
+{ const key = new THREE.DirectionalLight(0xf3f6fb, 1.05); key.position.set(-110, 150, 36); renderLights.add(key);
+  const fill = new THREE.DirectionalLight(0xffc9a8, 0.28); fill.position.set(140, 24, -20); renderLights.add(fill);
+  const rose = new THREE.DirectionalLight(0xffb0b8, 0.08); rose.position.set(-160, 50, -10); renderLights.add(rose);
+  const cyan = new THREE.DirectionalLight(0x9fd4ee, 0.12); cyan.position.set(150, 80, 20); renderLights.add(cyan);
+  const roofSky = new THREE.DirectionalLight(0xd5e4f4, 0.1); roofSky.position.set(-20, 240, 10); renderLights.add(roofSky);
+  const roofWarm = new THREE.DirectionalLight(0xffd0b0, 0.16); roofWarm.position.set(80, 160, -70); renderLights.add(roofWarm); }
 let style = (Q.get('style') || 'render') === 'clay' ? 'clay' : 'render';
 
 const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.05, 3000);
@@ -127,16 +150,16 @@ gltf.scene.traverse(o => {
 // params.json style.web. A later export that already has these strengths is cloned and set to the same
 // numbers, not scaled again. Clay materials are a separate pair and are not painted.
 const LOOK = {
-  crescent: { emit: 0xfff6ee, estr: 0.38 },
+  crescent: { emit: 0xfff0e6, estr: 0.2 },
   crown: { emit: 0xf4f2ff, estr: 0.22 },
   windows: { emit: 0xffb068, estr: 0.7 },
   glass: { emit: 0xffd8c2, estr: 0.06 },
   rim: { emit: 0xffc8d6, estr: 0.26 },
-  // Roofs are silver and warm graphite, not a night-blue panel and not a light. Maps cleared.
-  saucer: { flat: [0.52, 0.55, 0.6], metal: 0.58, rough: 0.4, emit: 0xd5e6f2, estr: 0.03 },
-  roof: { flat: [0.46, 0.44, 0.48], metal: 0.46, rough: 0.44, emit: 0xead8e0, estr: 0.02 },
-  bridge: { flat: [0.5, 0.46, 0.44], metal: 0.4, rough: 0.46, emit: 0xf0e0d2, estr: 0.025 },
-  roofrib: { flat: [0.3, 0.32, 0.36], metal: 0.52, rough: 0.38 },
+  // Metal picks up the reflection: cool silver on the saucers, a warmer grey on the bridges.
+  saucer: { flat: [0.42, 0.46, 0.54], metal: 0.84, rough: 0.2, emit: 0xb7d8ee, estr: 0.012 },
+  roof: { flat: [0.52, 0.46, 0.5], metal: 0.64, rough: 0.32, emit: 0xf0c8d4, estr: 0.014 },
+  bridge: { flat: [0.58, 0.5, 0.46], metal: 0.58, rough: 0.34, emit: 0xffd8c0, estr: 0.016 },
+  roofrib: { flat: [0.16, 0.18, 0.22], metal: 0.72, rough: 0.3 },
   // T_L0. Cool plaster, not a tinted toy wall. The ceiling is drawn from both sides.
   hallceil: { flat: [0.62, 0.63, 0.66], metal: 0.02, rough: 0.9, side: 2 },
   hallwall: { flat: [0.56, 0.55, 0.54], metal: 0.03, rough: 0.88, side: 2 },
@@ -144,13 +167,12 @@ const LOOK = {
   hallfloor: { flat: [0.1, 0.096, 0.09], metal: 0.02, rough: 0.96 },
   // Forecourt paving only. The lobby floor stays on hallfloor; this stone is mixed in by world position.
   plazaground: { flat: [0.22, 0.2, 0.18], metal: 0.02, rough: 0.92 },
-  ring: { emit: 0xd5e6f0, estr: 0.12, color: [1.15, 1.2, 1.28] },
-  deck: { emit: 0xffe0c6, estr: 0.22 },
-  // The baked podium and tower are near-black. Flat graphite keeps them in the midtones under a bright sky.
-  podium: { flat: [0.2, 0.2, 0.22], metal: 0.32, rough: 0.55, emit: 0xffd8c4, estr: 0.02 },
-  arch: { flat: [0.34, 0.31, 0.28], metal: 0.18, rough: 0.62, emit: 0xfff1e4, estr: 0.06 },
-  tower: { flat: [0.24, 0.25, 0.28], metal: 0.38, rough: 0.48, emit: 0xdce6f0, estr: 0.015 },
-  shell: { flat: [0.18, 0.19, 0.21], metal: 0.34, rough: 0.52, emit: 0xe4e0dc, estr: 0.012 },
+  ring: { emit: 0xc9dff0, estr: 0.1, color: [0.72, 0.78, 0.88] },
+  deck: { flat: [0.4, 0.38, 0.42], metal: 0.72, rough: 0.28, emit: 0xffe0c8, estr: 0.06 },
+  podium: { flat: [0.36, 0.33, 0.32], metal: 0.46, rough: 0.46, emit: 0xffd4bc, estr: 0.012 },
+  arch: { flat: [0.16, 0.13, 0.12], metal: 0.2, rough: 0.62, emit: 0xfff0e2, estr: 0.045 },
+  tower: { flat: [0.4, 0.42, 0.5], metal: 0.62, rough: 0.34, emit: 0xc5dff2, estr: 0.01 },
+  shell: { flat: [0.26, 0.27, 0.3], metal: 0.5, rough: 0.44, emit: 0xe4ddd6, estr: 0.008 },
 };
 function partRole(o) {
   const ns = [];
@@ -260,7 +282,7 @@ const plazaFx = new THREE.Group(); scene.add(plazaFx);
   sprite(0xfff2e4, 10, b2t(0, fy + 8, 6), 0.16);
   sprite(0xf2f0ff, 22, b2t(13.5, 40, 76), 0.06);
   const glow = (hex, inten, dist, pos) => { const L = new THREE.PointLight(hex, inten, dist, 2); L.position.copy(pos); plazaFx.add(L); };
-  glow(0xfff3e6, 34, 46, b2t(0, fy + 6, 6));          // milky arch
+  glow(0xfff3e6, 52, 46, b2t(0, fy + 6, 6));          // milky arch
   glow(0xe8e6f4, 18, 56, b2t(13.5, 40, 78));          // pale crown
   glow(0xffe6d2, 40, 34, b2t(0, 2, 5));               // warm court, low
   glow(0xfff0e4, 26, 40, b2t(0, 2, 16));              // mid court
@@ -305,8 +327,9 @@ function applyStyle(s) {
   const R = s === 'render';
   gltf.scene.traverse(o => { if (o.isMesh && o.userData.matRender) o.material = R ? o.userData.matRender : o.userData.matClay; });
   scene.background = R ? RENDER_BG : CLAY_BG; scene.fog = R ? RENDER_FOG : CLAY_FOG;
+  scene.environment = R ? RENDER_ENV : null; scene.environmentIntensity = R ? 1.25 : 1;
   clayLights.visible = !R; renderLights.visible = R; plazaFx.visible = R;
-  renderer.toneMappingExposure = R ? 0.94 : 1.0;
+  renderer.toneMappingExposure = R ? 0.9 : 1.0;
   headlamp.intensity = headlampFor(mode);
   const b = document.getElementById('bStyle'); if (b) b.textContent = R ? '风格 Style: 渲染 Render' : '风格 Style: 白模 Clay';
 }

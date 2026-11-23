@@ -66,7 +66,7 @@ def ground_mat():
 MAT["ground"] = ground_mat()
 def saucer_mat():
     """dark glossy/metallic underside; top surface catches bright iridescent pink/cyan/white light"""
-    m = principled("St_Saucer", (0.52, 0.55, 0.6), 0.58, 0.4, 0.25, 280); N, L = nodes(m); b = N["Principled BSDF"]
+    m = principled("St_Saucer", (0.42, 0.46, 0.54), 0.84, 0.2, 0.2, 280); N, L = nodes(m); b = N["Principled BSDF"]
     geo = N.new("ShaderNodeNewGeometry"); sp = N.new("ShaderNodeSeparateXYZ"); L.new(geo.outputs["Normal"], sp.inputs[0])
     top = N.new("ShaderNodeMapRange"); top.inputs["From Min"].default_value = 0.2; top.inputs["From Max"].default_value = 0.9
     top.inputs["To Max"].default_value = CY["saucer_top_glow"]; L.new(sp.outputs["Z"], top.inputs["Value"])
