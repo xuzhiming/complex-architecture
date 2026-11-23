@@ -113,7 +113,7 @@ def windows_mat():
     """window-light instances: per-instance random colour (warm white / amber / teal / pink / cyan) and brightness"""
     m = bpy.data.materials.new("St_Windows"); N, L = nodes(m); N.remove(N["Principled BSDF"])
     e = N.new("ShaderNodeEmission"); oi = N.new("ShaderNodeObjectInfo")
-    r = ramp_node(N, [(0.0, PAL["amber"]), (0.35, (1.0, 0.82, 0.55)), (0.62, (1.0, 0.5, 0.2)), (0.78, PAL["teal"]), (0.9, PAL["pink"]), (1.0, PAL["cyan"])], 'CONSTANT')
+    r = ramp_node(N, [(0.0, (1.0, 0.62, 0.28)), (0.4, (1.0, 0.78, 0.45)), (0.62, (1.0, 0.5, 0.22)), (0.78, PAL["teal"]), (0.9, PAL["pink"]), (1.0, PAL["cyan"])], 'CONSTANT')
     L.new(oi.outputs["Random"], r.inputs["Fac"])
     tc = N.new("ShaderNodeTexCoord"); vo = N.new("ShaderNodeTexWhiteNoise"); L.new(tc.outputs["Object"], vo.inputs["Vector"])
     st = N.new("ShaderNodeMapRange"); st.inputs["To Min"].default_value = CY["window_strength"]*0.3; st.inputs["To Max"].default_value = CY["window_strength"]
@@ -151,7 +151,7 @@ def glass_mat():
     L.new(r.outputs["Color"], b.inputs["Emission Color"]); L.new(mk.outputs[0], b.inputs["Emission Strength"])
     return m
 MAT["glass"] = glass_mat()
-STRIP = emit("St_DeckStrip", (0.85, 0.88, 1.0), CY["deck_strip_strength"])
+STRIP = emit("St_DeckStrip", (1.0, 0.78, 0.45), CY["deck_strip_strength"])
 MAT["deck"] = MAT["podium"]
 
 # ---------------- assignment by rules (params.json style.rules) ----------------
@@ -229,8 +229,10 @@ light("StBurstSpot", 'SPOT', (0, FRONT_Y + 12, 6), 2e3, (1.0, 0.9, 0.78), 1.0, (
 for k, (ax, az_) in enumerate([(-44, 20), (-30, 32), (-15, 42), (0, 48), (15, 42), (30, 32), (44, 20)]):
     light(f"StArchBeam{k}", 'SPOT', (0, FRONT_Y - 2.0, 1.5), 1.6e5, (1.0, 0.88, 0.7), 0.3,
           (math.radians(90 + az_), 0, math.radians(180 + ax)), math.radians(5), 0.1)
-light("StCourtGlow", 'POINT', (CC[0], CC[1], 7), 8e3, (1.0, 0.82, 0.7), 5)
-light("StCrownHalo", 'POINT', (TX, TY, TZ + 12), 4e4, (0.95, 0.85, 1.0), 12)
+light("StCourtGlow", 'POINT', (CC[0], CC[1], 12), CY["court_fill_w"], (1.0, 0.72, 0.45), 6)
+light("StCourtCool", 'POINT', (CC[0], CC[1] + 6, 30), CY["court_cool_w"], (0.42, 0.66, 1.0), 8)
+light("StPodiumWarm", 'POINT', (0, FRONT_Y - 12, 9), CY["podium_warm_w"], (1.0, 0.64, 0.35), 8)
+light("StCrownHalo", 'POINT', (TX, TY, TZ + 12), 4e4, (0.78, 0.65, 1.0), 12)
 light("StMoon", 'SUN', (0, 0, 100), 0.25, (0.55, 0.6, 1.0), rot=(math.radians(40), 0, math.radians(200)))
 light("StRimPink", 'AREA', (-90, 30, 80), 3e3, (1.0, 0.35, 0.8), 50, (math.radians(60), 0, math.radians(-120)))
 light("StRimCyan", 'AREA', (100, 20, 70), 3e3, (0.25, 0.8, 1.0), 50, (math.radians(60), 0, math.radians(120)))

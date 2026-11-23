@@ -1,5 +1,13 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Richer Render light (after the dimming pass)
+
+The dimmed preview read as one blue-violet wash, and the courtyard plus the podium fell into black. This pass does not raise the global exposure (it stays 0.9) and does not grade a screenshot. `web/main.js` paints each loaded part once — crescent, crown, windows, glass, rim, saucer, floor band, deck, podium, arch, tower, shell — to an absolute emissive colour and strength that matches `params.json` `style.web`. That replaces the previous strength remap (3 → 0.70 and so on). It does not multiply those factors again.
+
+The split is warm against cool, not a rainbow: warm-gold windows and the arch, cyan edges on the saucers and floor bands, rose and violet on the crescent and crown. Extra point lights sit in the arch, on the podium face, low and high in the courtyard, and on the east and west sides. Bloom stays a short halo (0.22 / 0.26 / 0.94). Clay lights, the two white materials, and exposure 1 are untouched.
+
+`src/render_style.py` gained the same courtyard warm fill, courtyard cool fill, and podium warm light, and the window and deck-strip colours move toward gold. Those Cycles frames were not re-rendered.
+
 ## Render brightness (web preview)
 
 The first web preview clipped. The crescent, the deck edge and the arch core went white, and bloom plus fog hid the floor plates. Clay was not the problem. The bright look came from several Render-only sources stacked together:

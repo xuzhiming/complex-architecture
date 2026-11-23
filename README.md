@@ -56,7 +56,7 @@ Controls / 操作 (buttons 环绕 Orbit / 漫游 Walk / 飞行 Fly, top right):
 - **Compositor and finish:** Bloom and Streaks glare in the compositor, then `src/style_post.py` adds grain, chromatic
   softness and a vignette.
 - **Backdrop:** an abstract gradient with a few faint light streaks; no city and no people.
-- **Web brightness:** the Render preview was too hot (emissive strengths up to 3, arch/crown point lights, a wide bloom and dense fog). Those were lowered together so the crescent, floor plates and facade read, while the blue-violet / cyan-pink palette stays. Clay lights, materials and exposure are unchanged. The Cycles stills above were not re-rendered; `style.cycles` was lowered so the next Blender run follows the same direction.
+- **Web light:** Render is a night scene with three families of colour — warm gold on the podium, arch and windows; cyan on the saucer edges and floor bands; rose and violet on the crescent and crown. Exposure stays near 0.9. Bloom is a short halo, not a white fog. Clay lights, materials and exposure are the daylight white model and are not shifted with Render. The Cycles stills above are from the earlier render; `style.web` and `style.cycles` now describe this palette for the next Blender export, which has not been run.
 
 ## Pipeline / 流程
 
