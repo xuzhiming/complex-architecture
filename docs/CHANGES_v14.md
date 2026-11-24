@@ -1,5 +1,9 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
+## Daylight textures
+
+Each surface samples its map once, on the dominant world axis, instead of three times. Render now uses shared tileable maps, sampled in world metres: limestone ashlar on the podium, arch, shell and crescent, brushed metal on the saucers and bridges, wood boards only on the deck soffit and fascia, and large slabs on the forecourt. Window panes and the podium window planes are thin glass, opacity 0.2, depth write off, no transmission. A podium window plane sits about 7 cm in front of PodiumShell; the recess is 0.3 m and does not pierce the 0.6 m wall. Tower shells are solid behind the panes. The glass shows that real surface, not a cut room. Door leaves export as one material, so they stay solid. The windows do not glow. Plaza rings are dull metal inlays. The sky is neutral daylight and bloom is nearly off. Two directional lights and a plain reflection replace the dusk colour wash. The path-pool shader remains, at zero intensity, so it does not paint night spots. Clay is not textured. The glTF file was not rewritten. Cycles was not re-rendered.
+
 ## Material finish
 
 The dusk materials were one even coat: the podium and the arch still read as metal, the windows were one bright amber, and the saucer undersides and the wall feet had no darker contact. Render now keeps the four global point lights, the ground and hall pools, the reflection and the pixel-ratio cap. Stone (podium, arch, shell) is a warm matte grey. Saucers stay a cooler silver and the bridges and the deck a warmer grey. Window cores are a softer amber with a per-cell variation, so the band is not one flat glow. A short shader darkens downward faces and the base of the podium, arch and hall walls, sharpens the saucer and roof lip, and darkens the lobby ceiling toward its edge. Clay is not painted by this pass. Cycles was not re-rendered.

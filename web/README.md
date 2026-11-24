@@ -34,12 +34,10 @@ python3 -m http.server 8765 --directory web   # http://localhost:8765/
   have shut. The 14 open archways have no leaves: the arch portal, the tunnel→courtyard mouth, 2 tunnel side openings and
   10 courtyard→gallery arcade openings.
 - **Style 风格 (V or the 风格 Style button):** two looks, **渲染 Render** (the default) and **白模 Clay**, the v13 white model.
-  Render is an overcast grey-blue dusk: warm matte stone on the podium, arch and shell, cool silver saucers
-  with a sharper lip, warmer grey bridges, softer uneven amber windows, and a milky warm arch and forecourt.
-  Downward faces and the wall feet are darker. Rose and cyan stay as a faint side light and the plaza rings.
-  A generated reflection tints the metal with cyan, rose and amber. The forecourt paving is lit by pools on the
-  ground material, with five short bollards. Exposure is 0.9. Render draws at a pixel ratio of at most 1; Clay still
-  uses the screen ratio up to 2. The bloom is a short halo.
+  Render is neutral daylight with shared textures: limestone ashlar, brushed metal saucers, a wood soffit
+  on the deck only, low-saturation glass, and large plaza slabs with dull metal rings.
+  A plain sky reflection tints the metal. Exposure is 1.02. Render draws at a pixel ratio of at most 1; Clay still
+  uses the screen ratio up to 2. Bloom is nearly off.
   Clay swaps in two plain white materials and the old daylight, and is not recolored with Render. Walk, fly and the
   automatic doors work the same in both looks. Use `?style=clay` to open in Clay.
 - `building_opt.glb`: Meshopt-compressed, window surrounds as GPU instances (EXT_mesh_gpu_instancing). Door leaves are
