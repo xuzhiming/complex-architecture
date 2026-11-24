@@ -12,6 +12,9 @@
   #bar button{background:#3a3f52;color:#fff;border:0;border-radius:5px;padding:6px 10px;cursor:pointer}
   #bar button.on{background:#6b7cff}
   #cross{pointer-events:none;position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#fff;opacity:.7;display:none}
+  #minimap{position:absolute;left:12px;bottom:12px;width:172px;height:148px;pointer-events:none;z-index:2;border-radius:6px}
+  @media (max-width:720px){#minimap{width:132px;height:114px;left:8px;bottom:8px}}
+  @media (max-height:480px){#minimap{width:112px;height:96px;left:8px;bottom:8px}}
   #flyBar{position:absolute;right:12px;top:46px;display:none;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:70vw}
   #flyBar button{background:#3a3f52;color:#fff;border:0;border-radius:5px;padding:5px 9px;cursor:pointer;font-size:12px}
   #flyBar button.on{background:#6b7cff}

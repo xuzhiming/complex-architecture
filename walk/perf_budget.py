@@ -49,6 +49,21 @@ async def main():
             if tex.get("plaza", 0) < 256: fails.append(f"plaza map {tex.get('plaza')}")
             if tex.get("proj") != "axis": fails.append(f"proj {tex.get('proj')}")
             if tex.get("ringEmit", 1) > 0.02: fails.append(f"ringEmit {tex.get('ringEmit')}")
+        mp = await pg.evaluate("window.__map ? __map.read() : null")
+        gln = await pg.evaluate("""() => {
+          let n = 0;
+          for (const c of document.querySelectorAll('canvas')) {
+            if (c.id === 'minimap') continue;
+            if (c.getContext('webgl2')) n++;
+          }
+          return n;
+        }""")
+        if gln != 1: fails.append(f"webgl contexts {gln}")
+        if not mp: fails.append("missing map")
+        else:
+            if mp["dpr"] > 2: fails.append(f"map dpr {mp['dpr']}")
+            if mp["kind"] != "orbit" or mp["marker"]: fails.append(f"orbit marker {mp['kind']}")
+            if "环绕" not in (mp.get("caption") or ""): fails.append(mp.get("caption"))
         if errs: fails.append("errors " + " | ".join(errs[:4]))
         await br.close()
     print("PERF BUDGET", "PASS" if not fails else "FAIL", info, fails)
