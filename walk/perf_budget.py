@@ -1,6 +1,6 @@
 """Render cost budget: few global point lights, Render pixel-ratio cap 1, Clay cap stays 2.
-The path lamps and the lobby lights are not global PointLights; they are shaded only on the
-surfaces they light. Bollards and the reflection stay.
+The path lamps and the lobby lights are not global PointLights. The night look is the original
+dark blue scene: no dusk reflection, a bright arch core, and the lobby ceiling drawn from both sides.
 usage: python3 walk/perf_budget.py --url http://127.0.0.1:8771/index.html
 """
 import asyncio, sys
@@ -28,14 +28,15 @@ async def main():
             if info.get("clayCap") != 2: fails.append(f"clayCap {info.get('clayCap')}")
             if info.get("pointLights", 99) > 4: fails.append(f"pointLights {info.get('pointLights')}")
             if info.get("bollards", 0) < 5: fails.append(f"bollards {info.get('bollards')}")
-            if not info.get("env"): fails.append("env off")
+            if info.get("env"): fails.append("dusk env on")
             if info.get("style") != "render": fails.append(f"style {info.get('style')}")
-            fin = info.get("finish") or {}
-            if fin.get("stoneMetal", 1) > 0.16: fails.append(f"stoneMetal {fin.get('stoneMetal')}")
-            if fin.get("saucerMetal", 0) < 0.75: fails.append(f"saucerMetal {fin.get('saucerMetal')}")
-            if not (fin.get("bridgeR", 0) > fin.get("saucerR", 1)): fails.append("bridge not warmer than saucer")
-            if fin.get("windowEstr", 1) > 0.42: fails.append(f"windowEstr {fin.get('windowEstr')}")
-            if not fin.get("contact"): fails.append("contact darkening off")
+            look = info.get("look") or {}
+            if look.get("fog") != 0x1b1840: fails.append(f"fog {look.get('fog')}")
+            if look.get("exposure", 0) < 0.94: fails.append(f"exposure {look.get('exposure')}")
+            if look.get("bloom", 0) < 0.5: fails.append(f"bloom {look.get('bloom')}")
+            if look.get("arch", 0) < 200: fails.append(f"arch {look.get('arch')}")
+            if look.get("pools", 0) < 7: fails.append(f"pools {look.get('pools')}")
+            if not look.get("hallDouble"): fails.append("hall ceiling single sided")
         if errs: fails.append("errors " + " | ".join(errs[:4]))
         await br.close()
     print("PERF BUDGET", "PASS" if not fails else "FAIL", info, fails)
