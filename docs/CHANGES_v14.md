@@ -1,12 +1,12 @@
 # v14 — stylised render (目前是白模，参考这个抽象的效果图进行渲染) + no people
 
-## Material finish
+## Night look restored
 
-The dusk materials were one even coat: the podium and the arch still read as metal, the windows were one bright amber, and the saucer undersides and the wall feet had no darker contact. Render now keeps the four global point lights, the ground and hall pools, the reflection and the pixel-ratio cap. Stone (podium, arch, shell) is a warm matte grey. Saucers stay a cooler silver and the bridges and the deck a warmer grey. Window cores are a softer amber with a per-cell variation, so the band is not one flat glow. A short shader darkens downward faces and the base of the podium, arch and hall walls, sharpens the saucer and roof lip, and darkens the lobby ceiling toward its edge. Clay is not painted by this pass. Cycles was not re-rendered.
+Render is the original blue-violet night again (`3505840`): navy fog, the glb's hot crescent, warm windows and white deck edge, bloom 0.55, exposure 0.95, and the bright arch and crown lights. The grey-blue dusk, the coloured reflection and the warm stone paint are gone. Two global point lights remain. The path and the lobby stay on their own materials, the lobby ceiling is still drawn from both sides, and Render's pixel ratio stays capped at 1. Clay is unchanged. Cycles was not re-rendered. The forecourt is lit, so it is not the pure black disc of that first preview.
 
 ## Render frame cost
 
-The dusk look kept twenty point lights in the one forward shader, so every surface paid for the plaza and the lobby. Those ten lamps are now computed only inside the ground and hall materials. Four point lights remain for the arch, the court, the podium and the crown, and the headlamp is out of the shader until walk or fly. Render's pixel ratio is capped at 1. Clay stays at 2. The reflection, the bollards, bloom and the door system are unchanged.
+The dusk look kept twenty point lights in the one forward shader, so every surface paid for the plaza and the lobby. Those lamps are computed only inside the ground and hall materials. The night restore keeps two of the global point lights, the arch and the crown, and the headlamp stays out of the shader until walk or fly. Render's pixel ratio is capped at 1. Clay stays at 2. The bollards, bloom and the door system stay. The dusk reflection does not.
 
 ## Grey-blue dusk
 
