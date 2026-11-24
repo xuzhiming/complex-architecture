@@ -10,6 +10,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { attachMinimap } from './minimap.js';
 
 const Q = new URLSearchParams(location.search);
 const TEST = Q.has('test');
@@ -85,14 +86,21 @@ function setFeet(v3) { player.pos.set(v3.x, v3.y + FEET, v3.z); player.vel.set(0
 // ---------------- load ----------------
 const loader = new GLTFLoader(); loader.setMeshoptDecoder(MeshoptDecoder);
 const texLoader = new THREE.TextureLoader();
-const [gltf, spaces, stoneAlb, stoneRough, metalAlb, metalRough, woodAlb, woodRough, plazaAlb, plazaRough] = await Promise.all([
+const [gltf, spaces, params, stoneAlb, stoneRough, metalAlb, metalRough, woodAlb, woodRough, plazaAlb, plazaRough] = await Promise.all([
   loader.loadAsync(MODEL),
   fetch('./spaces.json').then(r => r.json()).catch(() => null),
+  fetch('./params.json').then(r => r.ok ? r.json() : null).catch(() => null),
   texLoader.loadAsync('./tex/stone_albedo.png'), texLoader.loadAsync('./tex/stone_rough.png'),
   texLoader.loadAsync('./tex/metal_albedo.png'), texLoader.loadAsync('./tex/metal_rough.png'),
   texLoader.loadAsync('./tex/wood_albedo.png'), texLoader.loadAsync('./tex/wood_rough.png'),
   texLoader.loadAsync('./tex/plaza_albedo.png'), texLoader.loadAsync('./tex/plaza_rough.png')]);
 SPACES = spaces;
+const minimap = params ? attachMinimap(null, params) : null;
+function mapPose() {
+  if (mode === 'walk') return { mode: 'walk', x: player.pos.x, y: -player.pos.z, z: feetY(), yaw: player.yaw };
+  if (mode === 'fly') return { mode: 'fly', x: fly.pos.x, y: -fly.pos.z, z: fly.pos.y, yaw: fly.yaw };
+  return { mode: 'orbit' };
+}
 function prepTex(t, srgb) {
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
   t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
@@ -813,6 +821,7 @@ function loop(now) {
   else if (mode === 'fly') { if (tour.on) tourStep(dt); else flyStep(dt); flyCamera(); document.getElementById('bTour').classList.toggle('on', tour.on); }
   else orbit.update();
   updateDoors(dt, mode === 'walk' ? player.pos : (mode === 'fly' ? camera.position : null), mode === 'fly');
+  if (minimap) minimap.sync(mapPose());
   hud.innerHTML = hudText();
   if (renderEvery) draw();
   requestAnimationFrame(loop);
@@ -820,6 +829,11 @@ function loop(now) {
 requestAnimationFrame(loop);
 
 // ---------------- test hooks (used by walk_test.py) ----------------
+window.__map = minimap ? {
+  read: () => minimap.read(),
+  cost: () => minimap.cost(),
+  bench(n = 30) { const samples = []; for (let i = 0; i < n; i++) { minimap.sync(mapPose()); samples.push(minimap.cost()); } return samples; },
+} : null;
 window.__walk = {
   ready: true,
   setMode, render() { if (mode === 'walk') syncCamera(); else if (mode === 'fly') flyCamera(); draw(); },

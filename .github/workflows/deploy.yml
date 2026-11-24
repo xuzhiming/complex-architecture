@@ -26,6 +26,8 @@ jobs:
           mkdir -p dist
           cp web/index.html dist/index.html
           cp web/main.js dist/main.js
+          cp web/minimap.js dist/minimap.js
+          cp params.json dist/params.json
           cp web/spaces.json dist/spaces.json
           cp web/building_opt.glb dist/building_opt.glb
           cp -a web/tex dist/tex

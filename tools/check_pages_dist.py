@@ -11,9 +11,13 @@ TEX = [
     "wood_albedo.png", "wood_rough.png",
 ]
 REQUIRED = [
-    "index.html", "main.js", "spaces.json", "building_opt.glb",
+    "index.html", "main.js", "minimap.js", "params.json", "spaces.json", "building_opt.glb",
     "vendor/three/build/three.module.js",
 ]
+HASHED = {
+    "minimap.js": "web/minimap.js",
+    "params.json": "params.json",
+}
 
 def main():
     dist = sys.argv[1] if len(sys.argv) > 1 else "dist"
@@ -23,6 +27,14 @@ def main():
         path = os.path.join(dist, rel)
         if not os.path.isfile(path) or os.path.getsize(path) < 32:
             bad.append("missing " + rel)
+    for rel, src_rel in HASHED.items():
+        path = os.path.join(dist, rel)
+        src = os.path.join(root, src_rel)
+        if not os.path.isfile(path) or not os.path.isfile(src):
+            bad.append("missing " + rel)
+            continue
+        if hashlib.sha256(open(path, "rb").read()).hexdigest() != hashlib.sha256(open(src, "rb").read()).hexdigest():
+            bad.append("hash " + rel)
     for name in TEX:
         path = os.path.join(dist, "tex", name)
         src = os.path.join(root, "web", "tex", name)

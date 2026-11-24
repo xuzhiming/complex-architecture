@@ -13,9 +13,13 @@ TEX = [
     "wood_albedo.png", "wood_rough.png",
 ]
 REQUIRED = [
-    "index.html", "main.js", "spaces.json", "building_opt.glb",
+    "index.html", "main.js", "minimap.js", "params.json", "spaces.json", "building_opt.glb",
     "vendor/three/build/three.module.js",
 ]
+HASHED = {
+    "minimap.js": "web/minimap.js",
+    "params.json": "params.json",
+}
 
 def build_script():
     lines = open(os.path.join(ROOT, ".github/workflows/deploy.yml"), encoding="utf-8").read().splitlines()
@@ -44,6 +48,14 @@ def check(dist):
         path = os.path.join(dist, rel)
         if not os.path.isfile(path) or os.path.getsize(path) < 32:
             bad.append("missing " + rel)
+    for rel, src_rel in HASHED.items():
+        path = os.path.join(dist, rel)
+        src = os.path.join(ROOT, src_rel)
+        if not os.path.isfile(path):
+            bad.append("missing " + rel)
+            continue
+        if hashlib.sha256(open(path, "rb").read()).hexdigest() != hashlib.sha256(open(src, "rb").read()).hexdigest():
+            bad.append("hash " + rel)
     for name in TEX:
         path = os.path.join(dist, "tex", name)
         src = os.path.join(ROOT, "web", "tex", name)
@@ -92,6 +104,7 @@ def load_preview(dist):
                 render = await pg.evaluate("__walk.style()")
                 clay = await pg.evaluate("__walk.style('clay')")
                 tex = await pg.evaluate("__perf.snapshot().tex")
+                cap = await pg.evaluate("window.__map && __map.read()")
                 await br.close()
             if errs:
                 return ["page " + errs[0]]
@@ -99,6 +112,8 @@ def load_preview(dist):
                 return [f"style {render} {clay}"]
             if tex.get("stone") != 512 or tex.get("proj") != "axis":
                 return ["textures did not decode " + str(tex)]
+            if not cap or "环绕" not in (cap.get("caption") or "") or cap.get("marker"):
+                return ["minimap missing from packed page " + str(cap)]
             return []
         finally:
             proc.terminate()
