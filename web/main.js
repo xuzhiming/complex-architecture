@@ -288,11 +288,11 @@ function applySurface(m, kind, tint) {
         ${wood ? 'uniform sampler2D uWood; uniform sampler2D uWoodR;' : ''}
         float gRough;
         vec3 surfTri(sampler2D tex, vec3 wn) {
-          vec3 bw = pow(abs(wn), vec3(4.0));
-          bw /= max(bw.x + bw.y + bw.z, 1e-4);
-          return texture2D(tex, vTexW.zy / uMeters).rgb * bw.x
-            + texture2D(tex, vTexW.xz / uMeters).rgb * bw.y
-            + texture2D(tex, vTexW.xy / uMeters).rgb * bw.z;
+          vec3 aw = abs(wn);
+          vec2 uv = vTexW.xz;
+          if (aw.x >= aw.y && aw.x >= aw.z) uv = vTexW.zy;
+          else if (aw.z > aw.y) uv = vTexW.xy;
+          return texture2D(tex, uv / uMeters).rgb;
         }`)
       .replace('#include <color_fragment>', `#include <color_fragment>
         {
@@ -312,7 +312,7 @@ function applySurface(m, kind, tint) {
       .replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\nroughnessFactor = clamp(gRough, 0.04, 1.0);');
   };
   const old = m.customProgramCacheKey && m.customProgramCacheKey.bind(m);
-  m.customProgramCacheKey = () => (old ? old() : '') + '|surf-' + kind;
+  m.customProgramCacheKey = () => (old ? old() : '') + '|surf-axis-' + kind;
 }
 gltf.scene.traverse(o => {
   if (!o.isMesh || !o.userData.matRender || partRole(o) === 'door') return;
@@ -966,6 +966,7 @@ window.__perf = {
         wood: WOOD_A.image ? WOOD_A.image.width : 0,
         plaza: PLAZA_A.image ? PLAZA_A.image.width : 0,
         ringEmit: RING_MAT.emissiveIntensity,
+        proj: 'axis',
       },
     };
   },

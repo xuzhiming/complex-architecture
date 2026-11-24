@@ -47,6 +47,7 @@ async def main():
             if tex.get("metal", 0) < 256: fails.append(f"metal map {tex.get('metal')}")
             if tex.get("wood", 0) < 128: fails.append(f"wood map {tex.get('wood')}")
             if tex.get("plaza", 0) < 256: fails.append(f"plaza map {tex.get('plaza')}")
+            if tex.get("proj") != "axis": fails.append(f"proj {tex.get('proj')}")
             if tex.get("ringEmit", 1) > 0.02: fails.append(f"ringEmit {tex.get('ringEmit')}")
         if errs: fails.append("errors " + " | ".join(errs[:4]))
         await br.close()
