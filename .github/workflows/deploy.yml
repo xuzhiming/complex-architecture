@@ -28,7 +28,9 @@ jobs:
           cp web/main.js dist/main.js
           cp web/spaces.json dist/spaces.json
           cp web/building_opt.glb dist/building_opt.glb
+          cp -a web/tex dist/tex
           cp -r web/vendor dist/vendor
+          python3 tools/check_pages_dist.py dist
           find dist -type f -size +25M -print -exec false {} + || { echo "::error::file exceeds Cloudflare Pages 25 MiB limit"; exit 1; }
           ls -la dist
           du -sh dist
