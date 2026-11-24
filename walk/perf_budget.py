@@ -36,6 +36,12 @@ async def main():
             if not (fin.get("bridgeR", 0) > fin.get("saucerR", 1)): fails.append("bridge not warmer than saucer")
             if fin.get("windowEstr", 1) > 0.05: fails.append(f"windowEstr {fin.get('windowEstr')}")
             if fin.get("crescentEstr", 1) > 0.02: fails.append(f"crescentEstr {fin.get('crescentEstr')}")
+            g = info.get("glass") or {}
+            if not g.get("transparent"): fails.append("glass opaque")
+            if not (0.08 <= g.get("opacity", 1) <= 0.4): fails.append(f"glass opacity {g.get('opacity')}")
+            if g.get("depthWrite", True): fails.append("glass writes depth")
+            if g.get("transmission", 0): fails.append("transmission")
+            if g.get("panes", 0) < 20: fails.append(f"glass panes {g.get('panes')}")
             tex = info.get("tex") or {}
             if tex.get("stone", 0) < 256: fails.append(f"stone map {tex.get('stone')}")
             if tex.get("metal", 0) < 256: fails.append(f"metal map {tex.get('metal')}")

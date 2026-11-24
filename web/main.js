@@ -153,8 +153,8 @@ gltf.scene.traverse(o => {
 const LOOK = {
   crescent: { flat: [1, 1, 1], metal: 0.06, rough: 0.72, estr: 0 },
   crown: { flat: [0.96, 0.98, 1], metal: 0.78, rough: 0.36, estr: 0 },
-  windows: { flat: [0.62, 0.68, 0.7], metal: 0.02, rough: 0.14, estr: 0 },
-  glass: { flat: [0.58, 0.64, 0.66], metal: 0.02, rough: 0.1, estr: 0 },
+  windows: { flat: [0.8, 0.84, 0.86], metal: 0.08, rough: 0.06, estr: 0, glass: true },
+  glass: { flat: [0.8, 0.84, 0.86], metal: 0.08, rough: 0.06, estr: 0, glass: true },
   rim: { flat: [0.96, 0.97, 0.98], metal: 0.7, rough: 0.34, estr: 0 },
   saucer: { flat: [0.94, 0.97, 1.02], metal: 0.86, rough: 0.36, estr: 0 },
   roof: { flat: [1.0, 0.97, 0.92], metal: 0.74, rough: 0.4, estr: 0 },
@@ -172,6 +172,7 @@ const LOOK = {
   tower: { flat: [1, 1, 1], metal: 0.05, rough: 0.76, estr: 0 },
   shell: { flat: [1, 1, 1], metal: 0.04, rough: 0.8, estr: 0 },
 };
+const GLASS_STATE = { transparent: false, opacity: 1, depthWrite: true, transmission: 0, panes: 0 };
 function surfaceOf(role) {
   if (role === 'windows' || role === 'glass') return null;
   if (role === 'deck') return 'deck';
@@ -189,7 +190,7 @@ function partRole(o) {
   if (self === 'GroundSlab') return 'hallfloor';
   if (/Crescent/i.test(n)) return 'crescent';
   if (/Crown|Dome|Lantern/i.test(n)) return 'crown';
-  if (/Window/i.test(n)) return 'windows';
+  if (/Window/i.test(n) || /_pane$|_lit$/.test(self)) return 'windows';
   if (/Deck/i.test(n)) return 'deck';
   if (/CanopyRim/i.test(self)) return 'rim';
   if (/canopy_rib/i.test(self)) return 'roofrib';
@@ -224,6 +225,21 @@ function paintMaterial(src, role) {
       if (spec.flat) m.emissiveMap = null;
       m.emissive.setHex(spec.emit); m.emissiveIntensity = spec.estr;
     } else if (!spec.flat && (src.emissiveIntensity ?? 1) >= 1.05) m.emissiveIntensity = 0.4;
+  }
+  if (spec && spec.glass) {
+    m.transparent = true;
+    m.opacity = 0.2;
+    m.depthWrite = false;
+    m.side = THREE.DoubleSide;
+    m.envMapIntensity = 0.5;
+    m.polygonOffset = true;
+    m.polygonOffsetFactor = -1;
+    m.polygonOffsetUnits = -4;
+    m.userData.glass = true;
+    GLASS_STATE.transparent = true;
+    GLASS_STATE.opacity = m.opacity;
+    GLASS_STATE.depthWrite = false;
+    GLASS_STATE.transmission = m.transmission || 0;
   }
   const surf = surfaceOf(role);
   if (surf) {
@@ -303,6 +319,7 @@ gltf.scene.traverse(o => {
   const role = partRole(o);
   const src = o.userData.matRender;
   o.userData.matRender = Array.isArray(src) ? src.map(m => paintMaterial(m, role)) : paintMaterial(src, role);
+  if (role === 'windows') { o.userData.glassPane = true; GLASS_STATE.panes++; }
   if (o.name !== 'GroundSlab') return;
   const mats = Array.isArray(o.userData.matRender) ? o.userData.matRender : [o.userData.matRender];
   mats.forEach(applyPlazaGround);
@@ -430,7 +447,10 @@ function applyPixelRatio() {
 function applyStyle(s) {
   style = s;
   const R = s === 'render';
-  gltf.scene.traverse(o => { if (o.isMesh && o.userData.matRender) o.material = R ? o.userData.matRender : o.userData.matClay; });
+  gltf.scene.traverse(o => {
+    if (o.isMesh && o.userData.matRender) o.material = R ? o.userData.matRender : o.userData.matClay;
+    if (o.userData.glassPane) o.renderOrder = R ? 2 : 0;
+  });
   scene.background = R ? RENDER_BG : CLAY_BG; scene.fog = R ? RENDER_FOG : CLAY_FOG;
   scene.environment = R ? RENDER_ENV : null; scene.environmentIntensity = R ? 0.65 : 1;
   clayLights.visible = !R; renderLights.visible = R; plazaFx.visible = R;
@@ -852,6 +872,77 @@ function visiblePointLights() {
   });
   return n;
 }
+window.__glassDiag = () => {
+  gltf.scene.updateMatrixWorld(true);
+  const ray = new THREE.Raycaster();
+  const dir = new THREE.Vector3(), origin = new THREE.Vector3(), inst = new THREE.Matrix4(), box = new THREE.Box3();
+  const names = {};
+  let panes = 0, instanced = 0, doorMats = 0;
+  const samples = [];
+  const isPane = (o) => {
+    if (/_pane$|_lit$|WindowLights/.test(o.name)) return true;
+    const r = roleOf(o);
+    if (r === 'glass' || r === 'window_light') return true;
+    const mats = Array.isArray(o.material) ? o.material : [o.material];
+    return mats.some(m => m && /Recess|glass/i.test(m.name || ''));
+  };
+  gltf.scene.traverse(o => {
+    if (!o.isMesh || !isPane(o)) return;
+    panes++;
+    if (o.isInstancedMesh) instanced++;
+    const key = (roleOf(o) || partRole(o)) + '|' + o.name.replace(/[0-9_].*/, '');
+    names[key] = (names[key] || 0) + (o.isInstancedMesh ? o.count : 1);
+    if (/DoorLeaf/.test(o.name)) doorMats++;
+    if (samples.length >= 8 || !/_pane$|_lit$|WindowLights/.test(o.name)) return;
+    const take = (mx) => {
+      origin.set(0, 0, 0).applyMatrix4(mx);
+      dir.set(0, 1, 0).transformDirection(mx).normalize();
+      ray.set(origin.clone().addScaledVector(dir, 0.05), dir.clone().negate());
+      ray.far = 6;
+      const hits = ray.intersectObject(gltf.scene, true).filter(h => h.object !== o && h.distance > 0.002 && h.distance < 6);
+      const h = hits[0];
+      samples.push({ name: o.name, role: roleOf(o), part: partRole(o), inst: !!o.isInstancedMesh, count: o.count || 1,
+        at: origin.toArray().map(v => +v.toFixed(2)),
+        hit: h ? { name: h.object.name, role: roleOf(h.object) || partRole(h.object), d: +h.distance.toFixed(3) } : null });
+    };
+    if (o.isInstancedMesh && o.count) {
+      o.getMatrixAt(Math.min(3, o.count - 1), inst);
+      take(inst.premultiply(o.matrixWorld));
+    } else {
+      const pos = o.geometry && o.geometry.attributes && o.geometry.attributes.position;
+      if (!pos) return;
+      origin.fromBufferAttribute(pos, Math.min(4, pos.count - 1)).applyMatrix4(o.matrixWorld);
+      dir.set(0, 0, 1);
+      const nm = o.geometry.attributes.normal;
+      if (nm) dir.fromBufferAttribute(nm, Math.min(4, nm.count - 1)).transformDirection(o.matrixWorld).normalize();
+      ray.set(origin.clone().addScaledVector(dir, 0.05), dir.clone().negate());
+      ray.far = 6;
+      const hits = ray.intersectObject(gltf.scene, true).filter(h => h.object !== o && h.distance > 0.002 && h.distance < 6);
+      const h = hits[0];
+      samples.push({ name: o.name, role: roleOf(o), part: partRole(o), inst: false, count: 1,
+        at: origin.toArray().map(v => +v.toFixed(2)),
+        hit: h ? { name: h.object.name, role: roleOf(h.object) || partRole(h.object), d: +h.distance.toFixed(3) } : null });
+    }
+  });
+  const mats = {}, instNames = [];
+  gltf.scene.traverse(o => {
+    if (!o.isMesh) return;
+    const list = Array.isArray(o.material) ? o.material : [o.material];
+    for (const m of list) if (m) mats[m.name || '(none)'] = (mats[m.name || '(none)'] || 0) + 1;
+    if (o.isInstancedMesh) instNames.push(o.name + ' x' + o.count + ' role=' + (roleOf(o) || ''));
+  });
+  let door = null;
+  gltf.scene.traverse(o => {
+    if (door || !/DoorLeaf_/.test(o.name)) return;
+    const kids = o.children.filter(c => c.isMesh).map(c => ({
+      name: c.name, groups: (c.geometry.groups || []).length,
+      mats: (Array.isArray(c.material) ? c.material : [c.material]).map(m => m && m.name) }));
+    door = { type: o.type, isMesh: !!o.isMesh, kids: kids.slice(0, 4),
+      selfMats: o.isMesh ? (Array.isArray(o.material) ? o.material : [o.material]).map(m => m && m.name) : null,
+      groups: o.isMesh ? (o.geometry.groups || []).map(g => g.materialIndex).slice(0, 6) : null };
+  });
+  return { panes, instanced, doorMats, names, samples, door, instCount: instNames.length };
+};
 window.__perf = {
   snapshot() {
     let bollards = 0;
@@ -868,6 +959,7 @@ window.__perf = {
         bridgeR: LOOK.bridge.flat[0], saucerR: LOOK.saucer.flat[0],
         windowEstr: LOOK.windows.estr, crescentEstr: LOOK.crescent.estr,
       },
+      glass: GLASS_STATE,
       tex: {
         stone: STONE_A.image ? STONE_A.image.width : 0,
         metal: METAL_A.image ? METAL_A.image.width : 0,
